@@ -5,12 +5,12 @@
     android:background="#fafafa"
     android:fillViewport="true">
 
-    <org.telegram.ui.Views.FrameLayoutFixed
+    <org.tdesktop.ui.Views.FrameLayoutFixed
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|left">
 
-        <org.telegram.ui.LoginActivityPhoneView
+        <org.tdesktop.ui.LoginActivityPhoneView
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -108,9 +108,9 @@
                 android:layout_marginBottom="10dp"
                 android:lineSpacingExtra="2dp"/>
 
-        </org.telegram.ui.LoginActivityPhoneView>
+        </org.tdesktop.ui.LoginActivityPhoneView>
 
-        <org.telegram.ui.LoginActivitySmsView
+        <org.tdesktop.ui.LoginActivitySmsView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="16dp"
@@ -192,9 +192,9 @@
 
             </LinearLayout>
 
-        </org.telegram.ui.LoginActivitySmsView>
+        </org.tdesktop.ui.LoginActivitySmsView>
 
-        <org.telegram.ui.LoginActivityRegisterView
+        <org.tdesktop.ui.LoginActivityRegisterView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
@@ -255,7 +255,7 @@
                 <!--android:layout_below="@+id/login_register_info"-->
                 <!--android:id="@+id/login_avatar_button">-->
 
-                <!--<org.telegram.ui.Views.BackupImageView-->
+                <!--<org.tdesktop.ui.Views.BackupImageView-->
                     <!--android:id="@+id/settings_avatar_image"-->
                     <!--android:layout_width="fill_parent"-->
                     <!--android:layout_height="fill_parent"-->
@@ -289,8 +289,8 @@
 
             </LinearLayout>
 
-        </org.telegram.ui.LoginActivityRegisterView>
+        </org.tdesktop.ui.LoginActivityRegisterView>
 
-    </org.telegram.ui.Views.FrameLayoutFixed>
+    </org.tdesktop.ui.Views.FrameLayoutFixed>
 
 </ScrollView>

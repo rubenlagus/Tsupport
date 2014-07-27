@@ -51,7 +51,7 @@
 
             </LinearLayout>
 
-            <org.telegram.ui.Views.BackupImageView
+            <org.tdesktop.ui.Views.BackupImageView
                 android:id="@+id/settings_avatar_image"
                 android:layout_width="64dp"
                 android:layout_height="64dp"

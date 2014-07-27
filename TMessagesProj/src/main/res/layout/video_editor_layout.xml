@@ -26,7 +26,7 @@
             android:layout_gravity="center"
             android:id="@+id/play_button"/>
 
-        <org.telegram.ui.Views.VideoSeekBarView
+        <org.tdesktop.ui.Views.VideoSeekBarView
             android:layout_height="36dp"
             android:layout_width="match_parent"
             android:id="@+id/video_seekbar"
@@ -41,7 +41,7 @@
         android:layout_gravity="bottom"
         android:id="@+id/info_container">
     
-        <org.telegram.ui.Views.VideoTimelineView
+        <org.tdesktop.ui.Views.VideoTimelineView
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:id="@+id/video_timeline_view"/>

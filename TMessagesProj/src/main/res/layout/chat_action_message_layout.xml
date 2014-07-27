@@ -9,7 +9,7 @@
     android:gravity="center"
     android:layout_gravity="top">
 
-    <org.telegram.ui.Views.MessageActionLayout
+    <org.tdesktop.ui.Views.MessageActionLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -17,7 +17,7 @@
         android:layout_marginRight="15dp"
         android:id="@+id/message_action_layout">
 
-        <org.telegram.ui.Views.TightTextView
+        <org.tdesktop.ui.Views.TightTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14dp"
@@ -30,6 +30,6 @@
             android:maxLines="10"
             android:layout_gravity="center"/>
 
-    </org.telegram.ui.Views.MessageActionLayout>
+    </org.tdesktop.ui.Views.MessageActionLayout>
 
 </LinearLayout>

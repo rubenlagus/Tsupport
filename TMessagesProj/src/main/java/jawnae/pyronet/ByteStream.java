@@ -18,8 +18,8 @@
 
 package jawnae.pyronet;
 
-import org.telegram.messenger.BuffersStorage;
-import org.telegram.messenger.ByteBufferDesc;
+import org.tdesktop.messenger.BuffersStorage;
+import org.tdesktop.messenger.ByteBufferDesc;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

@@ -65,7 +65,7 @@
 
     </LinearLayout>
 
-    <org.telegram.ui.Views.BackupImageView
+    <org.tdesktop.ui.Views.BackupImageView
         android:id="@+id/docs_item_thumb"
         android:layout_width="55dp"
         android:layout_height="42dp"

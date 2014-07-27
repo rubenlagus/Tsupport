@@ -3,10 +3,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.+'
+        classpath 'com.android.tools.build:gradle:0.11.+'
     }
 }
-apply plugin: 'com.android.application'
+apply plugin: 'android'
 
 repositories {
     mavenCentral()
@@ -20,15 +20,14 @@ dependencies {
     compile 'com.android.support:support-v4:19.0.+'
     compile 'com.google.android.gms:play-services:4.1.+'
     compile 'net.hockeyapp.android:HockeySDK:3.0.1'
-    compile 'com.googlecode.mp4parser:isoparser:1.0.+'
+    compile 'com.googlecode.mp4parser:isoparser:1.0.2'
 }
 
 android {
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
 
-    useAaptPngCruncher = true
-    useOldManifestMerger true
+    aaptOptions.useAaptPngCruncher = true
 
     signingConfigs {
         debug {
@@ -37,9 +36,9 @@ android {
 
         release {
             storeFile file("config/release.keystore")
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storePassword "android"
+            keyAlias "androidreleasekey"
+            keyPassword "android"
         }
     }
 
@@ -83,7 +82,11 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 19
-        versionCode 288
-        versionName "1.6.1"
+        versionCode 254
+        versionName "1.5.3"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 }

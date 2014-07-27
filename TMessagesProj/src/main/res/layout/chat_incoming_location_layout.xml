@@ -9,7 +9,7 @@
     android:paddingTop="1dp"
     android:layout_gravity="top">
 
-    <org.telegram.ui.Views.FrameLayoutFixed
+    <org.tdesktop.ui.Views.FrameLayoutFixed
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="9dp"
@@ -17,7 +17,7 @@
         android:layout_gravity="top"
         android:addStatesFromChildren="true">
 
-        <org.telegram.ui.Views.BackupImageView
+        <org.tdesktop.ui.Views.BackupImageView
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_margin="6dp"
@@ -48,7 +48,7 @@
 
         </LinearLayout>
 
-    </org.telegram.ui.Views.FrameLayoutFixed>
+    </org.tdesktop.ui.Views.FrameLayoutFixed>
 
     <TextView
         android:layout_width="wrap_content"

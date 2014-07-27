@@ -16,7 +16,7 @@ METHODDEF(void) my_error_exit(j_common_ptr cinfo) {
     longjmp(myerr->setjmp_buffer, 1);
 }
 
-JNIEXPORT void Java_org_telegram_messenger_Utilities_loadBitmap(JNIEnv *env, jclass class, jstring path, jintArray bitmap, int scale, int format, int width, int height) {
+JNIEXPORT void Java_org_tdesktop_messenger_Utilities_loadBitmap(JNIEnv *env, jclass class, jstring path, jintArray bitmap, int scale, int format, int width, int height) {
     
     int i;
     

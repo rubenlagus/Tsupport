@@ -10,7 +10,7 @@
     android:layout_gravity="top"
     android:gravity="right">
 
-    <org.telegram.ui.Views.FrameLayoutFixed
+    <org.tdesktop.ui.Views.FrameLayoutFixed
         android:layout_height="wrap_content"
         android:layout_width="140dp"
         android:layout_marginRight="10dp"
@@ -41,7 +41,7 @@
             android:id="@+id/chat_view_action_progress"
             android:max="100"/>
 
-    </org.telegram.ui.Views.FrameLayoutFixed>
+    </org.tdesktop.ui.Views.FrameLayoutFixed>
 
     <TextView
         android:layout_width="wrap_content"
@@ -61,7 +61,7 @@
         android:textStyle="bold"
         android:layout_gravity="center"/>
 
-    <org.telegram.ui.Views.FrameLayoutFixed
+    <org.tdesktop.ui.Views.FrameLayoutFixed
         android:layout_height="78dp"
         android:layout_width="wrap_content"
         android:paddingTop="9dp"
@@ -70,19 +70,19 @@
         android:layout_gravity="top|right"
         android:id="@+id/chat_bubble_layout">
 
-        <org.telegram.ui.Views.FrameLayoutFixed
+        <org.tdesktop.ui.Views.FrameLayoutFixed
             android:layout_height="69dp"
             android:layout_width="wrap_content"
             android:layout_gravity="top|right"
             android:id="@+id/shared_layout">
 
-            <org.telegram.ui.Views.BackupImageView
+            <org.tdesktop.ui.Views.BackupImageView
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:background="#408ed057"
                 android:id="@+id/contact_avatar"/>
 
-            <org.telegram.ui.Views.TightTextView
+            <org.tdesktop.ui.Views.TightTextView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:scrollHorizontally="true"
@@ -97,7 +97,7 @@
                 android:id="@+id/chat_user_group_name"
                 android:layout_marginLeft="50dp"/>
 
-            <org.telegram.ui.Views.TightTextView
+            <org.tdesktop.ui.Views.TightTextView
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginLeft="50dp"
@@ -145,8 +145,8 @@
 
             </LinearLayout>
 
-        </org.telegram.ui.Views.FrameLayoutFixed>
+        </org.tdesktop.ui.Views.FrameLayoutFixed>
 
-    </org.telegram.ui.Views.FrameLayoutFixed>
+    </org.tdesktop.ui.Views.FrameLayoutFixed>
 
 </LinearLayout>
