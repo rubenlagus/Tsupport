@@ -37,6 +37,7 @@ import org.tdesktop.android.Emoji;
 import org.tdesktop.android.LocaleController;
 import org.tdesktop.android.MediaController;
 import org.tdesktop.android.MessagesController;
+import org.tdesktop.android.TemplateSupport;
 import org.tdesktop.messenger.ConnectionsManager;
 import org.tdesktop.messenger.FileLog;
 import org.tdesktop.messenger.NotificationCenter;
@@ -318,7 +319,11 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     }
 
     public boolean processSendingText(String text) {
-        text = getTrimmedString(text);
+        String templateText = TemplateSupport.getInstance().getTemplate(text); // Check in Template file
+        if (templateText.compareToIgnoreCase("") != 0)
+            text = getTrimmedString(templateText);
+        else
+            text = getTrimmedString(text);
         if (text.length() != 0) {
             int count = (int)Math.ceil(text.length() / 2048.0f);
             for (int a = 0; a < count; a++) {
