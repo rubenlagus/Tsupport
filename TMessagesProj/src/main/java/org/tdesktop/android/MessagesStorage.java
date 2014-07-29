@@ -187,7 +187,7 @@ public class MessagesStorage {
                 loadUnreadMessages();
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -240,7 +240,7 @@ public class MessagesStorage {
                     state.dispose();
                     buffersStorage.reuseFreeBuffer(data);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -266,7 +266,7 @@ public class MessagesStorage {
                     lastSavedDate = date;
                     lastSavedQts = qts;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -292,7 +292,7 @@ public class MessagesStorage {
                         }
                     });
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -320,7 +320,7 @@ public class MessagesStorage {
                     state.dispose();
                     database.commitTransaction();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -344,7 +344,7 @@ public class MessagesStorage {
                     cursor.dispose();
                     NotificationCenter.getInstance().postNotificationName(wallpapersDidLoaded, wallPapers);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -363,7 +363,7 @@ public class MessagesStorage {
                     database.executeFast("DELETE FROM messages WHERE uid = " + did).stepThis().dispose();
                     database.executeFast("DELETE FROM media WHERE uid = " + did).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -402,7 +402,7 @@ public class MessagesStorage {
                     });
 
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -415,7 +415,7 @@ public class MessagesStorage {
                 try {
                     database.executeFast("DELETE FROM user_photos WHERE uid = " + uid).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -445,7 +445,7 @@ public class MessagesStorage {
                     }
                     state.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -480,7 +480,7 @@ public class MessagesStorage {
                     cursor.dispose();
                     MessagesController.getInstance().processLoadedDeleteTask(taskId, date, arr);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -542,7 +542,7 @@ public class MessagesStorage {
                         MessagesController.getInstance().didAddedNewTask(minDate);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -590,7 +590,7 @@ public class MessagesStorage {
                 cursor.dispose();
 
                 if (totalCount != messages.size()) {
-                    FileLog.e("tmessages", "messages read mismatch!");
+                    FileLog.e("tdesktop", "messages read mismatch!");
                 }
 
                 cursor = database.queryFinalized(String.format(Locale.US, "SELECT did, unread_count FROM dialogs WHERE did IN(%s)", dialogsToReload));
@@ -622,7 +622,7 @@ public class MessagesStorage {
                 MessagesController.getInstance().processDialogsUpdateRead(dialogsToUpdate);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -667,7 +667,7 @@ public class MessagesStorage {
                     state.dispose();
                     buffersStorage.reuseFreeBuffer(data);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -725,7 +725,7 @@ public class MessagesStorage {
                         buffersStorage.reuseFreeBuffer(data);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -774,7 +774,7 @@ public class MessagesStorage {
                     }
                     MessagesController.getInstance().processChatInfo(chat_id, info, loadedUsers, true);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -823,7 +823,7 @@ public class MessagesStorage {
                         database.commitTransaction();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -920,7 +920,7 @@ public class MessagesStorage {
                     cursor.dispose();
                     NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchResults, token, resultArray, resultArrayNames, encUsers);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -948,7 +948,7 @@ public class MessagesStorage {
                     state.dispose();
                     database.commitTransaction();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -971,7 +971,7 @@ public class MessagesStorage {
                     }
                     database.executeFast("DELETE FROM contacts WHERE uid IN(" + ids + ")").stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -992,7 +992,7 @@ public class MessagesStorage {
                         database.executeFast(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 1 WHERE sphone IN(%s)", deletes)).stepThis().dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1029,7 +1029,7 @@ public class MessagesStorage {
                     state2.dispose();
                     database.commitTransaction();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1071,7 +1071,7 @@ public class MessagesStorage {
                     cursor.dispose();
                 } catch (Exception e) {
                     contactHashMap.clear();
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 ContactsController.getInstance().performSyncPhoneBook(contactHashMap, true, true, false);
             }
@@ -1121,7 +1121,7 @@ public class MessagesStorage {
                 } catch (Exception e) {
                     contacts.clear();
                     users.clear();
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 ContactsController.getInstance().processLoadedContacts(contacts, users, 1);
             }
@@ -1140,7 +1140,7 @@ public class MessagesStorage {
                     state2.step();
                     state2.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1170,7 +1170,7 @@ public class MessagesStorage {
                     }
                     MessagesController.getInstance().processLoadedMediaCount(count, uid, classGuid, true);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1244,7 +1244,7 @@ public class MessagesStorage {
                     res.messages.clear();
                     res.chats.clear();
                     res.users.clear();
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     MessagesController.getInstance().processLoadedMedia(res, uid, offset, count, max_id, true, classGuid);
                 }
@@ -1275,7 +1275,7 @@ public class MessagesStorage {
                     state2.dispose();
                     database.commitTransaction();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1445,7 +1445,7 @@ public class MessagesStorage {
                     res.messages.clear();
                     res.chats.clear();
                     res.users.clear();
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     MessagesController.getInstance().processLoadedMessages(res, dialog_id, offset, count_query, max_id, true, classGuid, min_unread_id, max_unread_id, count_unread, max_unread_date, forward);
                 }
@@ -1461,7 +1461,7 @@ public class MessagesStorage {
                     try {
                         database.beginTransaction();
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             });
@@ -1469,7 +1469,7 @@ public class MessagesStorage {
             try {
                 database.beginTransaction();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
     }
@@ -1513,7 +1513,7 @@ public class MessagesStorage {
                         cursor.dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     semaphore.release();
                 }
@@ -1522,7 +1522,7 @@ public class MessagesStorage {
         try {
             semaphore.acquire();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return !result.isEmpty() ? result.get(0) : null;
     }
@@ -1549,7 +1549,7 @@ public class MessagesStorage {
                         buffersStorage.reuseFreeBuffer(data);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1569,7 +1569,7 @@ public class MessagesStorage {
                     state.bindInteger(2, chat.id);
                     state.step();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -1609,7 +1609,7 @@ public class MessagesStorage {
                     buffersStorage.reuseFreeBuffer(data2);
                     buffersStorage.reuseFreeBuffer(data3);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -1663,7 +1663,7 @@ public class MessagesStorage {
                         }
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     semaphore.release();
                 }
@@ -1719,7 +1719,7 @@ public class MessagesStorage {
                         state.dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1780,7 +1780,7 @@ public class MessagesStorage {
                 database.commitTransaction();
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -1990,7 +1990,7 @@ public class MessagesStorage {
             }
 
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2019,7 +2019,7 @@ public class MessagesStorage {
                 state.bindInteger(2, newId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2036,7 +2036,7 @@ public class MessagesStorage {
                         oldId = cursor.intValue(0);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     if (cursor != null) {
                         cursor.dispose();
@@ -2046,7 +2046,7 @@ public class MessagesStorage {
 //                    try {
 //                        database.executeFast(String.format(Locale.US, "DELETE FROM randoms WHERE random_id = %d", random_id)).stepThis().dispose();
 //                    } catch (Exception e) {
-//                        FileLog.e("tmessages", e);
+//                        FileLog.e("tdesktop", e);
 //                    }
 //                }
             }
@@ -2061,7 +2061,7 @@ public class MessagesStorage {
                 state.bindInteger(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2074,7 +2074,7 @@ public class MessagesStorage {
                 state.bindInteger(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2087,7 +2087,7 @@ public class MessagesStorage {
                 state.bindLong(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2199,7 +2199,7 @@ public class MessagesStorage {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2247,7 +2247,7 @@ public class MessagesStorage {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2302,7 +2302,7 @@ public class MessagesStorage {
                         MessagesStorage.getInstance().updateDialogsWithDeletedMessagesInternal(mids);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -2325,7 +2325,7 @@ public class MessagesStorage {
             database.executeFast("DELETE FROM media_counts WHERE 1").stepThis().dispose();
 
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2499,7 +2499,7 @@ public class MessagesStorage {
                 MessagesController.getInstance().processDialogsUpdate(dialogs, encryptedChats);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2620,7 +2620,7 @@ public class MessagesStorage {
 
                     database.commitTransaction();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -2719,7 +2719,7 @@ public class MessagesStorage {
                                 }
                                 buffersStorage.reuseFreeBuffer(data);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                             }
                         }
                         cursor.dispose();
@@ -2745,7 +2745,7 @@ public class MessagesStorage {
                                 }
                                 buffersStorage.reuseFreeBuffer(data);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                             }
                         }
                         cursor.dispose();
@@ -2774,7 +2774,7 @@ public class MessagesStorage {
                                 }
                                 buffersStorage.reuseFreeBuffer(data);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                             }
                         }
                         cursor.dispose();
@@ -2785,11 +2785,11 @@ public class MessagesStorage {
                     dialogs.users.clear();
                     dialogs.chats.clear();
                     encryptedChats.clear();
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     /*try {
                         database.executeFast("DELETE FROM dialogs WHERE 1").stepThis().dispose();
                     } catch (Exception e2) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }*/
                     MessagesController.getInstance().processLoadedDialogs(dialogs, encryptedChats, 0, 0, 100, true, true);
                 }
@@ -2907,7 +2907,7 @@ public class MessagesStorage {
 
                     loadUnreadMessages();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -2931,7 +2931,7 @@ public class MessagesStorage {
             }
             cursor.dispose();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return user;
     }
@@ -2973,7 +2973,7 @@ public class MessagesStorage {
             cursor.dispose();
         } catch (Exception e) {
             error[0] = true;
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return users;
     }
@@ -2991,7 +2991,7 @@ public class MessagesStorage {
             }
             cursor.dispose();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return chat;
     }
@@ -3015,7 +3015,7 @@ public class MessagesStorage {
             }
             cursor.dispose();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return chat;
     }

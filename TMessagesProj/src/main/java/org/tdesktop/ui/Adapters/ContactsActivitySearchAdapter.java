@@ -48,7 +48,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
                     searchTimer.cancel();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             searchTimer = new Timer();
             searchTimer.schedule(new TimerTask() {

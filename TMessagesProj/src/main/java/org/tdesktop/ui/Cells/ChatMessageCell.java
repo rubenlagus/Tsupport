@@ -63,7 +63,7 @@ public class ChatMessageCell extends ChatBaseCell {
                                         try {
                                             pressedLink.onClick(this);
                                         } catch (Exception e) {
-                                            FileLog.e("tmessages", e);
+                                            FileLog.e("tdesktop", e);
                                         }
                                         return true;
                                     }

@@ -262,14 +262,14 @@ public class LocaleController {
             }
             applyLanguage(currentInfo, override);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         try {
             IntentFilter timezoneFilter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
             ApplicationLoader.applicationContext.registerReceiver(new TimeZoneChangedReceiver(), timezoneFilter);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -376,7 +376,7 @@ public class LocaleController {
                 return true;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return false;
     }
@@ -470,7 +470,7 @@ public class LocaleController {
             }
             return stringMap;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -527,7 +527,7 @@ public class LocaleController {
                 changingConfiguration = false;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             changingConfiguration = false;
         }
         recreateFormatters();
@@ -571,7 +571,7 @@ public class LocaleController {
                 return String.format(value, args);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return "LOC_ERR: " + key;
         }
     }
@@ -584,7 +584,7 @@ public class LocaleController {
                 return String.format(string, args);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return "LOC_ERR: " + string;
         }
     }

@@ -89,7 +89,7 @@ public class SQLiteDatabase {
                 commitTransaction();
 				closedb(sqliteHandle);
 			} catch (SQLiteException e) {
-                FileLog.e("tmessages", e.getMessage(), e);
+                FileLog.e("tdesktop", e.getMessage(), e);
 			}
 			isOpen = false;
 		}

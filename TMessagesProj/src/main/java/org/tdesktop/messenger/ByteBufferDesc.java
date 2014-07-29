@@ -74,7 +74,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 len += 4;
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", "write int32 error");
+            FileLog.e("tdesktop", "write int32 error");
         }
     }
 
@@ -86,7 +86,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 len += 8;
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", "write int64 error");
+            FileLog.e("tdesktop", "write int64 error");
         }
     }
 
@@ -110,7 +110,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 len += b.length;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write raw error");
+            FileLog.e("tdesktop", "write raw error");
         }
     }
 
@@ -122,7 +122,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 len += count;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write raw error");
+            FileLog.e("tdesktop", "write raw error");
         }
     }
 
@@ -138,7 +138,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 len += 1;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", "write byte error");
+            FileLog.e("tdesktop", "write byte error");
         }
     }
 
@@ -146,7 +146,7 @@ public class ByteBufferDesc extends AbsSerializedData {
         try {
             writeByteArray(s.getBytes("UTF-8"));
         } catch(Exception x) {
-            FileLog.e("tmessages", "write string error");
+            FileLog.e("tdesktop", "write string error");
         }
     }
 
@@ -183,7 +183,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 i++;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write byte array error");
+            FileLog.e("tdesktop", "write byte array error");
         }
     }
 
@@ -220,7 +220,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 i++;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write byte array error");
+            FileLog.e("tdesktop", "write byte array error");
         }
     }
 
@@ -228,7 +228,7 @@ public class ByteBufferDesc extends AbsSerializedData {
         try {
             writeInt64(Double.doubleToRawLongBits(d));
         } catch(Exception x) {
-            FileLog.e("tmessages", "write double error");
+            FileLog.e("tdesktop", "write double error");
         }
     }
 
@@ -267,7 +267,7 @@ public class ByteBufferDesc extends AbsSerializedData {
                 i++;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -295,7 +295,7 @@ public class ByteBufferDesc extends AbsSerializedData {
             if (error != null) {
                 error[0] = true;
             }
-            FileLog.e("tmessages", "read int32 error");
+            FileLog.e("tdesktop", "read int32 error");
         }
         return 0;
     }
@@ -307,7 +307,7 @@ public class ByteBufferDesc extends AbsSerializedData {
         } else if (consructor == 0xbc799737) {
             return false;
         }
-        FileLog.e("tmessages", "Not bool value!");
+        FileLog.e("tdesktop", "Not bool value!");
         return false;
     }
 
@@ -326,7 +326,7 @@ public class ByteBufferDesc extends AbsSerializedData {
             if (error != null) {
                 error[0] = true;
             }
-            FileLog.e("tmessages", "read int64 error");
+            FileLog.e("tdesktop", "read int64 error");
         }
         return 0;
     }
@@ -335,7 +335,7 @@ public class ByteBufferDesc extends AbsSerializedData {
         try {
             buffer.get(b);
         } catch (Exception x) {
-            FileLog.e("tmessages", "read raw error");
+            FileLog.e("tdesktop", "read raw error");
         }
     }
 
@@ -362,7 +362,7 @@ public class ByteBufferDesc extends AbsSerializedData {
             }
             return new String(b, "UTF-8");
         } catch (Exception x) {
-            FileLog.e("tmessages", "read string error");
+            FileLog.e("tdesktop", "read string error");
         }
         return null;
     }
@@ -388,7 +388,7 @@ public class ByteBufferDesc extends AbsSerializedData {
             }
             return b;
         } catch (Exception x) {
-            FileLog.e("tmessages", "read byte array error");
+            FileLog.e("tdesktop", "read byte array error");
         }
         return null;
     }
@@ -416,7 +416,7 @@ public class ByteBufferDesc extends AbsSerializedData {
             }
             return b;
         } catch (Exception x) {
-            FileLog.e("tmessages", "read byte array error");
+            FileLog.e("tdesktop", "read byte array error");
         }
         return null;
     }
@@ -425,7 +425,7 @@ public class ByteBufferDesc extends AbsSerializedData {
         try {
             return Double.longBitsToDouble(readInt64());
         } catch(Exception x) {
-            FileLog.e("tmessages", "read double error");
+            FileLog.e("tdesktop", "read double error");
         }
         return 0;
     }

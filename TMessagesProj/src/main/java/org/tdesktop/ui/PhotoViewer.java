@@ -601,7 +601,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         parentActivity.startActivity(intent);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -1708,7 +1708,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             windowView = null;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         Instance = null;
     }
@@ -1735,7 +1735,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         wm.removeView(windowView);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });

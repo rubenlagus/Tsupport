@@ -97,7 +97,7 @@ public class ChatProfileActivity extends BaseFragment implements NotificationCen
             try {
                 semaphore.acquire();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             if (currentChat != null) {
                 MessagesController.getInstance().chats.put(currentChat.id, currentChat);

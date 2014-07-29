@@ -150,7 +150,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 MapsInitializer.initialize(getParentActivity());
                 googleMap = mapView.getMap();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             if (googleMap != null) {
@@ -321,7 +321,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             try {
                 mapView.onPause();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
     }

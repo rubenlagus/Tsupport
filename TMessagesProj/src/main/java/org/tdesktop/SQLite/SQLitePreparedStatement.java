@@ -91,7 +91,7 @@ public class SQLitePreparedStatement {
 			isFinalized = true;
 			finalize(sqliteStatementHandle);
 		} catch (SQLiteException e) {
-            FileLog.e("tmessages", e.getMessage(), e);
+            FileLog.e("tdesktop", e.getMessage(), e);
 		}
 	}
 

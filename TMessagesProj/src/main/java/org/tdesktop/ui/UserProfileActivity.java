@@ -618,7 +618,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 getParentActivity().startActivity(intent);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                             }
                         }
                     });

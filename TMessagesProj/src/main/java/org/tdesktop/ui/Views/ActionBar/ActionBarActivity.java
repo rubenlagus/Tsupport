@@ -121,7 +121,7 @@ public class ActionBarActivity extends Activity {
             openAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_in);
             closeAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_out);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         setTheme(R.style.Theme_TMessages);
@@ -747,7 +747,7 @@ public class ActionBarActivity extends Activity {
                 try {
                     ActionBarActivity.super.startActivityForResult(intent, requestCode);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         } else {
@@ -755,7 +755,7 @@ public class ActionBarActivity extends Activity {
                 try {
                     super.startActivityForResult(intent, requestCode);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }

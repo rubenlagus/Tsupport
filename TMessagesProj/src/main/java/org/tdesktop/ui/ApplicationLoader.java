@@ -32,6 +32,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.tdesktop.android.AndroidUtilities;
 import org.tdesktop.android.ContactsController;
 import org.tdesktop.android.NotificationsService;
+import org.tdesktop.android.TemplateSupport;
 import org.tdesktop.messenger.BuildVars;
 import org.tdesktop.messenger.ConnectionsManager;
 import org.tdesktop.messenger.FileLog;
@@ -69,6 +70,7 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
 
         try {
+            TemplateSupport.getInstance();
             LocaleController.getInstance();
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,15 +88,16 @@ public class ApplicationLoader extends Application {
         try {
             PowerManager pm = (PowerManager)ApplicationLoader.applicationContext.getSystemService(Context.POWER_SERVICE);
             isScreenOn = pm.isScreenOn();
-            FileLog.e("tmessages", "screen state = " + isScreenOn);
+            FileLog.e("tdesktop", "screen state = " + isScreenOn);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         UserConfig.loadConfig();
         if (UserConfig.getCurrentUser() != null) {
             boolean changed = false;
             SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
+
             int v = preferences.getInt("v", 0);
             if (v != 1) {
                 SharedPreferences preferences2 = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -128,7 +131,7 @@ public class ApplicationLoader extends Application {
 
         ApplicationLoader app = (ApplicationLoader)ApplicationLoader.applicationContext;
         app.initPlayServices();
-        FileLog.e("tmessages", "app initied");
+        FileLog.e("tdesktop", "app initied");
 
         ContactsController.getInstance().checkAppAccount();
     }
@@ -198,7 +201,7 @@ public class ApplicationLoader extends Application {
                 sendRegistrationIdToBackend(false);
             }
         } else {
-            FileLog.d("tmessages", "No valid Google Play Services APK found.");
+            FileLog.d("tdesktop", "No valid Google Play Services APK found.");
         }
     }
 
@@ -209,7 +212,7 @@ public class ApplicationLoader extends Application {
             if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
                 GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
             } else {
-                Log.i("tmessages", "This device is not supported.");
+                Log.i("tdesktop", "This device is not supported.");
             }
             return false;
         }
@@ -220,13 +223,13 @@ public class ApplicationLoader extends Application {
         final SharedPreferences prefs = getGCMPreferences(applicationContext);
         String registrationId = prefs.getString(PROPERTY_REG_ID, "");
         if (registrationId.length() == 0) {
-            FileLog.d("tmessages", "Registration not found.");
+            FileLog.d("tdesktop", "Registration not found.");
             return "";
         }
         int registeredVersion = prefs.getInt(PROPERTY_APP_VERSION, Integer.MIN_VALUE);
         int currentVersion = getAppVersion();
         if (registeredVersion != currentVersion) {
-            FileLog.d("tmessages", "App version changed.");
+            FileLog.d("tdesktop", "App version changed.");
             return "";
         }
         return registrationId;
@@ -261,7 +264,7 @@ public class ApplicationLoader extends Application {
                         storeRegistrationId(applicationContext, regid);
                         return true;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     try {
                         if (count % 20 == 0) {
@@ -270,7 +273,7 @@ public class ApplicationLoader extends Application {
                             Thread.sleep(5000);
                         }
                     } catch (InterruptedException e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
                 return false;
@@ -306,7 +309,7 @@ public class ApplicationLoader extends Application {
     private void storeRegistrationId(Context context, String regId) {
         final SharedPreferences prefs = getGCMPreferences(context);
         int appVersion = getAppVersion();
-        FileLog.e("tmessages", "Saving regId on app version " + appVersion);
+        FileLog.e("tdesktop", "Saving regId on app version " + appVersion);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);

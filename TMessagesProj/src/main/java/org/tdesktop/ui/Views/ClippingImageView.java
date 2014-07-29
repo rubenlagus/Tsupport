@@ -69,7 +69,7 @@ public class ClippingImageView extends View {
             try {
                 canvas.drawBitmap(this.bmp, null, drawRect, this.paint);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             canvas.restore();
         }

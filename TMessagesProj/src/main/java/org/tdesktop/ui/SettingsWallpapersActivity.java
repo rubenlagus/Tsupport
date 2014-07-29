@@ -127,7 +127,7 @@ public class SettingsWallpapersActivity extends BaseFragment implements Notifica
                             done = Utilities.copyFile(f, toFile);
                         } catch (Exception e) {
                             done = false;
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     } else {
                         if (selectedBackground == -1) {
@@ -225,7 +225,7 @@ public class SettingsWallpapersActivity extends BaseFragment implements Notifica
                     selectedColor = 0;
                     backgroundImage.setImageBitmap(bitmap);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 currentPicturePath = null;
             } else if (requestCode == 11) {
@@ -241,7 +241,7 @@ public class SettingsWallpapersActivity extends BaseFragment implements Notifica
                     selectedColor = 0;
                     backgroundImage.setImageBitmap(bitmap);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }

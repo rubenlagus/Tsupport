@@ -90,7 +90,7 @@ public class CountrySelectActivity extends BaseFragment {
             reader.close();
             stream.close();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         Collections.sort(sortedCountries, new Comparator<String>() {
@@ -263,7 +263,7 @@ public class CountrySelectActivity extends BaseFragment {
                     searchTimer.cancel();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             searchTimer = new Timer();
             searchTimer.schedule(new TimerTask() {
@@ -273,7 +273,7 @@ public class CountrySelectActivity extends BaseFragment {
                         searchTimer.cancel();
                         searchTimer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     processSearch(query);
                 }

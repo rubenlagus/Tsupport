@@ -256,7 +256,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                         intent.putExtra(Intent.EXTRA_TEXT, inviteText != null ? inviteText : LocaleController.getString("InviteText", R.string.InviteText));
                                         getParentActivity().startActivity(intent);
                                     } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
+                                        FileLog.e("tdesktop", e);
                                     }
                                     return;
                                 } else {
@@ -310,7 +310,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                         intent.putExtra("sms_body", LocaleController.getString("InviteText", R.string.InviteText));
                                         getParentActivity().startActivity(intent);
                                     } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
+                                        FileLog.e("tdesktop", e);
                                     }
                                 }
                             });

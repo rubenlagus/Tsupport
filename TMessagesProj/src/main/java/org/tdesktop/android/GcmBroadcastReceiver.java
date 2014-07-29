@@ -26,7 +26,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
-        FileLog.d("tmessages", "GCM received intent: " + intent);
+        FileLog.d("tdesktop", "GCM received intent: " + intent);
 
         if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
             Utilities.RunOnUIThread(new Runnable() {
@@ -50,13 +50,13 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
                             ConnectionsManager.getInstance().applyDcPushUpdate(dc, ip, port);
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
 
                     /*SharedPreferences preferences = context.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
                     boolean globalEnabled = preferences.getBoolean("EnableAll", true);
                     if (!globalEnabled) {
-                        FileLog.d("tmessages", "GCM disabled");
+                        FileLog.d("tdesktop", "GCM disabled");
                         return;
                     }*/
 
@@ -66,11 +66,11 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
         } else if (intent.getAction().equals("com.google.android.c2dm.intent.REGISTRATION")) {
             String registration = intent.getStringExtra("registration_id");
             if (intent.getStringExtra("error") != null) {
-                FileLog.e("tmessages", "Registration failed, should try again later.");
+                FileLog.e("tdesktop", "Registration failed, should try again later.");
             } else if (intent.getStringExtra("unregistered") != null) {
-                FileLog.e("tmessages", "unregistration done, new messages from the authorized sender will be rejected");
+                FileLog.e("tdesktop", "unregistration done, new messages from the authorized sender will be rejected");
             } else if (registration != null) {
-                FileLog.e("tmessages", "registration id = " + registration);
+                FileLog.e("tdesktop", "registration id = " + registration);
             }
         }
 

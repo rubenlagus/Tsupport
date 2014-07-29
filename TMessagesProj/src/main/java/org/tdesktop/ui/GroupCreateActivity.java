@@ -187,7 +187,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                             try {
                                 deletedString = changeString.toString().substring(afterChangeIndex, beforeChangeIndex);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                             }
                             if (deletedString.length() > 0) {
                                 if (searching && searchWas) {
@@ -359,7 +359,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                     searchTimer.cancel();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             searchTimer = new Timer();
             searchTimer.schedule(new TimerTask() {
@@ -369,7 +369,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                         searchTimer.cancel();
                         searchTimer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     processSearch(query);
                 }

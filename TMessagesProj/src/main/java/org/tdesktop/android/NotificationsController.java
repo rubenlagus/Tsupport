@@ -427,7 +427,7 @@ public class NotificationsController {
                 sendAlertToPebble(lastMessage);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -438,7 +438,7 @@ public class NotificationsController {
             pushMessagesDict.clear();
             NotificationCenter.getInstance().postNotificationName(pushMessagesUpdated);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -458,7 +458,7 @@ public class NotificationsController {
 
             ApplicationLoader.applicationContext.sendBroadcast(i);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -646,7 +646,7 @@ public class NotificationsController {
             intent.putExtra("badge_count_class_name", launcherClassName);
             context.sendBroadcast(intent);
         } catch (Throwable e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -665,7 +665,7 @@ public class NotificationsController {
                 }
             }
         } catch (Throwable e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }

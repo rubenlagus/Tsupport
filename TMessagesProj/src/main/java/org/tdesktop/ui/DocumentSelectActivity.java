@@ -86,7 +86,7 @@ public class DocumentSelectActivity extends BaseFragment {
                             listFiles(currentDir);
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             };
@@ -105,7 +105,7 @@ public class DocumentSelectActivity extends BaseFragment {
                 getParentActivity().unregisterReceiver(receiver);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         super.onFragmentDestroy();
     }
@@ -361,12 +361,12 @@ public class DocumentSelectActivity extends BaseFragment {
                         item.file = new File(path);
                         items.add(item);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         ListItem fs = new ListItem();
         fs.title = "/";

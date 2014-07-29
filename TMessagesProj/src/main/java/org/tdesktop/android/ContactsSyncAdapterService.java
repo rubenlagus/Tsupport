@@ -41,7 +41,7 @@ public class ContactsSyncAdapterService extends Service {
             try {
                 ContactsSyncAdapterService.performSync(mContext, account, extras, authority, provider, syncResult);
             } catch (OperationCanceledException e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
     }

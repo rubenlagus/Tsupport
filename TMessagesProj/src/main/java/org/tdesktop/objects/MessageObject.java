@@ -408,7 +408,7 @@ public class MessageObject {
         try {
             textLayout = new StaticLayout(messageText, textPaint, maxWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return;
         }
 
@@ -447,7 +447,7 @@ public class MessageObject {
                         blockHeight = Math.min(blockHeight, (int)(block.textYOffset - prevOffset));
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     continue;
                 }
             }
@@ -458,14 +458,14 @@ public class MessageObject {
             try {
                 lastLeft = block.textXOffset = block.textLayout.getLineLeft(currentBlockLinesCount - 1);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             float lastLine = 0;
             try {
                 lastLine = block.textLayout.getLineWidth(currentBlockLinesCount - 1);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             int linesMaxWidth = (int)Math.ceil(lastLine);
@@ -488,7 +488,7 @@ public class MessageObject {
                     try {
                         lineWidth = block.textLayout.getLineWidth(n);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                         lineWidth = 0;
                     }
 
@@ -502,7 +502,7 @@ public class MessageObject {
                     try {
                         lineLeft = block.textLayout.getLineLeft(n);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                         lineLeft = 0;
                     }
 

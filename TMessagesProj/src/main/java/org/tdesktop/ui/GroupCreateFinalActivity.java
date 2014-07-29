@@ -90,7 +90,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             try {
                 semaphore.acquire();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             if (error[0]) {
                 return false;
@@ -154,7 +154,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                                     try {
                                         dialog.dismiss();
                                     } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
+                                        FileLog.e("tdesktop", e);
                                     }
                                 }
                             });
@@ -236,7 +236,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                 avatar = small.location;
                 avatarImage.setImage(avatar, "50_50", R.drawable.group_blue);
                 if (createAfterUpload) {
-                    FileLog.e("tmessages", "avatar did uploaded");
+                    FileLog.e("tdesktop", "avatar did uploaded");
                     MessagesController.getInstance().createChat(nameTextView.getText().toString(), selectedContacts, uploadedAvatar);
                 }
             }
@@ -288,7 +288,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                 try {
                     progressDialog.dismiss();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
             donePressed = false;
@@ -300,7 +300,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                         try {
                             progressDialog.dismiss();
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     }
                     Bundle args2 = new Bundle();

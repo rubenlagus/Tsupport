@@ -178,7 +178,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener, 
             try {
                 header.measure(widthSpec, heightSpec);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             header.layout(0, 0, header.getMeasuredWidth(), header.getMeasuredHeight());
         }

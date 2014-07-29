@@ -477,10 +477,10 @@ public class TLClassStore {
                 }
                 return response;
             } catch (IllegalAccessException e) {
-                FileLog.e("tmessages", "can't create class");
+                FileLog.e("tdesktop", "can't create class");
                 return null;
             } catch (InstantiationException e2) {
-                FileLog.e("tmessages", "can't create class");
+                FileLog.e("tdesktop", "can't create class");
                 return null;
             }
         } else {

@@ -105,7 +105,7 @@ public class Utilities {
             sUrandomIn.close();
             random.setSeed(buffer);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("primes", Context.MODE_PRIVATE);
@@ -123,7 +123,7 @@ public class Utilities {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
                 goodPrimes.clear();
                 goodPrimes.add("C71CAEB9C6B1C9048E6C522F70F13F73980D40238E3E21C14934D037563D930F48198A0AA7C14058229493D22530F4DBFA336F6E0AC925139543AED44CCE7C3720FD51F69458705AC68CD4FE6B6B13ABDC9746512969328454F18FAF8C595F642477FE96BB2A941D5BCD1D4AC8CC49880708FA9B378E3C4F3A9060BEE67CF9A4A4A695811051907E162753B56B0F6B410DBA74D8A84B2A14B3144E0EF1284754FD17ED950D5965B4B9DD46582DB1178D169C6BC465B0D6FF9CA3928FEF5B9AE4E418FC15E83EBEA0F87FA9FF5EED70050DED2849F47BF959D956850CE929851F0D8115F635B105EE2E4E15D04B2454BF6F4FADF034B10403119CD8E3B92FCC5B");
             }
@@ -147,7 +147,7 @@ public class Utilities {
                 val = Integer.parseInt(num);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return val;
     }
@@ -241,7 +241,7 @@ public class Utilities {
                     editor.putString("primes", Base64.encodeToString(bytes, Base64.DEFAULT));
                     editor.commit();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -270,7 +270,7 @@ public class Utilities {
 
             return result;
         } else {
-            FileLog.e("tmessages", String.format("**** Factorization failed for %d", what));
+            FileLog.e("tdesktop", String.format("**** Factorization failed for %d", what));
             TPFactorizedValue result = new TPFactorizedValue();
             result.p = 0;
             result.q = 0;
@@ -296,7 +296,7 @@ public class Utilities {
             md.update(convertme, offset, len);
             return md.digest();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -311,7 +311,7 @@ public class Utilities {
             md.update(convertme);
             return md.digest();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         } finally {
             convertme.limit(oldl);
             convertme.position(oldp);
@@ -336,7 +336,7 @@ public class Utilities {
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return cipher.doFinal(data);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -410,7 +410,7 @@ public class Utilities {
             SerializedData stream = new SerializedData(bytesOutput.toByteArray());
             return TLClassStore.Instance().TLdeserialize(stream, stream.readInt32(), parentObject);
         } catch (IOException e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -428,7 +428,7 @@ public class Utilities {
             zip.close();
             packedData = bytesStream.toByteArray();
         } catch (IOException e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return packedData;
     }
@@ -484,7 +484,7 @@ public class Utilities {
             destination = new FileOutputStream(destFile).getChannel();
             destination.transferFrom(source, 0, source.size());
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return false;
         } finally {
             if(source != null) {
@@ -528,7 +528,7 @@ public class Utilities {
             }
             return Math.abs(b) % arr.length;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return id % arr.length;
     }
@@ -564,7 +564,7 @@ public class Utilities {
             }
             return sb.toString();
         } catch (java.security.NoSuchAlgorithmException e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -594,13 +594,13 @@ public class Utilities {
             if (storageDir != null) {
                 if (! storageDir.mkdirs()) {
                     if (! storageDir.exists()){
-                        FileLog.d("tmessages", "failed to create directory");
+                        FileLog.d("tdesktop", "failed to create directory");
                         return null;
                     }
                 }
             }
         } else {
-            FileLog.d("tmessages", "External storage is not mounted READ/WRITE.");
+            FileLog.d("tdesktop", "External storage is not mounted READ/WRITE.");
         }
 
         return storageDir;
@@ -648,7 +648,7 @@ public class Utilities {
                 return uri.getPath();
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -668,7 +668,7 @@ public class Utilities {
                 return cursor.getString(column_index);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         } finally {
             if (cursor != null) {
                 cursor.close();
@@ -696,7 +696,7 @@ public class Utilities {
             String imageFileName = "IMG_" + timeStamp + "_";
             return File.createTempFile(imageFileName, ".jpg", storageDir);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -746,7 +746,7 @@ public class Utilities {
             String imageFileName = "VID_" + timeStamp + "_";
             return File.createTempFile(imageFileName, ".mp4", storageDir);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -786,7 +786,7 @@ public class Utilities {
                     final int l = Character.digit((char) bytes[++i], 16);
                     buffer.write((char) ((u << 4) + l));
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     return null;
                 }
             } else {

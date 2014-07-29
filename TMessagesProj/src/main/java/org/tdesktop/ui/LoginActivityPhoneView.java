@@ -36,6 +36,7 @@ import org.tdesktop.ui.Views.ActionBar.BaseFragment;
 import org.tdesktop.ui.Views.SlideView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -131,10 +132,12 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                             updatePhoneField();
                             countryState = 0;
                         } else {
+                            FileLog.d("tdesktop","Number to check0: " + codeField.getText() + "-" + phoneField.getText());
                             countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
                             countryState = 2;
                         }
                     } else {
+                        FileLog.d("tdesktop","Number to check: " + codeField.getText() + "-" + phoneField.getText());
                         countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
                         countryState = 2;
                     }
@@ -213,7 +216,7 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                     languageMap.put(args[1], args[2]);
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             Collections.sort(countriesArray, new Comparator<String>() {
@@ -231,7 +234,7 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                     country = telephonyManager.getSimCountryIso().toUpperCase();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             if (country != null) {
@@ -328,16 +331,20 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             delegate.needShowAlert(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
             return;
         } else if (countryState == 2) {
+            FileLog.d("tdesktop","Number to check1: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("WrongCountry", R.string.WrongCountry));
             return;
         }
         if (codeField.length() == 0) {
+            FileLog.e("tdesktop", "invalid phone number onNextPressed1");
+            FileLog.d("tdesktop","Number to check2: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
             return;
         }
         TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
         String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
         ConnectionsManager.getInstance().applyCountryPortNumber(phone);
+        FileLog.e("tdesktop", "Phone for request:" + phone);
         req.api_hash = BuildVars.APP_HASH;
         req.api_id = BuildVars.APP_ID;
         req.sms_type = 0;
@@ -346,6 +353,12 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
         if (req.lang_code == null || req.lang_code.length() == 0) {
             req.lang_code = "en";
         }
+
+        FileLog.e("tdesktop", "Lang code: " + req.lang_code);
+        FileLog.e("tdesktop", "api_hash: " + req.api_hash);
+        FileLog.e("tdesktop", "api_id: " + req.api_id);
+        FileLog.e("tdesktop", "sms_type: " + req.sms_type);
+        FileLog.e("tdesktop", "phone_number: " + req.phone_number);
 
         final Bundle params = new Bundle();
         params.putString("phone", "+" + codeField.getText() + phoneField.getText());
@@ -372,6 +385,10 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                         } else {
                             if (delegate != null && error.text != null) {
                                 if (error.text.contains("PHONE_NUMBER_INVALID")) {
+                                    FileLog.e("tdesktop", "invalid phone number onNextPressed2");
+                                    FileLog.d("tdesktop","Number to check3: " + codeField.getText() + phoneField.getText());
+                                    FileLog.d("tdesktop","Code to check3: " + error.code);
+                                    FileLog.d("tdesktop","tostring to check3: " + error.toString());
                                     delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                 } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                                     delegate.needShowAlert(LocaleController.getString("InvalidCode", R.string.InvalidCode));

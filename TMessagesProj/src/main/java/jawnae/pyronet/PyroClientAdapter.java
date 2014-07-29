@@ -31,14 +31,14 @@ public class PyroClientAdapter implements PyroClientListener {
 
     public void unconnectableClient(PyroClient client, Exception cause) {
         if (BuildVars.DEBUG_VERSION) {
-            FileLog.e("tmessages", "unconnectable");
+            FileLog.e("tdesktop", "unconnectable");
         }
     }
 
     public void droppedClient(PyroClient client, IOException cause) {
         if (cause != null) {
             if (BuildVars.DEBUG_VERSION) {
-                FileLog.e("tmessages", this.getClass().getSimpleName() + ".droppedClient() caught exception: " + cause);
+                FileLog.e("tdesktop", this.getClass().getSimpleName() + ".droppedClient() caught exception: " + cause);
             }
         }
     }

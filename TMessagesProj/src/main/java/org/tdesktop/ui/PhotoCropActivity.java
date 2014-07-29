@@ -251,7 +251,7 @@ public class PhotoCropActivity extends BaseFragment {
                 try {
                     return Bitmap.createBitmap(imageToCrop, x, y, size, size);
                 } catch (Exception e2) {
-                    FileLog.e("tmessages", e2);
+                    FileLog.e("tdesktop", e2);
                 }
             }
             return null;

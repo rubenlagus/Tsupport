@@ -24,6 +24,7 @@
 
 package org.tdesktop.PhoneFormat;
 
+import org.tdesktop.messenger.FileLog;
 import org.tdesktop.ui.ApplicationLoader;
 
 import java.io.ByteArrayOutputStream;
@@ -76,6 +77,7 @@ public class PhoneFormat {
         if (includePlus) {
             phoneChars += "+";
         }
+        FileLog.e("tdesktop","Number before strip: " + str);
         for (int i = res.length() - 1; i >= 0; i--) {
             if (!phoneChars.contains(res.substring(i, i + 1))) {
                 res.deleteCharAt(i);

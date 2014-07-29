@@ -112,10 +112,10 @@ public class TcpConnection extends ConnectionContext {
                             }
                         }
                     } catch (Exception e2) {
-                        FileLog.e("tmessages", e2);
+                        FileLog.e("tdesktop", e2);
                     }
 
-                    FileLog.d("tmessages", String.format(TcpConnection.this + " Connecting (%s:%d)", hostAddress, hostPort));
+                    FileLog.d("tdesktop", String.format(TcpConnection.this + " Connecting (%s:%d)", hostAddress, hostPort));
                     firstPacket = true;
                     if (restOfTheData != null) {
                         BuffersStorage.getInstance().reuseFreeBuffer(restOfTheData);
@@ -161,7 +161,7 @@ public class TcpConnection extends ConnectionContext {
                 }
             }
         } catch (Exception e2) {
-            FileLog.e("tmessages", e2);
+            FileLog.e("tdesktop", e2);
         }
         connectionState =  TcpConnectionState.TcpConnectionStageReconnecting;
         if (delegate != null) {
@@ -192,9 +192,9 @@ public class TcpConnection extends ConnectionContext {
         }
 
         if (e != null) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
-        FileLog.d("tmessages", "Reconnect " + hostAddress + ":" + hostPort + " " + TcpConnection.this);
+        FileLog.d("tdesktop", "Reconnect " + hostAddress + ":" + hostPort + " " + TcpConnection.this);
         try {
             reconnectTimer = new Timer();
             reconnectTimer.schedule(new TimerTask() {
@@ -211,7 +211,7 @@ public class TcpConnection extends ConnectionContext {
                                     }
                                 }
                             } catch (Exception e2) {
-                                FileLog.e("tmessages", e2);
+                                FileLog.e("tdesktop", e2);
                             }
                             connect();
                         }
@@ -219,7 +219,7 @@ public class TcpConnection extends ConnectionContext {
                 }
             }, failedConnectionCount >= 3 ? 500 : 300, failedConnectionCount >= 3 ? 500 : 300);
         } catch (Exception e3) {
-            FileLog.e("tmessages", e3);
+            FileLog.e("tdesktop", e3);
         }
     }
 
@@ -233,7 +233,7 @@ public class TcpConnection extends ConnectionContext {
         if (connectionState == TcpConnectionState.TcpConnectionStageIdle || connectionState == TcpConnectionState.TcpConnectionStageSuspended) {
             return;
         }
-        FileLog.d("tmessages", "suspend connnection " + TcpConnection.this);
+        FileLog.d("tdesktop", "suspend connnection " + TcpConnection.this);
         connectionState = TcpConnectionState.TcpConnectionStageSuspended;
         if (client != null) {
             client.removeListener(TcpConnection.this);
@@ -351,12 +351,12 @@ public class TcpConnection extends ConnectionContext {
         ByteBuffer parseLaterBuffer = null;
         if (restOfTheData != null) {
             if (lastPacketLength == 0) {
-                //FileLog.e("tmessages", this +  " write addition data to restOfTheData");
+                //FileLog.e("tdesktop", this +  " write addition data to restOfTheData");
                 if (restOfTheData.capacity() - restOfTheData.position() >= buffer.limit()) {
                     restOfTheData.limit(restOfTheData.position() + buffer.limit());
                     restOfTheData.put(buffer);
                     buffer = restOfTheData.buffer;
-                    //FileLog.e("tmessages", this +  " no need to recreate buffer");
+                    //FileLog.e("tdesktop", this +  " no need to recreate buffer");
                 } else {
                     ByteBufferDesc newBuffer = BuffersStorage.getInstance().getFreeBuffer(restOfTheData.limit() + buffer.limit());
                     restOfTheData.rewind();
@@ -365,30 +365,30 @@ public class TcpConnection extends ConnectionContext {
                     buffer = newBuffer.buffer;
                     BuffersStorage.getInstance().reuseFreeBuffer(restOfTheData);
                     restOfTheData = newBuffer;
-                    //FileLog.e("tmessages", this +  " NEED to recreate buffer");
+                    //FileLog.e("tdesktop", this +  " NEED to recreate buffer");
                 }
             } else {
-                //FileLog.e("tmessages", this +  " write buffer to restOfTheData buffer of len = " + lastPacketLength);
+                //FileLog.e("tdesktop", this +  " write buffer to restOfTheData buffer of len = " + lastPacketLength);
                 int len = 0;
                 if (lastPacketLength - restOfTheData.position() <= buffer.limit()) {
                     len = lastPacketLength - restOfTheData.position();
-                    //FileLog.e("tmessages", this +  " received buffer - OK!");
+                    //FileLog.e("tdesktop", this +  " received buffer - OK!");
                 } else {
                     len = buffer.limit();
-                    //FileLog.e("tmessages", this +  " received buffer less than need");
+                    //FileLog.e("tdesktop", this +  " received buffer less than need");
                 }
                 int oldLimit = buffer.limit();
                 buffer.limit(len);
                 restOfTheData.put(buffer);
                 buffer.limit(oldLimit);
                 if (restOfTheData.position() != lastPacketLength) {
-                    //FileLog.e("tmessages", this +  " don't get much data to restOfTheData");
+                    //FileLog.e("tdesktop", this +  " don't get much data to restOfTheData");
                     return;
                 } else {
-                    //FileLog.e("tmessages", this +  " get much data to restOfTheData - OK!");
+                    //FileLog.e("tdesktop", this +  " get much data to restOfTheData - OK!");
                     if (buffer.hasRemaining()) {
                         parseLaterBuffer = buffer;
-                        //FileLog.e("tmessages", this +  " something remain in the received buffer");
+                        //FileLog.e("tdesktop", this +  " something remain in the received buffer");
                     } else {
                         parseLaterBuffer = null;
                     }
@@ -424,10 +424,10 @@ public class TcpConnection extends ConnectionContext {
                     restOfTheData.put(buffer);
                     restOfTheData.limit(restOfTheData.position());
                     lastPacketLength = 0;
-                    //FileLog.e("tmessages", this +  " 1 - size less than 4 bytes - write to free buffer");
+                    //FileLog.e("tdesktop", this +  " 1 - size less than 4 bytes - write to free buffer");
                     if (reuseLater != null) {
                         BuffersStorage.getInstance().reuseFreeBuffer(reuseLater);
-                        //FileLog.e("tmessages", this +  " 1 - reuse later buffer1");
+                        //FileLog.e("tdesktop", this +  " 1 - reuse later buffer1");
                     }
                     break;
                 }
@@ -451,7 +451,7 @@ public class TcpConnection extends ConnectionContext {
             } else {
                 buffer.reset();
                 if (buffer.remaining() < 4) {
-                    //FileLog.e("tmessages", this +  " 2 - size less than 4 bytes - write to free buffer");
+                    //FileLog.e("tdesktop", this +  " 2 - size less than 4 bytes - write to free buffer");
                     if (restOfTheData == null || restOfTheData != null && restOfTheData.position() != 0) {
                         ByteBufferDesc reuseLater = restOfTheData;
                         restOfTheData = BuffersStorage.getInstance().getFreeBuffer(16384);
@@ -460,7 +460,7 @@ public class TcpConnection extends ConnectionContext {
                         lastPacketLength = 0;
                         if (reuseLater != null) {
                             BuffersStorage.getInstance().reuseFreeBuffer(reuseLater);
-                            //FileLog.e("tmessages", this +  " 2 - reuse later buffer1");
+                            //FileLog.e("tdesktop", this +  " 2 - reuse later buffer1");
                         }
                     } else {
                         restOfTheData.position(restOfTheData.limit());
@@ -471,27 +471,27 @@ public class TcpConnection extends ConnectionContext {
             }
 
             if (currentPacketLength % 4 != 0 || currentPacketLength > 2 * 1024 * 1024) {
-                FileLog.e("tmessages", "Invalid packet length");
+                FileLog.e("tdesktop", "Invalid packet length");
                 reconnect();
                 return;
             }
 
             if (currentPacketLength < buffer.remaining()) {
-                FileLog.d("tmessages", TcpConnection.this + " Received message len " + currentPacketLength + " but packet larger " + buffer.remaining());
+                FileLog.d("tdesktop", TcpConnection.this + " Received message len " + currentPacketLength + " but packet larger " + buffer.remaining());
             } else if (currentPacketLength == buffer.remaining()) {
-                FileLog.d("tmessages", TcpConnection.this + " Received message len " + currentPacketLength + " equal to packet size");
+                FileLog.d("tdesktop", TcpConnection.this + " Received message len " + currentPacketLength + " equal to packet size");
             } else {
-                FileLog.d("tmessages", TcpConnection.this + " Received packet size less(" + buffer.remaining() + ") then message size(" + currentPacketLength + ")");
+                FileLog.d("tdesktop", TcpConnection.this + " Received packet size less(" + buffer.remaining() + ") then message size(" + currentPacketLength + ")");
 
                 ByteBufferDesc reuseLater = null;
                 int len = currentPacketLength + (fByte != 0x7f ? 1 : 4);
                 if (restOfTheData != null && restOfTheData.capacity() < len) {
                     reuseLater = restOfTheData;
                     restOfTheData = null;
-                    //FileLog.e("tmessages", this +  " not enough space for len, recreate buffer = " + len);
+                    //FileLog.e("tdesktop", this +  " not enough space for len, recreate buffer = " + len);
                 }
                 if (restOfTheData == null) {
-                    //FileLog.e("tmessages", this +  " write to restOfTheData, get buffer len = " + len);
+                    //FileLog.e("tdesktop", this +  " write to restOfTheData, get buffer len = " + len);
                     buffer.reset();
                     restOfTheData = BuffersStorage.getInstance().getFreeBuffer(len);
                     restOfTheData.put(buffer);
@@ -502,7 +502,7 @@ public class TcpConnection extends ConnectionContext {
                 lastPacketLength = len;
                 if (reuseLater != null) {
                     BuffersStorage.getInstance().reuseFreeBuffer(reuseLater);
-                    //FileLog.e("tmessages", this +  " 3 - reuse later buffer1");
+                    //FileLog.e("tdesktop", this +  " 3 - reuse later buffer1");
                 }
                 return;
             }
@@ -530,17 +530,17 @@ public class TcpConnection extends ConnectionContext {
                 if (lastPacketLength != 0 && restOfTheData.position() == lastPacketLength || lastPacketLength == 0 && !restOfTheData.hasRemaining()) {
                     BuffersStorage.getInstance().reuseFreeBuffer(restOfTheData);
                     restOfTheData = null;
-                    //FileLog.e("tmessages", this +  " restOfTheData parsed null it");
+                    //FileLog.e("tdesktop", this +  " restOfTheData parsed null it");
                 } else {
                     restOfTheData.compact();
                     restOfTheData.limit(restOfTheData.position());
                     restOfTheData.position(0);
-                    //FileLog.e("tmessages", this +  " restOfTheData NOT parsed, compact");
+                    //FileLog.e("tdesktop", this +  " restOfTheData NOT parsed, compact");
                 }
             }
 
             if (parseLaterBuffer != null) {
-                //FileLog.e("tmessages", this +  " there is parseLaterBuffer");
+                //FileLog.e("tdesktop", this +  " there is parseLaterBuffer");
                 buffer = parseLaterBuffer;
                 parseLaterBuffer = null;
             }
@@ -555,9 +555,9 @@ public class TcpConnection extends ConnectionContext {
             }
         }
         if (e != null) {
-            FileLog.d("tmessages", "Disconnected " + TcpConnection.this + " with error " + e);
+            FileLog.d("tdesktop", "Disconnected " + TcpConnection.this + " with error " + e);
         } else {
-            FileLog.d("tmessages", "Disconnected " + TcpConnection.this);
+            FileLog.d("tdesktop", "Disconnected " + TcpConnection.this);
         }
         boolean switchToNextPort = wasConnected && !hasSomeDataSinceLastConnect && timedout;
         firstPacket = true;
@@ -598,7 +598,7 @@ public class TcpConnection extends ConnectionContext {
                     failedConnectionCount = 0;
                 }
             }
-            FileLog.d("tmessages", "Reconnect " + hostAddress + ":" + hostPort + " " + TcpConnection.this);
+            FileLog.d("tdesktop", "Reconnect " + hostAddress + ":" + hostPort + " " + TcpConnection.this);
             try {
                 synchronized (timerSync) {
                     reconnectTimer = new Timer();
@@ -616,7 +616,7 @@ public class TcpConnection extends ConnectionContext {
                                             }
                                         }
                                     } catch (Exception e2) {
-                                        FileLog.e("tmessages", e2);
+                                        FileLog.e("tdesktop", e2);
                                     }
                                     connect();
                                 }
@@ -625,7 +625,7 @@ public class TcpConnection extends ConnectionContext {
                     }, failedConnectionCount > 3 ? 500 : 300, failedConnectionCount > 3 ? 500 : 300);
                 }
             } catch (Exception e3) {
-                FileLog.e("tmessages", e3);
+                FileLog.e("tdesktop", e3);
             }
         }
     }
@@ -635,7 +635,7 @@ public class TcpConnection extends ConnectionContext {
         connectionState = TcpConnectionState.TcpConnectionStageConnected;
         channelToken = generateChannelToken();
         wasConnected = true;
-        FileLog.d("tmessages", String.format(TcpConnection.this + " Connected (%s:%d)", hostAddress, hostPort));
+        FileLog.d("tdesktop", String.format(TcpConnection.this + " Connected (%s:%d)", hostAddress, hostPort));
         if (delegate != null) {
             final TcpConnectionDelegate finalDelegate = delegate;
             Utilities.stageQueue.postRunnable(new Runnable() {
@@ -669,7 +669,7 @@ public class TcpConnection extends ConnectionContext {
             failedConnectionCount = 0;
             readData(data);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             reconnect();
         }
     }

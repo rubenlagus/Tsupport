@@ -199,7 +199,7 @@ public class VideoTimelineView extends View {
                         bitmap = result;
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 return bitmap;
             }

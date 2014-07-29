@@ -110,7 +110,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                 mWakeLock.release();
                 mWakeLock = null;
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
         if (sizeNotifierRelativeLayout != null) {
@@ -369,7 +369,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     mWakeLock.acquire();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             AndroidUtilities.lockOrientation(parentActivity);
 
@@ -407,7 +407,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     mWakeLock.release();
                     mWakeLock = null;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
             AndroidUtilities.unlockOrientation(parentActivity);

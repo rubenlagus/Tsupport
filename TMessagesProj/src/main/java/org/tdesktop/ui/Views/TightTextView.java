@@ -64,7 +64,7 @@ public class TightTextView extends TextView {
                                 lineWidth = layout.getLineWidth(n);
                                 lineLeft = layout.getLineLeft(n);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop", e);
                                 return;
                             }
 
@@ -93,12 +93,12 @@ public class TightTextView extends TextView {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             try {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             } catch (Exception e2) {
                 setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
         }
     }

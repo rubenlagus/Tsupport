@@ -203,7 +203,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 try {
                     semaphore.acquire();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 if (currentChat != null) {
                     MessagesController.getInstance().chats.put(currentChat.id, currentChat);
@@ -227,7 +227,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 try {
                     semaphore.acquire();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 if (currentUser != null) {
                     MessagesController.getInstance().users.putIfAbsent(currentUser.id, currentUser);
@@ -250,7 +250,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 try {
                     semaphore.acquire();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 if (currentEncryptedChat != null) {
                     MessagesController.getInstance().encryptedChats.putIfAbsent(currentEncryptedChat.id, currentEncryptedChat);
@@ -271,7 +271,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 try {
                     semaphore.acquire();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 if (currentUser != null) {
                     MessagesController.getInstance().users.putIfAbsent(currentUser.id, currentUser);
@@ -408,7 +408,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             }
                             getParentActivity().startActivityForResult(takePictureIntent, 0);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     } else if (id == attach_gallery) {
                         PhotoPickerActivity fragment = new PhotoPickerActivity();
@@ -434,7 +434,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                             getParentActivity().startActivityForResult(chooserIntent, 2);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     } else if (id == attach_location) {
                         if (!isGoogleMapsInstalled()) {
@@ -650,7 +650,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } catch (Exception e) {
                     contentView.setBackgroundColor(-2693905);
                     chatListView.setCacheColorHint(-2693905);
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
 
@@ -1310,7 +1310,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         try {
                             videoPath = Utilities.getPath(uri);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     }
                 }
@@ -1539,7 +1539,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         document.thumb.type = "s";
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
             if (document.thumb == null) {
@@ -2428,7 +2428,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             photoPickerIntent.setType("image/*");
             getParentActivity().startActivityForResult(photoPickerIntent, 1);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2453,7 +2453,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 mAnim.setAlpha(200);
                 mAnim.start();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         } else {
             actionBarLayer.setSubTitleIcon(0, 0);
@@ -2865,7 +2865,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             photoPickerIntent.setType("*/*");
             getParentActivity().startActivityForResult(photoPickerIntent, 21);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -2993,7 +2993,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.maps"));
                         getParentActivity().startActivity(intent);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             });
@@ -3853,7 +3853,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                             getParentActivity().startActivity(intent);
                                                         } catch (Exception e) {
-                                                            FileLog.e("tmessages", e);
+                                                            FileLog.e("tdesktop", e);
                                                         }
                                                     } else if (i == 0) {
                                                         int sdk = android.os.Build.VERSION.SDK_INT;

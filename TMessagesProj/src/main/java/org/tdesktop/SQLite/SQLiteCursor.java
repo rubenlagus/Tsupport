@@ -78,14 +78,14 @@ public class SQLiteCursor {
             int repeatCount = 6;
             while (repeatCount-- != 0) {
                 try {
-                    FileLog.e("tmessages", "sqlite busy, waiting...");
+                    FileLog.e("tdesktop", "sqlite busy, waiting...");
                     Thread.sleep(500);
                     res = preparedStatement.step();
                     if (res == 0) {
                         break;
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
             if (res == -1) {

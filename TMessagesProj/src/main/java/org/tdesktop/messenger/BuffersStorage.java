@@ -95,7 +95,7 @@ public class BuffersStorage {
 
             if (buffer == null) {
                 buffer = new ByteBufferDesc(byteCount);
-                FileLog.e("tmessages", "create new " + byteCount + " buffer");
+                FileLog.e("tdesktop", "create new " + byteCount + " buffer");
             }
         }
 

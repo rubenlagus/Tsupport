@@ -327,7 +327,7 @@ public class FileLoadOperation {
                                 delegate.didFailedLoadingFile(FileLoadOperation.this);
                             }
                         });
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             });
@@ -358,7 +358,7 @@ public class FileLoadOperation {
                         downloadedBytes = 0;
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     downloadedBytes = 0;
                 }
             }
@@ -371,7 +371,7 @@ public class FileLoadOperation {
                     fileOutputStream.seek(downloadedBytes);
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop",e);
             }
             if (fileOutputStream == null) {
                 cleanup();
@@ -435,7 +435,7 @@ public class FileLoadOperation {
                 httpConnection = null;
                 httpConnectionStream = null;
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         } else {
             try {
@@ -444,7 +444,7 @@ public class FileLoadOperation {
                     fileOutputStream = null;
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             try {
@@ -453,7 +453,7 @@ public class FileLoadOperation {
                     fiv = null;
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             for (RequestInfo requestInfo : delayedRequestInfos) {
                 if (requestInfo.response != null) {
@@ -487,7 +487,7 @@ public class FileLoadOperation {
                         try {
                             Thread.sleep(delay);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     }
                     BitmapFactory.Options opts = new BitmapFactory.Options();
@@ -525,7 +525,7 @@ public class FileLoadOperation {
                             try {
                                 image = BitmapFactory.decodeStream(new FileInputStream(cacheFileTemp), null, opts);
                             } catch (Exception e) {
-                                FileLog.e("tmessages", e);
+                                FileLog.e("tdesktop" , e);
                                 image = BitmapFactory.decodeStream(new FileInputStream(cacheFileFinal), null, opts);
                             }
                         }
@@ -551,7 +551,7 @@ public class FileLoadOperation {
                             delegate.didFailedLoadingFile(FileLoadOperation.this);
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop" , e);
                         delegate.didFailedLoadingFile(FileLoadOperation.this);
                     }
                 }
@@ -574,7 +574,7 @@ public class FileLoadOperation {
                 httpConnection.connect();
                 httpConnectionStream = httpConnection.getInputStream();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
                 cleanup();
                 Utilities.stageQueue.postRunnable(new Runnable() {
                     @Override
@@ -620,7 +620,7 @@ public class FileLoadOperation {
             }
         } catch (Exception e) {
             cleanup();
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             Utilities.stageQueue.postRunnable(new Runnable() {
                 @Override
                 public void run() {
@@ -682,7 +682,7 @@ public class FileLoadOperation {
             } catch (Exception e) {
                 cleanup();
                 delegate.didFailedLoadingFile(FileLoadOperation.this);
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         } else {
             if (error.text.contains("FILE_MIGRATE_")) {
@@ -708,7 +708,7 @@ public class FileLoadOperation {
                     try {
                         onFinishLoadingFile();
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop" , e);
                         cleanup();
                         delegate.didFailedLoadingFile(FileLoadOperation.this);
                     }

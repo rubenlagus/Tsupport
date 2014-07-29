@@ -94,7 +94,7 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
 
             actionBarLayer.setTitle(views[0].getHeaderName());
@@ -138,7 +138,7 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
             putBundleToEditor(bundle, editor, null);
             editor.commit();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -172,7 +172,7 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
             }
             return bundle;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return null;
     }
@@ -253,7 +253,7 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
         try {
             progressDialog.dismiss();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 

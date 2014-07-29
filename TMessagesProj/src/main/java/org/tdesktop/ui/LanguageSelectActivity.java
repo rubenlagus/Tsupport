@@ -214,7 +214,7 @@ public class LanguageSelectActivity extends BaseFragment {
                     searchTimer.cancel();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             searchTimer = new Timer();
             searchTimer.schedule(new TimerTask() {
@@ -224,7 +224,7 @@ public class LanguageSelectActivity extends BaseFragment {
                         searchTimer.cancel();
                         searchTimer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     processSearch(query);
                 }

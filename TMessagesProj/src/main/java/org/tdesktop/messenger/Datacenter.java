@@ -261,7 +261,7 @@ public class Datacenter {
         }
 
         if (result == 0) {
-            FileLog.e("tmessages", "Valid salt not found");
+            FileLog.e("tdesktop", "Valid salt not found");
         }
 
         return result;

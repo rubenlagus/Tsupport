@@ -135,7 +135,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
 
@@ -245,7 +245,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                                 error = true;
                             }
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                             error = true;
                         }
                     } else {
@@ -332,7 +332,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                             error = true;
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                         error = true;
                     }
                     if (error) {
@@ -350,7 +350,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                             cursor.close();
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 } else if (intent.getAction().equals("org.tdesktop.messenger.OPEN_ACCOUNT")) {
                     open_settings = 1;
@@ -577,7 +577,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         } else if (id == 703) {
             int state = (Integer)args[0];
             if (currentConnectionState != state) {
-                FileLog.e("tmessages", "switch to state " + state);
+                FileLog.e("tdesktop", "switch to state " + state);
                 currentConnectionState = state;
                 actionBar.setBackOverlayVisible(currentConnectionState != 0);
             }
@@ -626,7 +626,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                 lastFragment.saveSelfArgs(outState);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 

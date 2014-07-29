@@ -292,7 +292,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         internalObserver = null;
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 try {
                     if (externalObserver != null) {
@@ -300,7 +300,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         externalObserver = null;
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }
@@ -345,7 +345,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 freePlayerBuffers.add(new AudioBuffer(playerBufferSize));
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         fileBuffer = ByteBuffer.allocateDirect(1920);
         recordQueue = new DispatchQueue("recordQueue");
@@ -369,7 +369,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     progressTimer.cancel();
                     progressTimer = null;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
             progressTimer = new Timer();
@@ -406,7 +406,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                         playingMessageObject.audioProgressSec = lastProgress / 1000;
                                         NotificationCenter.getInstance().postNotificationName(audioProgressDidChanged, playingMessageObject.messageOwner.id, value);
                                     } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
+                                        FileLog.e("tdesktop", e);
                                     }
                                 }
                             }
@@ -424,7 +424,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     progressTimer.cancel();
                     progressTimer = null;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }
@@ -451,14 +451,14 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 ApplicationLoader.applicationContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, false, externalObserver = new ExternalObserver());
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         try {
             if (externalObserver == null) {
                 ApplicationLoader.applicationContext.getContentResolver().registerContentObserver(MediaStore.Images.Media.INTERNAL_CONTENT_URI, false, internalObserver = new InternalObserver());
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -500,7 +500,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                         break;
                                     }
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                                 Thread.sleep(1000);
                             }
@@ -533,17 +533,17 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                         bitmap.recycle();
                                     }
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                             }
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                             try {
                                 if (bitmapRegionDecoder != null) {
                                     bitmapRegionDecoder.recycle();
                                 }
                             } catch (Exception e2) {
-                                FileLog.e("tmessages", e2);
+                                FileLog.e("tdesktop", e2);
                             }
                             if (!added) {
                                 screenshotDates.add(date);
@@ -551,7 +551,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         }*/
                         screenshotDates.add(date);
                     }
-                    FileLog.e("tmessages", "screenshot!");
+                    FileLog.e("tdesktop", "screenshot!");
                 }
                 cursor.close();
             }
@@ -565,7 +565,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 });
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -794,7 +794,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     try {
                         count = audioTrackPlayer.write(buffer.bufferBytes, 0, buffer.size);
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
 
                     if (count > 0) {
@@ -836,13 +836,13 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 try {
                     audioPlayer.stop();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 try {
                     audioPlayer.release();
                     audioPlayer = null;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             } else if (audioTrackPlayer != null) {
                 synchronized (playerObjectSync) {
@@ -850,13 +850,13 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         audioTrackPlayer.pause();
                         audioTrackPlayer.flush();
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     try {
                         audioTrackPlayer.release();
                         audioTrackPlayer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             }
@@ -920,7 +920,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 seekOpusPlayer(progress);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return false;
         }
         return true;
@@ -976,7 +976,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     audioTrackPlayer.play();
                     startProgressTimer();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     if (audioTrackPlayer != null) {
                         audioTrackPlayer.release();
                         audioTrackPlayer = null;
@@ -1001,7 +1001,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 audioPlayer.start();
                 startProgressTimer();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
                 if (audioPlayer != null) {
                     audioPlayer.release();
                     audioPlayer = null;
@@ -1026,7 +1026,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             } catch (Exception e2) {
                 playingMessageObject.audioProgress = 0;
                 playingMessageObject.audioProgressSec = 0;
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
         } else if (audioTrackPlayer != null) {
             if (playingMessageObject.audioProgress == 1) {
@@ -1064,7 +1064,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 audioTrackPlayer.flush();
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         try {
             if (audioPlayer != null) {
@@ -1077,7 +1077,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         stopProgressTimer();
         playingMessageObject = null;
@@ -1096,7 +1096,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             }
             isPaused = true;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             isPaused = false;
             return false;
         }
@@ -1116,7 +1116,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             }
             isPaused = false;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return false;
         }
         return true;
@@ -1135,7 +1135,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             Vibrator v = (Vibrator) ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_SERVICE);
             v.vibrate(20);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         recordQueue.postRunnable(new Runnable() {
@@ -1179,7 +1179,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
 
                     audioRecorder.startRecording();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     recordingAudio = null;
                     stopRecord();
                     recordingAudioFile.delete();
@@ -1188,7 +1188,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         audioRecorder.release();
                         audioRecorder = null;
                     } catch (Exception e2) {
-                        FileLog.e("tmessages", e2);
+                        FileLog.e("tdesktop", e2);
                     }
 
                     Utilities.RunOnUIThread(new Runnable() {
@@ -1244,7 +1244,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 audioRecorder = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         recordingAudio = null;
         recordingAudioFile = null;
@@ -1261,7 +1261,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     sendAfterDone = send;
                     audioRecorder.stop();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     if (recordingAudioFile != null) {
                         recordingAudioFile.delete();
                     }
@@ -1273,7 +1273,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                     Vibrator v = (Vibrator) ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(20);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
                 Utilities.RunOnUIThread(new Runnable() {
                     @Override
@@ -1353,7 +1353,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                                 try {
                                                     finalProgress.setProgress(progress);
                                                 } catch (Exception e) {
-                                                    FileLog.e("tmessages", e);
+                                                    FileLog.e("tdesktop", e);
                                                 }
                                             }
                                         });
@@ -1361,7 +1361,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                 }
                             }
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                             result = false;
                         } finally {
                             if(source != null) {
@@ -1376,7 +1376,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                             Utilities.addMediaToGallery(Uri.fromFile(destFile));
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     if (finalProgress != null) {
                         Utilities.RunOnUIThread(new Runnable() {
@@ -1385,7 +1385,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                                 try {
                                     finalProgress.dismiss();
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                             }
                         });
@@ -1437,7 +1437,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 currentGifDrawable.parentView = new WeakReference<View>(cell);
                 return currentGifDrawable;
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
 
@@ -1480,21 +1480,21 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         } finally {
             try {
                 if (parcelFD != null) {
                     parcelFD.close();
                 }
             } catch (Exception e2) {
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
             try {
                 if (input != null) {
                     input.close();
                 }
             } catch (Exception e2) {
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
         }
         return false;
@@ -1515,28 +1515,28 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
             UserConfig.saveConfig(false);
             return f.getAbsolutePath();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         } finally {
             try {
                 if (parcelFD != null) {
                     parcelFD.close();
                 }
             } catch (Exception e2) {
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
             try {
                 if (input != null) {
                     input.close();
                 }
             } catch (Exception e2) {
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
             try {
                 if (output != null) {
                     output.close();
                 }
             } catch (Exception e2) {
-                FileLog.e("tmessages", e2);
+                FileLog.e("tdesktop", e2);
             }
         }
         return null;
@@ -1601,13 +1601,13 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
                         }
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 } finally {
                     if (cursor != null) {
                         try {
                             cursor.close();
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     }
                 }

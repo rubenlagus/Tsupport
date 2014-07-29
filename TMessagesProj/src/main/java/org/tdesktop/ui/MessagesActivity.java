@@ -576,7 +576,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     searchTimer.cancel();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             searchTimer = new Timer();
             searchTimer.schedule(new TimerTask() {
@@ -586,7 +586,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         searchTimer.cancel();
                         searchTimer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     MessagesStorage.getInstance().searchDialogs(activityToken, query, !serverOnly);
                 }

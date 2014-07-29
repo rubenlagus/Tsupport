@@ -237,7 +237,7 @@ public class ImageReceiver {
                 currentPath = null;
             }
             setImage(last_path, last_httpUrl, last_filter, last_placeholder, last_size);
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 

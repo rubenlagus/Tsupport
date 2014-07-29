@@ -98,7 +98,7 @@ public class AndroidUtilities {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -110,7 +110,7 @@ public class AndroidUtilities {
                 prevOrientation = -10;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -181,7 +181,7 @@ public class AndroidUtilities {
                     return file;
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
         externalCacheNotAvailableState = 2;
@@ -191,7 +191,7 @@ public class AndroidUtilities {
                 return file;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return new File("");
     }
@@ -215,11 +215,11 @@ public class AndroidUtilities {
                     } else {
                         display.getSize(displaySize);
                     }
-                    FileLog.e("tmessages", "display size = " + displaySize.x + " " + displaySize.y);
+                    FileLog.e("tdesktop", "display size = " + displaySize.x + " " + displaySize.y);
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 }

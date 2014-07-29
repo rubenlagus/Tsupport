@@ -224,7 +224,7 @@ public class LoginActivitySmsView extends SlideView implements NotificationCente
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 

@@ -155,7 +155,7 @@ public class ContactsController {
                     currentAccount = new Account(UserConfig.getCurrentUser().phone, "org.tdesktop.account");
                     am.addAccountExplicitly(currentAccount, "", null);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }
@@ -178,7 +178,7 @@ public class ContactsController {
             @Override
             public void run() {
                 if (checkContactsInternal()) {
-                    FileLog.e("tmessages", "detected contacts change");
+                    FileLog.e("tdesktop", "detected contacts change");
                     ContactsController.getInstance().performSyncPhoneBook(ContactsController.getInstance().getContactsCopy(ContactsController.getInstance().contactsBook), true, false, true);
                 }
             }
@@ -187,6 +187,8 @@ public class ContactsController {
 
     private boolean checkContactsInternal() {
         boolean reload = false;
+        return reload; // Return to avoid contacts sincronization
+        /*FileLog.e("tdesktop", "Checking contacts Internal");
         try {
             ContentResolver cr = ApplicationLoader.applicationContext.getContentResolver();
             Cursor pCur = null;
@@ -202,7 +204,7 @@ public class ContactsController {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (pCur != null) {
                     pCur.close();
@@ -220,7 +222,7 @@ public class ContactsController {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (pCur != null) {
                     pCur.close();
@@ -238,7 +240,7 @@ public class ContactsController {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (pCur != null) {
                     pCur.close();
@@ -256,16 +258,16 @@ public class ContactsController {
                     }
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 if (pCur != null) {
                     pCur.close();
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
-        return reload;
+        return reload;*/
     }
 
     public void readContacts() {
@@ -292,7 +294,8 @@ public class ContactsController {
 
     private HashMap<Integer, Contact> readContactsFromPhoneBook() {
         HashMap<Integer, Contact> contactsMap = new HashMap<Integer, Contact>();
-        try {
+        return contactsMap; // Return to avoid contacts reading
+        /*try {
             ContentResolver cr = ApplicationLoader.applicationContext.getContentResolver();
 
             HashMap<String, Contact> shortContacts = new HashMap<String, Contact>();
@@ -434,13 +437,13 @@ public class ContactsController {
                     pCur.close();
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             contactsMap.clear();
         }
-        return contactsMap;
+        return contactsMap;*/
     }
 
     public HashMap<Integer, Contact> getContactsCopy(HashMap<Integer, Contact> original) {
@@ -464,19 +467,20 @@ public class ContactsController {
         if (!first && !contactsBookLoaded) {
             return;
         }
-        Utilities.globalQueue.postRunnable(new Runnable() {
+        return; // Return to avoid contacts importation.
+        /*Utilities.globalQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
 
                 boolean disableDeletion = true; //disable contacts deletion, because phone numbers can't be compared due to different numbers format
-                /*if (schedule) {
+                *//*if (schedule) {
                     try {
                         AccountManager am = AccountManager.get(ApplicationLoader.applicationContext);
                         Account[] accounts = am.getAccountsByType("org.tdesktop.account");
                         boolean recreateAccount = false;
                         if (UserConfig.isClientActivated()) {
                             if (accounts.length != 1) {
-                                FileLog.e("tmessages", "detected account deletion!");
+                                FileLog.e("tdesktop", "detected account deletion!");
                                 currentAccount = new Account(UserConfig.getCurrentUser().phone, "org.tdesktop.account");
                                 am.addAccountExplicitly(currentAccount, "", null);
                                 Utilities.RunOnUIThread(new Runnable() {
@@ -488,9 +492,9 @@ public class ContactsController {
                             }
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
-                }*/
+                }*//*
 
                 boolean request = requ;
                 if (request && first) {
@@ -510,7 +514,7 @@ public class ContactsController {
                     }
                 }
 
-                FileLog.e("tmessages", "start read contacts from phone");
+                FileLog.e("tdesktop", "start read contacts from phone");
                 if (!schedule) {
                     checkContactsInternal();
                 }
@@ -597,7 +601,7 @@ public class ContactsController {
                         }
                     }
                     if (!first && contactHashMap.isEmpty() && toImport.isEmpty() && oldCount == contactsMap.size()) {
-                        FileLog.e("tmessages", "contacts not changed!");
+                        FileLog.e("tdesktop", "contacts not changed!");
                         return;
                     }
                     if (request && !contactHashMap.isEmpty() && !contactsMap.isEmpty()) {
@@ -609,12 +613,12 @@ public class ContactsController {
                                 @Override
                                 public void run() {
                                     if (BuildVars.DEBUG_VERSION) {
-                                        FileLog.e("tmessages", "need delete contacts");
+                                        FileLog.e("tdesktop", "need delete contacts");
                                         for (HashMap.Entry<Integer, Contact> c : contactHashMap.entrySet()) {
                                             Contact contact = c.getValue();
-                                            FileLog.e("tmessages", "delete contact " + contact.first_name + " " + contact.last_name);
+                                            FileLog.e("tdesktop", "delete contact " + contact.first_name + " " + contact.last_name);
                                             for (String phone : contact.phones) {
-                                                FileLog.e("tmessages", phone);
+                                                FileLog.e("tdesktop", phone);
                                             }
                                         }
                                     }
@@ -650,7 +654,7 @@ public class ContactsController {
                                                 }
                                             }
                                         } catch (Exception e) {
-                                            FileLog.e("tmessages", e);
+                                            FileLog.e("tdesktop", e);
                                         }
                                     }
 
@@ -680,14 +684,14 @@ public class ContactsController {
                     }
                 }
 
-                FileLog.e("tmessages", "done processing contacts");
+                FileLog.e("tdesktop", "done processing contacts");
 
                 if (request) {
                     if (!toImport.isEmpty()) {
                         if (BuildVars.DEBUG_VERSION) {
-                            FileLog.e("tmessages", "start import contacts");
+                            FileLog.e("tdesktop", "start import contacts");
 //                            for (TLRPC.TL_inputPhoneContact contact : toImport) {
-//                                FileLog.e("tmessages", "add contact " + contact.first_name + " " + contact.last_name + " " + contact.phone);
+//                                FileLog.e("tdesktop", "add contact " + contact.first_name + " " + contact.last_name + " " + contact.phone);
 //                            }
                         }
                         final int count = (int)Math.ceil(toImport.size() / 500.0f);
@@ -702,14 +706,14 @@ public class ContactsController {
                                 @Override
                                 public void run(TLObject response, TLRPC.TL_error error) {
                                     if (error == null) {
-                                        FileLog.e("tmessages", "contacts imported");
+                                        FileLog.e("tdesktop", "contacts imported");
                                         if (isLastQuery && !contactsMap.isEmpty()) {
                                             MessagesStorage.getInstance().putCachedPhoneBook(contactsMap);
                                         }
                                         TLRPC.TL_contacts_importedContacts res = (TLRPC.TL_contacts_importedContacts)response;
                                         if (BuildVars.DEBUG_VERSION) {
 //                                            for (TLRPC.User user : res.users) {
-//                                                FileLog.e("tmessages", "received user " + user.first_name + " " + user.last_name + " " + user.phone);
+//                                                FileLog.e("tdesktop", "received user " + user.first_name + " " + user.last_name + " " + user.phone);
 //                                            }
                                         }
                                         MessagesStorage.getInstance().putUsersAndChats(res.users, null, true, true);
@@ -721,7 +725,7 @@ public class ContactsController {
                                         }
                                         processLoadedContacts(cArr, res.users, 2);
                                     } else {
-                                        FileLog.e("tmessages", "import contacts error " + error.text);
+                                        FileLog.e("tdesktop", "import contacts error " + error.text);
                                     }
                                     if (isLastQuery) {
                                         Utilities.stageQueue.postRunnable(new Runnable() {
@@ -791,7 +795,7 @@ public class ContactsController {
                     }
                 }
             }
-        });
+        });*/
     }
 
     public boolean isLoadingContacts() {
@@ -805,10 +809,10 @@ public class ContactsController {
             loadingContacts = true;
         }
         if (fromCache) {
-            FileLog.e("tmessages", "load contacts from cache");
+            FileLog.e("tdesktop", "load contacts from cache");
             MessagesStorage.getInstance().getContacts();
         } else {
-            FileLog.e("tmessages", "load contacts from server");
+            FileLog.e("tdesktop", "load contacts from server");
             TLRPC.TL_contacts_getContacts req = new TLRPC.TL_contacts_getContacts();
             req.hash = cacheEmpty ? "" : UserConfig.contactsHash;
             ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
@@ -831,7 +835,7 @@ public class ContactsController {
                                     NotificationCenter.getInstance().postNotificationName(MessagesController.contactsDidLoaded);
                                 }
                             });
-                            FileLog.e("tmessages", "load contacts don't change");
+                            FileLog.e("tdesktop", "load contacts don't change");
                             return;
                         }
                         processLoadedContacts(res.contacts, res.users, 0);
@@ -876,7 +880,7 @@ public class ContactsController {
                         usersDict.put(user.id, user);
 
 //                        if (BuildVars.DEBUG_VERSION) {
-//                            FileLog.e("tmessages", "loaded user contact " + user.first_name + " " + user.last_name + " " + user.phone);
+//                            FileLog.e("tdesktop", "loaded user contact " + user.first_name + " " + user.last_name + " " + user.phone);
 //                        }
                     }
                 }
@@ -884,7 +888,7 @@ public class ContactsController {
                 Utilities.stageQueue.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        FileLog.e("tmessages", "done loading contacts");
+                        FileLog.e("tdesktop", "done loading contacts");
                         if (from == 1 && contactsArr.isEmpty()) {
                             loadContacts(false, true);
                             return;
@@ -893,7 +897,7 @@ public class ContactsController {
                         for (TLRPC.TL_contact contact : contactsArr) {
                             if (usersDict.get(contact.user_id) == null && contact.user_id != UserConfig.getClientUserId()) {
                                 loadContacts(false, true);
-                                FileLog.e("tmessages", "contacts are broken, load from server");
+                                FileLog.e("tdesktop", "contacts are broken, load from server");
                                 return;
                             }
                         }
@@ -1226,23 +1230,25 @@ public class ContactsController {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
     private void performWriteContactsToPhoneBook() {
-        final ArrayList<TLRPC.TL_contact> contactsArray = new ArrayList<TLRPC.TL_contact>();
-        contactsArray.addAll(contacts);
-        Utilities.photoBookQueue.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                performWriteContactsToPhoneBookInternal(contactsArray);
-            }
-        });
+        return; // To avoid contacts synchronization
+//        final ArrayList<TLRPC.TL_contact> contactsArray = new ArrayList<TLRPC.TL_contact>();
+//        contactsArray.addAll(contacts);
+//        Utilities.photoBookQueue.postRunnable(new Runnable() {
+//            @Override
+//            public void run() {
+//                performWriteContactsToPhoneBookInternal(contactsArray);
+//            }
+//        });
     }
 
     private void applyContactsUpdates(ArrayList<Integer> ids, ConcurrentHashMap<Integer, TLRPC.User> userDict, ArrayList<TLRPC.TL_contact> newC, ArrayList<Integer> contactsTD) {
-        if (newC == null || contactsTD == null) {
+        return; // Return to avoid update contacts in phonebook or in server
+        /*if (newC == null || contactsTD == null) {
             newC = new ArrayList<TLRPC.TL_contact>();
             contactsTD = new ArrayList<Integer>();
             for (Integer uid : ids) {
@@ -1255,7 +1261,7 @@ public class ContactsController {
                 }
             }
         }
-        FileLog.e("tmessages", "process update - contacts add = " + newC.size() + " delete = " + contactsTD.size());
+        FileLog.e("tdesktop", "process update - contacts add = " + newC.size() + " delete = " + contactsTD.size());
 
         String toAdd = "";
         String toDelete = "";
@@ -1365,11 +1371,12 @@ public class ContactsController {
                     NotificationCenter.getInstance().postNotificationName(MessagesController.contactsDidLoaded);
                 }
             });
-        }
+        }*/
     }
 
     public void processContactsUpdates(ArrayList<Integer> ids, ConcurrentHashMap<Integer, TLRPC.User> userDict) {
-        final ArrayList<TLRPC.TL_contact> newContacts = new ArrayList<TLRPC.TL_contact>();
+        return; // Return to avoid update contacts in phonebook or in server
+        /*final ArrayList<TLRPC.TL_contact> newContacts = new ArrayList<TLRPC.TL_contact>();
         final ArrayList<Integer> contactsToDelete = new ArrayList<Integer>();
         for (Integer uid : ids) {
             if (uid > 0) {
@@ -1400,14 +1407,15 @@ public class ContactsController {
         }
         if (!contactsLoaded || !contactsBookLoaded) {
             delayedContactsUpdate.addAll(ids);
-            FileLog.e("tmessages", "delay update - contacts add = " + newContacts.size() + " delete = " + contactsToDelete.size());
+            FileLog.e("tdesktop", "delay update - contacts add = " + newContacts.size() + " delete = " + contactsToDelete.size());
         } else {
             applyContactsUpdates(ids, userDict, newContacts, contactsToDelete);
-        }
+        }*/
     }
 
     public long addContactToPhoneBook(TLRPC.User user, boolean check) {
-        if (currentAccount == null || user == null || user.phone == null || user.phone.length() == 0) {
+        return 0; // Return to avoid add contacts in phonebook
+        /*if (currentAccount == null || user == null || user.phone == null || user.phone.length() == 0) {
             return -1;
         }
         long res = -1;
@@ -1420,7 +1428,7 @@ public class ContactsController {
                 Uri rawContactUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, currentAccount.name).appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, currentAccount.type).build();
                 int value = contentResolver.delete(rawContactUri, ContactsContract.RawContacts.SYNC2 + " = " + user.id, null);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
 
@@ -1459,16 +1467,17 @@ public class ContactsController {
             ContentProviderResult[] result = contentResolver.applyBatch(ContactsContract.AUTHORITY, query);
             res = Long.parseLong(result[0].uri.getLastPathSegment());
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         synchronized (observerLock) {
             ignoreChanges = false;
         }
-        return res;
+        return res;*/
     }
 
     private void deleteContactFromPhoneBook(int uid) {
-        ContentResolver contentResolver = ApplicationLoader.applicationContext.getContentResolver();
+        return; // Return to avoid delete contacts from phonebook
+        /*ContentResolver contentResolver = ApplicationLoader.applicationContext.getContentResolver();
         synchronized (observerLock) {
             ignoreChanges = true;
         }
@@ -1476,11 +1485,11 @@ public class ContactsController {
             Uri rawContactUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, currentAccount.name).appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, currentAccount.type).build();
             int value = contentResolver.delete(rawContactUri, ContactsContract.RawContacts.SYNC2 + " = " + uid, null);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         synchronized (observerLock) {
             ignoreChanges = false;
-        }
+        }*/
     }
 
     public void addContact(TLRPC.User user) {
@@ -1502,7 +1511,7 @@ public class ContactsController {
         req.contacts = contactsParams;
         req.replace = false;
 //        if (BuildVars.DEBUG_VERSION) {
-//            FileLog.e("tmessages", "add contact " + user.first_name + " " + user.last_name + " " + user.phone);
+//            FileLog.e("tdesktop", "add contact " + user.first_name + " " + user.last_name + " " + user.phone);
 //        }
         ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
             @Override
@@ -1515,12 +1524,13 @@ public class ContactsController {
 
 //                if (BuildVars.DEBUG_VERSION) {
 //                    for (TLRPC.User user : res.users) {
-//                        FileLog.e("tmessages", "received user " + user.first_name + " " + user.last_name + " " + user.phone);
+//                        FileLog.e("tdesktop", "received user " + user.first_name + " " + user.last_name + " " + user.phone);
 //                    }
 //                }
 
                 for (final TLRPC.User u : res.users) {
-                    Utilities.photoBookQueue.postRunnable(new Runnable() {
+                    // Avoiding adding contact to phonebook
+                    /*Utilities.photoBookQueue.postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             addContactToPhoneBook(u, true);
@@ -1542,7 +1552,7 @@ public class ContactsController {
                                 contact.phoneDeleted.set(index, 0);
                             }
                         }
-                    }
+                    }*/
                 }
 
                 Utilities.RunOnUIThread(new Runnable() {
@@ -1585,7 +1595,8 @@ public class ContactsController {
                 if (error != null) {
                     return;
                 }
-                MessagesStorage.getInstance().deleteContacts(uids);
+                // Avoiding deletion from phonebook
+                /*MessagesStorage.getInstance().deleteContacts(uids);
                 Utilities.photoBookQueue.postRunnable(new Runnable() {
                     @Override
                     public void run() {
@@ -1593,7 +1604,7 @@ public class ContactsController {
                             deleteContactFromPhoneBook(user.id);
                         }
                     }
-                });
+                });*/
 
                 for (TLRPC.User user : users) {
                     if (user.phone != null && user.phone.length() > 0) {

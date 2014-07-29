@@ -119,7 +119,7 @@ public class FileLoader {
                 trackFree = cl.getMethod("trackExternalFree", new Class[] {long.class});
                 success = true;
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             if (!success) {
                 runtime = null;
@@ -492,7 +492,7 @@ public class FileLoader {
         try {
             semaphore.acquire();
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         return result[0];
     }
@@ -991,7 +991,7 @@ public class FileLoader {
                 try {
                     path = Utilities.getPath(uri);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }
@@ -1005,13 +1005,13 @@ public class FileLoader {
                 fileDescriptor = parcelFD.getFileDescriptor();
                 BitmapFactory.decodeFileDescriptor(fileDescriptor, null, bmOptions);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
                 try {
                     if (parcelFD != null) {
                         parcelFD.close();
                     }
                 } catch (Exception e2) {
-                    FileLog.e("tmessages", e2);
+                    FileLog.e("tdesktop", e2);
                 }
                 return null;
             }
@@ -1052,7 +1052,7 @@ public class FileLoader {
                         break;
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
 
@@ -1064,7 +1064,7 @@ public class FileLoader {
                     b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
                 FileLoader.getInstance().memCache.evictAll();
                 if (b == null) {
                     b = BitmapFactory.decodeFile(path, bmOptions);
@@ -1080,7 +1080,7 @@ public class FileLoader {
                     b = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             } finally {
                 try {
                     if (parcelFD != null) {

@@ -74,7 +74,7 @@ public class SerializedData extends AbsSerializedData {
                 out.write(x >> (i * 8));
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", "write int32 error");
+            FileLog.e("tdesktop", "write int32 error");
         }
     }
 
@@ -92,7 +92,7 @@ public class SerializedData extends AbsSerializedData {
                 out.write((int)(x >> (i * 8)));
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", "write int64 error");
+            FileLog.e("tdesktop", "write int64 error");
         }
     }
 
@@ -103,7 +103,7 @@ public class SerializedData extends AbsSerializedData {
         } else if (consructor == 0xbc799737) {
             return false;
         }
-        FileLog.e("tmessages", "Not bool value!");
+        FileLog.e("tdesktop", "Not bool value!");
         return false;
     }
 
@@ -156,7 +156,7 @@ public class SerializedData extends AbsSerializedData {
             if (error != null) {
                 error[0] = true;
             }
-            FileLog.e("tmessages", "read int32 error");
+            FileLog.e("tdesktop", "read int32 error");
         }
         return 0;
     }
@@ -179,7 +179,7 @@ public class SerializedData extends AbsSerializedData {
             if (error != null) {
                 error[0] = true;
             }
-            FileLog.e("tmessages", "read int64 error");
+            FileLog.e("tdesktop", "read int64 error");
         }
         return 0;
     }
@@ -192,7 +192,7 @@ public class SerializedData extends AbsSerializedData {
                 len += b.length;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write raw error");
+            FileLog.e("tdesktop", "write raw error");
         }
     }
 
@@ -204,7 +204,7 @@ public class SerializedData extends AbsSerializedData {
                 len += count;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write raw error");
+            FileLog.e("tdesktop", "write raw error");
         }
     }
 
@@ -216,7 +216,7 @@ public class SerializedData extends AbsSerializedData {
                 len += 1;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", "write byte error");
+            FileLog.e("tdesktop", "write byte error");
         }
     }
 
@@ -228,7 +228,7 @@ public class SerializedData extends AbsSerializedData {
                 len += 1;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", "write byte error");
+            FileLog.e("tdesktop" , "write byte error");
         }
     }
 
@@ -236,7 +236,7 @@ public class SerializedData extends AbsSerializedData {
         try {
             in.read(b);
         } catch (Exception x) {
-            FileLog.e("tmessages", "read raw error");
+            FileLog.e("tdesktop", "read raw error");
         }
     }
 
@@ -263,7 +263,7 @@ public class SerializedData extends AbsSerializedData {
             }
             return new String(b, "UTF-8");
         } catch (Exception x) {
-            FileLog.e("tmessages", "read string error");
+            FileLog.e("tdesktop", "read string error");
         }
         return null;
     }
@@ -285,7 +285,7 @@ public class SerializedData extends AbsSerializedData {
             }
             return b;
         } catch (Exception x) {
-            FileLog.e("tmessages", "read byte array error");
+            FileLog.e("tdesktop", "read byte array error");
         }
         return null;
     }
@@ -327,7 +327,7 @@ public class SerializedData extends AbsSerializedData {
                 i++;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write byte array error");
+            FileLog.e("tdesktop", "write byte array error");
         }
     }
 
@@ -335,7 +335,7 @@ public class SerializedData extends AbsSerializedData {
         try {
             writeByteArray(s.getBytes("UTF-8"));
         } catch(Exception x) {
-            FileLog.e("tmessages", "write string error");
+            FileLog.e("tdesktop", "write string error");
         }
     }
 
@@ -372,7 +372,7 @@ public class SerializedData extends AbsSerializedData {
                 i++;
             }
         } catch (Exception x) {
-            FileLog.e("tmessages", "write byte array error");
+            FileLog.e("tdesktop", "write byte array error");
         }
     }
 
@@ -380,7 +380,7 @@ public class SerializedData extends AbsSerializedData {
         try {
             return Double.longBitsToDouble(readInt64());
         } catch(Exception x) {
-            FileLog.e("tmessages", "read double error");
+            FileLog.e("tdesktop", "read double error");
         }
         return 0;
     }
@@ -389,7 +389,7 @@ public class SerializedData extends AbsSerializedData {
         try {
             writeInt64(Double.doubleToRawLongBits(d));
         } catch(Exception x) {
-            FileLog.e("tmessages", "write double error");
+            FileLog.e("tdesktop", "write double error");
         }
     }
 

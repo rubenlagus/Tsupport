@@ -62,7 +62,7 @@ public class AvatarUpdater implements NotificationCenter.NotificationCenterDeleg
             }
             parentFragment.getParentActivity().startActivityForResult(takePictureIntent, 13);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class AvatarUpdater implements NotificationCenter.NotificationCenterDeleg
             photoPickerIntent.setType("image/*");
             parentFragment.getParentActivity().startActivityForResult(photoPickerIntent, 14);
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 

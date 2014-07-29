@@ -791,12 +791,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 MessagesStorage.lastPtsValue = res.pts;
                                 MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                             } else if (MessagesStorage.lastSeqValue != res.seq) {
-                                FileLog.e("tmessages", "need get diff TL_messages_deleteHistory, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                                FileLog.e("tdesktop", "need get diff TL_messages_deleteHistory, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                                 if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                                     if (updatesStartWaitTime == 0) {
                                         updatesStartWaitTime = System.currentTimeMillis();
                                     }
-                                    FileLog.e("tmessages", "add TL_messages_deleteHistory to queue");
+                                    FileLog.e("tdesktop", "add TL_messages_deleteHistory to queue");
                                     UserActionUpdates updates = new UserActionUpdates();
                                     updates.seq = res.seq;
                                     updatesQueue.add(updates);
@@ -928,7 +928,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             }
 
             if (updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 < currentTime) {
-                FileLog.e("tmessages", "UPDATES WAIT TIMEOUT - CHECK QUEUE");
+                FileLog.e("tdesktop", "UPDATES WAIT TIMEOUT - CHECK QUEUE");
                 processUpdatesQueue(false);
             }
         }
@@ -1585,12 +1585,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 MessagesStorage.lastPtsValue = res.pts;
                                 MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                             } else if (MessagesStorage.lastSeqValue != res.seq) {
-                                FileLog.e("tmessages", "need get diff TL_messages_readHistory, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                                FileLog.e("tdesktop", "need get diff TL_messages_readHistory, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                                 if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                                     if (updatesStartWaitTime == 0) {
                                         updatesStartWaitTime = System.currentTimeMillis();
                                     }
-                                    FileLog.e("tmessages", "add TL_messages_readHistory to queue");
+                                    FileLog.e("tdesktop", "add TL_messages_readHistory to queue");
                                     UserActionUpdates updates = new UserActionUpdates();
                                     updates.seq = res.seq;
                                     updatesQueue.add(updates);
@@ -2558,12 +2558,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             MessagesStorage.lastPtsValue = res.pts;
                             MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                         } else if (MessagesStorage.lastSeqValue != res.seq) {
-                            FileLog.e("tmessages", "need get diff TL_messages_sentMessage, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                            FileLog.e("tdesktop", "need get diff TL_messages_sentMessage, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                             if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                                 if (updatesStartWaitTime == 0) {
                                     updatesStartWaitTime = System.currentTimeMillis();
                                 }
-                                FileLog.e("tmessages", "add TL_messages_sentMessage to queue");
+                                FileLog.e("tdesktop", "add TL_messages_sentMessage to queue");
                                 UserActionUpdates updates = new UserActionUpdates();
                                 updates.seq = res.seq;
                                 updatesQueue.add(updates);
@@ -2582,12 +2582,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             MessagesStorage.lastDateValue = res.message.date;
                             MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                         } else if (MessagesStorage.lastSeqValue != res.seq) {
-                            FileLog.e("tmessages", "need get diff messages_StatedMessage, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                            FileLog.e("tdesktop", "need get diff messages_StatedMessage, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                             if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                                 if (updatesStartWaitTime == 0) {
                                     updatesStartWaitTime = System.currentTimeMillis();
                                 }
-                                FileLog.e("tmessages", "add messages_StatedMessage to queue");
+                                FileLog.e("tdesktop", "add messages_StatedMessage to queue");
                                 UserActionUpdates updates = new UserActionUpdates();
                                 updates.seq = res.seq;
                                 updatesQueue.add(updates);
@@ -2608,12 +2608,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             MessagesStorage.lastPtsValue = res.pts;
                             MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                         } else if (MessagesStorage.lastSeqValue != res.seq) {
-                            FileLog.e("tmessages", "need get diff messages_StatedMessages, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                            FileLog.e("tdesktop", "need get diff messages_StatedMessages, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                             if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                                 if (updatesStartWaitTime == 0) {
                                     updatesStartWaitTime = System.currentTimeMillis();
                                 }
-                                FileLog.e("tmessages", "add messages_StatedMessages to queue");
+                                FileLog.e("tdesktop", "add messages_StatedMessages to queue");
                                 UserActionUpdates updates = new UserActionUpdates();
                                 updates.seq = res.seq;
                                 updatesQueue.add(updates);
@@ -2785,12 +2785,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else if (MessagesStorage.lastSeqValue != res.seq) {
-                    FileLog.e("tmessages", "need get diff TL_messages_createChat, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                    FileLog.e("tdesktop", "need get diff TL_messages_createChat, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_messages_createChat to queue");
+                        FileLog.e("tdesktop", "add TL_messages_createChat to queue");
                         UserActionUpdates updates = new UserActionUpdates();
                         updates.seq = res.seq;
                         updatesQueue.add(updates);
@@ -2867,12 +2867,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else if (MessagesStorage.lastSeqValue != res.seq) {
-                    FileLog.e("tmessages", "need get diff TL_messages_addChatUser, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                    FileLog.e("tdesktop", "need get diff TL_messages_addChatUser, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_messages_addChatUser to queue");
+                        FileLog.e("tdesktop", "add TL_messages_addChatUser to queue");
                         UserActionUpdates updates = new UserActionUpdates();
                         updates.seq = res.seq;
                         updatesQueue.add(updates);
@@ -2949,12 +2949,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else if (MessagesStorage.lastSeqValue != res.seq) {
-                    FileLog.e("tmessages", "need get diff TL_messages_deleteChatUser, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                    FileLog.e("tdesktop", "need get diff TL_messages_deleteChatUser, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_messages_deleteChatUser to queue");
+                        FileLog.e("tdesktop", "add TL_messages_deleteChatUser to queue");
                         UserActionUpdates updates = new UserActionUpdates();
                         updates.seq = res.seq;
                         updatesQueue.add(updates);
@@ -3009,12 +3009,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else if (MessagesStorage.lastSeqValue != res.seq) {
-                    FileLog.e("tmessages", "need get diff TL_messages_editChatTitle, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                    FileLog.e("tdesktop", "need get diff TL_messages_editChatTitle, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_messages_editChatTitle to queue");
+                        FileLog.e("tdesktop", "add TL_messages_editChatTitle to queue");
                         UserActionUpdates updates = new UserActionUpdates();
                         updates.seq = res.seq;
                         updatesQueue.add(updates);
@@ -3075,12 +3075,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else if (MessagesStorage.lastSeqValue != res.seq) {
-                    FileLog.e("tmessages", "need get diff TL_messages_editChatPhoto, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
+                    FileLog.e("tdesktop", "need get diff TL_messages_editChatPhoto, seq: " + MessagesStorage.lastSeqValue + " " + res.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_messages_editChatPhoto to queue");
+                        FileLog.e("tdesktop", "add TL_messages_editChatPhoto to queue");
                         UserActionUpdates updates = new UserActionUpdates();
                         updates.seq = res.seq;
                         updatesQueue.add(updates);
@@ -3142,7 +3142,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             }
 
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             req.lang_code = "en";
             req.device_model = "Android unknown";
             req.system_version = "SDK " + Build.VERSION.SDK_INT;
@@ -3167,7 +3167,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 @Override
                 public void run(TLObject response, TLRPC.TL_error error) {
                     if (error == null) {
-                        FileLog.e("tmessages", "registered for push");
+                        FileLog.e("tdesktop", "registered for push");
                         UserConfig.registeredForPush = true;
                         UserConfig.pushString = regid;
                         UserConfig.saveConfig(false);
@@ -3243,13 +3243,13 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     a--;
                 } else if (MessagesStorage.lastSeqValue < seq) {
                     if (updatesStartWaitTime != 0 && (anyProceed || updatesStartWaitTime + 1500 > System.currentTimeMillis())) {
-                        FileLog.e("tmessages", "HOLE IN UPDATES QUEUE - will wait more time");
+                        FileLog.e("tdesktop", "HOLE IN UPDATES QUEUE - will wait more time");
                         if (anyProceed) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
                         return;
                     } else {
-                        FileLog.e("tmessages", "HOLE IN UPDATES QUEUE - getDifference");
+                        FileLog.e("tdesktop", "HOLE IN UPDATES QUEUE - getDifference");
                         updatesStartWaitTime = 0;
                         updatesQueue.clear();
                         getDifference();
@@ -3261,7 +3261,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
             }
             updatesQueue.clear();
-            FileLog.e("tmessages", "UPDATES QUEUE PROCEED - OK");
+            FileLog.e("tdesktop", "UPDATES QUEUE PROCEED - OK");
             updatesStartWaitTime = 0;
             if (getDifference) {
                 final int stateCopy = ConnectionsManager.getInstance().getConnectionState();
@@ -3305,7 +3305,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         req.pts = MessagesStorage.lastPtsValue;
         req.date = MessagesStorage.lastDateValue;
         req.qts = MessagesStorage.lastQtsValue;
-        FileLog.e("tmessages", "start getDifference with date = " + MessagesStorage.lastDateValue + " pts = " + MessagesStorage.lastPtsValue + " seq = " + MessagesStorage.lastSeqValue);
+        FileLog.e("tdesktop", "start getDifference with date = " + MessagesStorage.lastDateValue + " pts = " + MessagesStorage.lastPtsValue + " seq = " + MessagesStorage.lastSeqValue);
         if (ConnectionsManager.getInstance().getConnectionState() == 0) {
             ConnectionsManager.getInstance().setConnectionState(3);
             final int stateCopy = ConnectionsManager.getInstance().getConnectionState();
@@ -3485,8 +3485,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         processUpdatesQueue(true);
                                     }
                                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
-                                    FileLog.e("tmessages", "received difference with date = " + MessagesStorage.lastDateValue + " pts = " + MessagesStorage.lastPtsValue + " seq = " + MessagesStorage.lastSeqValue);
-                                    FileLog.e("tmessages", "messages = " + res.new_messages.size() + " users = " + res.users.size() + " chats = " + res.chats.size() + " other updates = " + res.other_updates.size());
+                                    FileLog.e("tdesktop", "received difference with date = " + MessagesStorage.lastDateValue + " pts = " + MessagesStorage.lastPtsValue + " seq = " + MessagesStorage.lastSeqValue);
+                                    FileLog.e("tdesktop", "messages = " + res.new_messages.size() + " users = " + res.users.size() + " chats = " + res.chats.size() + " other updates = " + res.other_updates.size());
                                 }
                             });
                         }
@@ -3555,12 +3555,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     });
                     MessagesStorage.getInstance().putMessages(arr, false, true);
                 } else if (MessagesStorage.lastSeqValue != updates.seq) {
-                    FileLog.e("tmessages", "need get diff TL_updateShortChatMessage, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
+                    FileLog.e("tdesktop", "need get diff TL_updateShortChatMessage, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_updateShortChatMessage to queue");
+                        FileLog.e("tdesktop", "add TL_updateShortChatMessage to queue");
                         updatesQueue.add(updates);
                         addedToQueue = true;
                     } else {
@@ -3610,12 +3610,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     });
                     MessagesStorage.getInstance().putMessages(arr, false, true);
                 } else if (MessagesStorage.lastSeqValue != updates.seq) {
-                    FileLog.e("tmessages", "need get diff TL_updateShortMessage, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
+                    FileLog.e("tdesktop", "need get diff TL_updateShortMessage, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
                     if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                         if (updatesStartWaitTime == 0) {
                             updatesStartWaitTime = System.currentTimeMillis();
                         }
-                        FileLog.e("tmessages", "add TL_updateShortMessage to queue");
+                        FileLog.e("tdesktop", "add TL_updateShortMessage to queue");
                         updatesQueue.add(updates);
                         addedToQueue = true;
                     } else {
@@ -3631,7 +3631,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 if (!processUpdateArray(updates.updates, updates.users, updates.chats)) {
                     MessagesStorage.lastPtsValue = lastPtsValue;
                     MessagesStorage.lastQtsValue = lastQtsValue;
-                    FileLog.e("tmessages", "need get diff inner TL_updatesCombined, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
+                    FileLog.e("tdesktop", "need get diff inner TL_updatesCombined, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
                     needGetDiff = true;
                 } else {
                     MessagesStorage.lastDateValue = updates.date;
@@ -3641,12 +3641,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     }
                 }
             } else {
-                FileLog.e("tmessages", "need get diff TL_updatesCombined, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq_start);
+                FileLog.e("tdesktop", "need get diff TL_updatesCombined, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq_start);
                 if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                     if (updatesStartWaitTime == 0) {
                         updatesStartWaitTime = System.currentTimeMillis();
                     }
-                    FileLog.e("tmessages", "add TL_updatesCombined to queue");
+                    FileLog.e("tdesktop", "add TL_updatesCombined to queue");
                     updatesQueue.add(updates);
                     addedToQueue = true;
                 } else {
@@ -3662,7 +3662,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     needGetDiff = true;
                     MessagesStorage.lastPtsValue = lastPtsValue;
                     MessagesStorage.lastQtsValue = lastQtsValue;
-                    FileLog.e("tmessages", "need get diff inner TL_updates, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
+                    FileLog.e("tdesktop", "need get diff inner TL_updates, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
                 } else {
                     MessagesStorage.lastDateValue = updates.date;
                     if (updates.seq != 0) {
@@ -3673,12 +3673,12 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     }
                 }
             } else {
-                FileLog.e("tmessages", "need get diff TL_updates, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
+                FileLog.e("tdesktop", "need get diff TL_updates, seq: " + MessagesStorage.lastSeqValue + " " + updates.seq);
                 if (gettingDifference || updatesStartWaitTime == 0 || updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 > System.currentTimeMillis()) {
                     if (updatesStartWaitTime == 0) {
                         updatesStartWaitTime = System.currentTimeMillis();
                     }
-                    FileLog.e("tmessages", "add TL_updates to queue");
+                    FileLog.e("tdesktop", "add TL_updates to queue");
                     updatesQueue.add(updates);
                     addedToQueue = true;
                 } else {
@@ -3686,7 +3686,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
             }
         } else if (updates instanceof TLRPC.TL_updatesTooLong) {
-            FileLog.e("tmessages", "need get diff TL_updatesTooLong");
+            FileLog.e("tdesktop", "need get diff TL_updatesTooLong");
             needGetDiff = true;
         } else if (updates instanceof UserActionUpdates) {
             MessagesStorage.lastSeqValue = updates.seq;
@@ -4382,7 +4382,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             try {
                 semaphore.acquire();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             if (result.size() == 2) {
                 chat = (TLRPC.EncryptedChat)result.get(0);
@@ -4609,13 +4609,13 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         return null;
                     }
                 } else {
-                    FileLog.e("tmessages", "unkown message " + object);
+                    FileLog.e("tdesktop", "unkown message " + object);
                 }
             } else {
-                FileLog.e("tmessages", "unkown TLObject");
+                FileLog.e("tdesktop", "unkown TLObject");
             }
         } else {
-            FileLog.e("tmessages", "fingerprint mismatch");
+            FileLog.e("tdesktop", "fingerprint mismatch");
         }
         BuffersStorage.getInstance().reuseFreeBuffer(is);
         return null;
@@ -4814,7 +4814,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                             progressDialog.dismiss();
                                         }
                                     } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
+                                        FileLog.e("tdesktop", e);
                                     }
                                 }
                             });
@@ -4855,7 +4855,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                             try {
                                                 progressDialog.dismiss();
                                             } catch (Exception e) {
-                                                FileLog.e("tmessages", e);
+                                                FileLog.e("tdesktop", e);
                                             }
                                         }
                                         TLRPC.EncryptedChat chat = (TLRPC.EncryptedChat) response;
@@ -4911,7 +4911,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                             try {
                                                 progressDialog.dismiss();
                                             } catch (Exception e) {
-                                                FileLog.e("tmessages", e);
+                                                FileLog.e("tdesktop", e);
                                             }
                                             AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                             builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
@@ -4934,7 +4934,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 try {
                                     progressDialog.dismiss();
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                             }
                         }
@@ -4949,7 +4949,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 try {
                     dialog.dismiss();
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });

@@ -61,14 +61,14 @@ public class FileUploadOperation {
                     fingerprint |= ((digest[a] ^ digest[a + 4]) & 0xFF) << (a * 8);
                 }
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
         currentFileId = Utilities.random.nextLong();
         try {
             mdEnc = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -104,7 +104,7 @@ public class FileUploadOperation {
                 stream = new FileInputStream(cacheFile);
                 totalFileSize = cacheFile.length();
                 if (totalFileSize > 10 * 1024 * 1024) {
-                    FileLog.e("tmessages", "file is big!");
+                    FileLog.e("tdesktop","file is big!");
                     isBigFile = true;
                 }
 

@@ -94,7 +94,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                                     videoPlayer.pause();
                                     onPlayComplete();
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                             }
                         }
@@ -103,7 +103,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                 try {
                     Thread.sleep(50);
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         }
@@ -158,7 +158,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                         try {
                             startConvert();
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     }
                 }
@@ -189,7 +189,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                         videoPlayer.setOnSeekCompleteListener(null);
                         videoPlayer.seekTo((int)(videoPlayer.getDuration() * progress));
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     needSeek = true;
                     videoSeekBarView.setProgress(0);
@@ -206,7 +206,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                         videoPlayer.setOnSeekCompleteListener(null);
                         videoPlayer.seekTo((int)(videoPlayer.getDuration() * progress));
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                     needSeek = true;
                     videoSeekBarView.setProgress(0);
@@ -224,7 +224,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                             videoPlayer.seekTo((int)(videoPlayer.getDuration() * prog));
                             lastProgress = progress;
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     } else {
                         lastProgress = progress;
@@ -285,7 +285,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
             videoPlayer.seekTo((int) (videoTimelineView.getLeftProgress() * videoPlayer.getDuration()));
             initied = true;
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         updateVideoOriginalInfo();
         updateVideoEditedInfo();
@@ -307,7 +307,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
         try {
             videoPlayer.seekTo((int) (videoTimelineView.getLeftProgress() * videoPlayer.getDuration()));
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -452,7 +452,7 @@ public class VideoEditorActivity extends BaseFragment implements SurfaceHolder.C
                 videoPlayer.start();
                 new Thread(progressRunnable).start();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         }
     }

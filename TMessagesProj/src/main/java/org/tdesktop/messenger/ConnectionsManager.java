@@ -108,10 +108,10 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     if (datacenter != null && datacenter.pushConnection != null) {
                         datacenter.pushConnection.suspendConnection(true);
                     }
-                    FileLog.e("tmessages", "push ping timeout");
+                    FileLog.e("tdesktop", "push ping timeout");
                 }
                 if (lastPushPingTime < System.currentTimeMillis() - 60000 * 3) {
-                    FileLog.e("tmessages", "time for push ping");
+                    FileLog.e("tdesktop", "time for push ping");
                     lastPushPingTime = System.currentTimeMillis();
                     if (datacenter != null) {
                         generatePing(datacenter, true);
@@ -144,7 +144,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 }
                 if (!dontSleep) {
                     if (!paused) {
-                        FileLog.e("tmessages", "pausing network and timers by sleep time = " + nextSleepTimeout);
+                        FileLog.e("tdesktop", "pausing network and timers by sleep time = " + nextSleepTimeout);
                         for (Datacenter datacenter : datacenters.values()) {
                             datacenter.suspendConnections();
                         }
@@ -154,16 +154,16 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                         Utilities.stageQueue.postRunnable(stageRunnable, 1000);
                         return;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 } else {
                     lastPauseTime += 30 * 1000;
-                    FileLog.e("tmessages", "don't sleep 30 seconds because of salt, upload or download request");
+                    FileLog.e("tdesktop", "don't sleep 30 seconds because of salt, upload or download request");
                 }
             }
             if (paused) {
                 paused = false;
-                FileLog.e("tmessages", "resume network and timers");
+                FileLog.e("tdesktop", "resume network and timers");
             }
 
             if (datacenters != null) {
@@ -232,10 +232,10 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
         if (paused) {
             lastPauseTime = System.currentTimeMillis();
             nextSleepTimeout = 30000;
-            FileLog.e("tmessages", "wakeup network in background");
+            FileLog.e("tdesktop", "wakeup network in background");
         } else if (lastPauseTime != 0) {
             lastPauseTime = System.currentTimeMillis();
-            FileLog.e("tmessages", "reset sleep timeout");
+            FileLog.e("tdesktop", "reset sleep timeout");
         }
     }
 
@@ -255,7 +255,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             public void run() {
                 if (paused) {
                     nextSleepTimeout = 30000;
-                    FileLog.e("tmessages", "reset timers by application moved to foreground");
+                    FileLog.e("tdesktop", "reset timers by application moved to foreground");
                 }
             }
         });
@@ -267,7 +267,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             public void run() {
                 if (!byScreenState) {
                     appPaused = value;
-                    FileLog.e("tmessages", "app paused = " + value);
+                    FileLog.e("tdesktop", "app paused = " + value);
                 }
                 if (value) {
                     if (byScreenState) {
@@ -281,7 +281,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     if (appPaused) {
                         return;
                     }
-                    FileLog.e("tmessages", "reset app pause time");
+                    FileLog.e("tdesktop", "reset app pause time");
                     if (lastPauseTime != 0 && System.currentTimeMillis() - lastPauseTime > 5000) {
                         ContactsController.getInstance().checkContacts();
                     }
@@ -385,7 +385,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             }
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
 
                     try {
@@ -402,7 +402,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             }
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
 
@@ -548,7 +548,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                         configFile.delete();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                 }
             }
         });
@@ -809,7 +809,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     }
                     invoke.system_version = "SDK " + Build.VERSION.SDK_INT;
                 } catch (Exception e) {
-                    FileLog.e("tmessages", e);
+                    FileLog.e("tdesktop", e);
                     invoke.lang_code = "en";
                     invoke.device_model = "Android unknown";
                     invoke.app_version = "App version unknown";
@@ -851,7 +851,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
     public long performRpc(final TLObject rpc, final RPCRequest.RPCRequestDelegate completionBlock, final RPCRequest.RPCQuickAckDelegate quickAckBlock, final boolean requiresCompletion, final int requestClass, final int datacenterId, final boolean runQueue) {
         if (!UserConfig.isClientActivated() && (requestClass & RPCRequest.RPCRequestClassWithoutLogin) == 0) {
-            FileLog.e("tmessages", "can't do request without login " + rpc);
+            FileLog.e("tdesktop", "can't do request without login " + rpc);
             return 0;
         }
 
@@ -901,7 +901,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     if (request.token == token) {
                         found = true;
                         request.cancelled = true;
-                        FileLog.d("tmessages", "===== Cancelled queued rpc request " + request.rawRequest);
+                        FileLog.d("tdesktop", "===== Cancelled queued rpc request " + request.rawRequest);
                         requestQueue.remove(i);
                         break;
                     }
@@ -913,7 +913,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                         if (request.token == token) {
                             found = true;
 
-                            FileLog.d("tmessages", "===== Cancelled running rpc request " + request.rawRequest);
+                            FileLog.d("tdesktop", "===== Cancelled running rpc request " + request.rawRequest);
 
                             if ((request.flags & RPCRequest.RPCRequestClassGeneric) != 0) {
                                 if (notifyServer) {
@@ -931,7 +931,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                         }
                     }
                     if (!found) {
-                        FileLog.d("tmessages", "***** Warning: cancelling unknown request");
+                        FileLog.d("tdesktop", "***** Warning: cancelling unknown request");
                     }
                 }
             }
@@ -957,7 +957,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 }
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return true;
         }
         return false;
@@ -971,7 +971,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 return true;
             }
         } catch(Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             return true;
         }
         return false;
@@ -1015,7 +1015,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     timeout = 60;
                 }
                 if (requestStartTime != 0 && requestStartTime < currentTime - timeout) {
-                    FileLog.e("tmessages", "move " + request.rawRequest + " to requestQueue");
+                    FileLog.e("tdesktop", "move " + request.rawRequest + " to requestQueue");
                     requestQueue.add(request);
                     runningRequests.remove(i);
                     i--;
@@ -1085,11 +1085,11 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             if (((Math.abs(currentTime - request.runningStartTime) > maxTimeout) && (currentTime > request.runningMinStartTime || Math.abs(currentTime - request.runningMinStartTime) > 60.0)) || forceThisRequest) {
                 if (!forceThisRequest && request.transportChannelToken > 0) {
                     if ((request.flags & RPCRequest.RPCRequestClassGeneric) != 0 && request.transportChannelToken == connection.channelToken) {
-                        FileLog.d("tmessages", "Request token is valid, not retrying " + request.rawRequest);
+                        FileLog.d("tdesktop", "Request token is valid, not retrying " + request.rawRequest);
                         continue;
                     } else {
                         if (connection.channelToken != 0 && request.transportChannelToken == connection.channelToken) {
-                            FileLog.d("tmessages", "Request download token is valid, not retrying " + request.rawRequest);
+                            FileLog.d("tdesktop", "Request download token is valid, not retrying " + request.rawRequest);
                             continue;
                         }
                     }
@@ -1283,7 +1283,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             requestLength = os.length();
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
 
@@ -1313,7 +1313,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     proceedToSendingMessages(arr, connection, false);
                 }
             } else {
-                FileLog.e("tmessages", "***** Couldn't serialize " + request.rawRequest);
+                FileLog.e("tdesktop", "***** Couldn't serialize " + request.rawRequest);
             }
 
             requestQueue.remove(i);
@@ -1470,7 +1470,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             protoMessage.seqno = connection.generateMessageSeqNo(meaningful);
             return protoMessage;
         } else {
-            FileLog.e("tmessages", "***** Couldn't serialize " + message);
+            FileLog.e("tdesktop", "***** Couldn't serialize " + message);
             return null;
         }
     }
@@ -1540,7 +1540,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
                     connection.sendData(transportData, true, reportAck);
                 } else {
-                    FileLog.e("tmessages", "***** Transport data is nil");
+                    FileLog.e("tdesktop", "***** Transport data is nil");
                 }
 
                 currentSize = 0;
@@ -1565,16 +1565,16 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
             if (BuildVars.DEBUG_VERSION) {
                 if (message.body instanceof TLRPC.invokeWithLayer14) {
-                    FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)message.body).query);
+                    FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)message.body).query);
                 } else if (message.body instanceof TLRPC.initConnection) {
                     TLRPC.initConnection r = (TLRPC.initConnection)message.body;
                     if (r.query instanceof TLRPC.invokeWithLayer14) {
-                        FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)r.query).query);
+                        FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)r.query).query);
                     } else {
-                        FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + r.query);
+                        FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + r.query);
                     }
                 } else {
-                    FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + message.body);
+                    FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + message.body);
                 }
             }
 
@@ -1582,7 +1582,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             long currentTime = System.currentTimeMillis() + ((long)timeDifference) * 1000;
 
             if (msg_time < currentTime - 30000 || msg_time > currentTime + 25000) {
-                FileLog.d("tmessages", "wrap in messages continaer");
+                FileLog.d("tdesktop", "wrap in messages continaer");
                 TLRPC.TL_msg_container messageContainer = new TLRPC.TL_msg_container();
                 messageContainer.messages = new ArrayList<TLRPC.TL_protoMessage>();
                 messageContainer.messages.add(message);
@@ -1605,16 +1605,16 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 containerMessages.add(message);
                 if (BuildVars.DEBUG_VERSION) {
                     if (message.body instanceof TLRPC.invokeWithLayer14) {
-                        FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)message.body).query);
+                        FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)message.body).query);
                     } else if (message.body instanceof TLRPC.initConnection) {
                         TLRPC.initConnection r = (TLRPC.initConnection)message.body;
                         if (r.query instanceof TLRPC.invokeWithLayer14) {
-                            FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)r.query).query);
+                            FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + ((TLRPC.invokeWithLayer14)r.query).query);
                         } else {
-                            FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + r.query);
+                            FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + r.query);
                         }
                     } else {
-                        FileLog.d("tmessages", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + message.body);
+                        FileLog.d("tdesktop", connection.getSissionId() + ":DC" + datacenter.datacenterId + "> Send message (" + message.seqno + ", " + message.msg_id + "): " + message.body);
                     }
                 }
             }
@@ -1776,7 +1776,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             }
 
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
             req.lang_code = "en";
             req.device_model = "Android unknown";
             req.system_version = "SDK " + Build.VERSION.SDK_INT;
@@ -1804,7 +1804,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                         UserConfig.registeredForInternalPush = true;
                         UserConfig.saveConfig(false);
                         saveSession();
-                        FileLog.e("tmessages", "registered for internal push");
+                        FileLog.e("tdesktop", "registered for internal push");
                     }
                     registeringForPush = false;
                 }
@@ -1814,7 +1814,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
     void processMessage(TLObject message, long messageId, int messageSeqNo, long messageSalt, TcpConnection connection, long innerMsgId, long containerMessageId) {
         if (message == null) {
-            FileLog.e("tmessages", "message is null");
+            FileLog.e("tdesktop", "message is null");
             return;
         }
         Datacenter datacenter = datacenterWithId(connection.getDatacenterId());
@@ -1823,10 +1823,10 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             TLRPC.TL_new_session_created newSession = (TLRPC.TL_new_session_created)message;
 
             if (!connection.isSessionProcessed(newSession.unique_id)) {
-                FileLog.d("tmessages", "New session:");
-                FileLog.d("tmessages", String.format("    first message id: %d", newSession.first_msg_id));
-                FileLog.d("tmessages", String.format("    server salt: %d", newSession.server_salt));
-                FileLog.d("tmessages", String.format("    unique id: %d", newSession.unique_id));
+                FileLog.d("tdesktop", "New session:");
+                FileLog.d("tdesktop", String.format("    first message id: %d", newSession.first_msg_id));
+                FileLog.d("tdesktop", String.format("    server salt: %d", newSession.server_salt));
+                FileLog.d("tdesktop", String.format("    unique id: %d", newSession.unique_id));
 
                 long serverSalt = newSession.server_salt;
 
@@ -1909,7 +1909,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                     pingIdToDate.remove(pid);
                 }
             } else {
-                FileLog.e("tmessages", "received push ping");
+                FileLog.e("tdesktop", "received push ping");
                 sendingPushPing = false;
             }
         } else if (message instanceof TLRPC.TL_futuresalts) {
@@ -1938,7 +1938,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             for (long session : lst) {
                 if (session == res.session_id) {
                     sessionsToDestroy.remove(session);
-                    FileLog.d("tmessages", String.format("Destroyed session %d (%s)", res.session_id, res instanceof TLRPC.TL_destroy_session_ok ? "ok" : "not found"));
+                    FileLog.d("tdesktop", String.format("Destroyed session %d (%s)", res.session_id, res instanceof TLRPC.TL_destroy_session_ok ? "ok" : "not found"));
                     break;
                 }
             }
@@ -1947,10 +1947,10 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             long resultMid = resultContainer.req_msg_id;
 
             boolean ignoreResult = false;
-            FileLog.d("tmessages", "object in rpc_result is " + resultContainer.result);
+            FileLog.d("tdesktop", "object in rpc_result is " + resultContainer.result);
             if (resultContainer.result instanceof TLRPC.RpcError) {
                 String errorMessage = ((TLRPC.RpcError)resultContainer.result).error_message;
-                FileLog.e("tmessages", String.format("***** RPC error %d: %s", ((TLRPC.RpcError)resultContainer.result).error_code, errorMessage));
+                FileLog.e("tdesktop", String.format("***** RPC error %d: %s", ((TLRPC.RpcError)resultContainer.result).error_code, errorMessage));
 
                 int migrateToDatacenterId = DEFAULT_DATACENTER_ID;
 
@@ -2019,7 +2019,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             }
                             if (resultContainer.result instanceof TLRPC.RpcError) {
                                 String errorMessage = ((TLRPC.RpcError) resultContainer.result).error_message;
-                                FileLog.e("tmessages", String.format("***** RPC error %d: %s", ((TLRPC.RpcError) resultContainer.result).error_code, errorMessage));
+                                FileLog.e("tdesktop", String.format("***** RPC error %d: %s", ((TLRPC.RpcError) resultContainer.result).error_code, errorMessage));
 
                                 int errorCode = ((TLRPC.RpcError) resultContainer.result).error_code;
 
@@ -2074,9 +2074,9 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             } else if (!(resultContainer.result instanceof TLRPC.TL_error)) {
                                 if (request.rawRequest == null || !request.rawRequest.responseClass().isAssignableFrom(resultContainer.result.getClass())) {
                                     if (request.rawRequest == null) {
-                                        FileLog.e("tmessages", "rawRequest is null");
+                                        FileLog.e("tdesktop", "rawRequest is null");
                                     } else {
-                                        FileLog.e("tmessages", "***** RPC error: invalid response class " + resultContainer.result + " (" + request.rawRequest.responseClass() + " expected)");
+                                        FileLog.e("tdesktop", "***** RPC error: invalid response class " + resultContainer.result + " (" + request.rawRequest.responseClass() + " expected)");
                                     }
                                     implicitError = new TLRPC.TL_error();
                                     implicitError.code = -1000;
@@ -2135,9 +2135,9 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                                 if (datacenter.lastInitVersion != currentAppVersion) {
                                     datacenter.lastInitVersion = currentAppVersion;
                                     saveSession();
-                                    FileLog.e("tmessages", "init connection completed");
+                                    FileLog.e("tdesktop", "init connection completed");
                                 } else {
-                                    FileLog.e("tmessages", "rpc is init, but init connection already completed");
+                                    FileLog.e("tdesktop", "rpc is init, but init connection already completed");
                                 }
                             }
                             request.completed = true;
@@ -2154,7 +2154,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 resultContainer.freeResources();
 
                 if (!found) {
-                    FileLog.d("tmessages", "Response received, but request wasn't found.");
+                    FileLog.d("tdesktop", "Response received, but request wasn't found.");
                     rpcCompleted(resultMid);
                 }
 
@@ -2173,7 +2173,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
         } else if (message instanceof TLRPC.TL_bad_msg_notification) {
             TLRPC.TL_bad_msg_notification badMsgNotification = (TLRPC.TL_bad_msg_notification)message;
 
-            FileLog.e("tmessages", String.format("***** Bad message: %d", badMsgNotification.error_code));
+            FileLog.e("tdesktop", String.format("***** Bad message: %d", badMsgNotification.error_code));
 
             if (badMsgNotification.error_code == 16 || badMsgNotification.error_code == 17 || badMsgNotification.error_code == 19 || badMsgNotification.error_code == 32 || badMsgNotification.error_code == 33 || badMsgNotification.error_code == 64) {
                 long realId = messageId != 0 ? messageId : containerMessageId;
@@ -2265,7 +2265,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             processMessage(result, messageId, messageSeqNo, messageSalt, connection, innerMsgId, containerMessageId);
         } else if (message instanceof TLRPC.Updates) {
             if ((connection.transportRequestClass & RPCRequest.RPCRequestClassPush) != 0) {
-                FileLog.e("tmessages", "received internal push");
+                FileLog.e("tdesktop", "received internal push");
                 if (paused) {
                     pushMessagesReceived = false;
                 }
@@ -2289,7 +2289,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 MessagesController.getInstance().processUpdates((TLRPC.Updates) message, false);
             }
         } else {
-            FileLog.e("tmessages", "***** Error: unknown message class " + message);
+            FileLog.e("tdesktop", "***** Error: unknown message class " + message);
         }
     }
 
@@ -2344,7 +2344,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             ByteBufferDesc transportData = generatePingData(connection);
             if (transportData != null) {
                 if (push) {
-                    FileLog.e("tmessages", "send push ping");
+                    FileLog.e("tdesktop", "send push ping");
                     sendingPushPing = true;
                 }
                 connection.sendData(transportData, true, false);
@@ -2373,13 +2373,13 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                             break;
                         }
                         NetworkInfo info = networkInfos[a];
-                        FileLog.e("tmessages", "Network: " + info.getTypeName() + " status: " + info.getState() + " info: " + info.getExtraInfo() + " object: " + info.getDetailedState() + " other: " + info);
+                        FileLog.e("tdesktop", "Network: " + info.getTypeName() + " status: " + info.getState() + " info: " + info.getExtraInfo() + " object: " + info.getDetailedState() + " other: " + info);
                     }
                     if (networkInfos.length == 0) {
-                        FileLog.e("tmessages", "no network available");
+                        FileLog.e("tdesktop", "no network available");
                     }
                 } catch (Exception e) {
-                    FileLog.e("tmessages", "NETWORK STATE GET ERROR", e);
+                    FileLog.e("tdesktop", "NETWORK STATE GET ERROR", e);
                 }
             }
             final int stateCopy = connectionState;
@@ -2458,7 +2458,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
         }
         if (length == 4) {
             int error = data.readInt32();
-            FileLog.e("tmessages", "mtproto error = " + error);
+            FileLog.e("tdesktop", "mtproto error = " + error);
             connection.suspendConnection(true);
             connection.connect();
             return;
@@ -2485,7 +2485,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             }
         } else {
             if (datacenter.authKeyId == 0 || keyId != datacenter.authKeyId) {
-                FileLog.e("tmessages", "Error: invalid auth key id " + connection);
+                FileLog.e("tdesktop", "Error: invalid auth key id " + connection);
                 connection.suspendConnection(true);
                 connection.connect();
                 return;
@@ -2500,7 +2500,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             long messageSessionId = data.readInt64();
 
             if (messageSessionId != connection.getSissionId()) {
-                FileLog.e("tmessages", String.format("***** Error: invalid message session ID (%d instead of %d)", messageSessionId, connection.getSissionId()));
+                FileLog.e("tdesktop", String.format("***** Error: invalid message session ID (%d instead of %d)", messageSessionId, connection.getSissionId()));
                 finishUpdatingState(connection);
                 return;
             }
@@ -2525,7 +2525,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
             }
 
             if (!Utilities.arraysEquals(messageKey, 0, realMessageKeyFull, realMessageKeyFull.length - 16)) {
-                FileLog.e("tmessages", "***** Error: invalid message key");
+                FileLog.e("tdesktop", "***** Error: invalid message key");
                 connection.suspendConnection(true);
                 connection.connect();
                 return;
@@ -2536,9 +2536,9 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 TLObject message = TLClassStore.Instance().TLdeserialize(data, constructor, getRequestWithMessageId(messageId));
 
                 if (message == null) {
-                    FileLog.e("tmessages", "***** Error parsing message: " + constructor);
+                    FileLog.e("tdesktop", "***** Error parsing message: " + constructor);
                 } else {
-                    FileLog.e("tmessages", "received object " + message);
+                    FileLog.e("tdesktop", "received object " + message);
                     processMessage(message, messageId, messageSeqNo, messageServerSalt, connection, 0, 0);
                     connection.addProcessedMessageId(messageId);
 

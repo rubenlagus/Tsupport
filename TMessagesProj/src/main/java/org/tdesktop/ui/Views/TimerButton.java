@@ -87,7 +87,7 @@ public class TimerButton extends View {
             timeHeight = timeLayout.getHeight();
         } catch (Exception e) {
             timeLayout = null;
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
 
         invalidate();

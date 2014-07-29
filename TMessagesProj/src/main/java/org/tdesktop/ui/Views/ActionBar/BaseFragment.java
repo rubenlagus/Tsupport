@@ -115,7 +115,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
     }
 
@@ -183,7 +183,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         if (actionBarLayer != null) {
             actionBarLayer.onPause();
@@ -208,7 +208,7 @@ public class BaseFragment {
                 visibleDialog = null;
             }
         } catch (Exception e) {
-            FileLog.e("tmessages", e);
+            FileLog.e("tdesktop", e);
         }
         visibleDialog = builder.show();
         visibleDialog.setCanceledOnTouchOutside(true);

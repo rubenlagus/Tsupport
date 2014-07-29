@@ -839,7 +839,7 @@ public class PopupNotificationActivity extends Activity implements NotificationC
                 mAnim.setAlpha(200);
                 mAnim.start();
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
         } else {
             actionBarLayer.setSubTitleIcon(0, 0);

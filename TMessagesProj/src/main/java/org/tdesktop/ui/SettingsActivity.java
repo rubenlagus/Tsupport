@@ -107,7 +107,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             try {
                 return super.onTouchEvent(widget, buffer, event);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tdesktop", e);
             }
             return false;
         }
@@ -391,7 +391,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl)));
                             getParentActivity().startActivity(pickIntent);
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tdesktop", e);
                         }
                     } else if (i == contactsReimportRow) {
 
@@ -535,7 +535,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             }
                         }
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                         supportUser = null;
                     }
                 }
@@ -566,7 +566,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 try {
                                     progressDialog.dismiss();
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                                 MessagesController.getInstance().users.put(res.user.id, res.user);
                                 Bundle args = new Bundle();
@@ -581,7 +581,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 try {
                                     progressDialog.dismiss();
                                 } catch (Exception e) {
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tdesktop", e);
                                 }
                             }
                         });
@@ -1060,7 +1060,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
                         textView.setText(String.format(Locale.US, "Telegram for Android v%s (%d)", pInfo.versionName, pInfo.versionCode));
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tdesktop", e);
                     }
                 }
             }
