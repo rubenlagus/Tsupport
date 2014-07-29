@@ -164,7 +164,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    } else if (id == add_contact) {
+                    }
+                    // Delete unneeded options
+                    /*else if (id == add_contact) {
                         TLRPC.User user = MessagesController.getInstance().users.get(user_id);
                         Bundle args = new Bundle();
                         args.putInt("user_id", user.id);
@@ -198,7 +200,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    }
+                    }*/
                 }
             });
 
@@ -207,7 +209,8 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
             fragmentView = inflater.inflate(R.layout.user_profile_layout, container, false);
             listAdapter = new ListAdapter(getParentActivity());
 
-            TextView textView = (TextView)fragmentView.findViewById(R.id.start_secret_button_text);
+            // Delete unneeded options.
+            /*TextView textView = (TextView)fragmentView.findViewById(R.id.start_secret_button_text);
             textView.setText(LocaleController.getString("StartEncryptedChat", R.string.StartEncryptedChat));
 
             View startSecretButton = fragmentView.findViewById(R.id.start_secret_button);
@@ -236,7 +239,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
             } else {
                 startSecretButton.setVisibility(View.GONE);
             }
-
+            */
             listView = (ListView)fragmentView.findViewById(R.id.listView);
             listView.setAdapter(listAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -250,7 +253,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                             args.putLong("dialog_id", user_id);
                         }
                         presentFragment(new MediaActivity(args));
-                    } else if (i == settingsKeyRow) {
+                    }
+                    // Delete unneeded actions
+                    /*else if (i == settingsKeyRow) {
                         Bundle args = new Bundle();
                         args.putInt("chat_id", (int)(dialog_id >> 32));
                         presentFragment(new IdenticonActivity(args));
@@ -299,7 +304,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    } else if (i == settingsNotificationsRow) {
+                    }*/ else if (i == settingsNotificationsRow) {
                         Bundle args = new Bundle();
                         args.putLong("dialog_id", dialog_id == 0 ? user_id : dialog_id);
                         presentFragment(new ProfileNotificationsActivity(args));
@@ -655,7 +660,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                         detailTextView.setText(String.format("%d", totalMediaCount));
                     }
                     divider.setVisibility(View.INVISIBLE);
-                } else if (i == settingsTimerRow) {
+                }
+                // Delete unneeded options
+                /*else if (i == settingsTimerRow) {
                     TLRPC.EncryptedChat encryptedChat = MessagesController.getInstance().encryptedChats.get((int)(dialog_id >> 32));
                     textView.setText(LocaleController.getString("MessageLifetime", R.string.MessageLifetime));
                     divider.setVisibility(View.VISIBLE);
@@ -676,8 +683,10 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                     } else {
                         detailTextView.setText(String.format("%d", encryptedChat.ttl));
                     }
-                }
-            } else if (type == 4) {
+                }*/
+            }
+            // Delete unneeded options
+            /*else if (type == 4) {
                 if (view == null) {
                     LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = li.inflate(R.layout.user_profile_identicon_layout, viewGroup, false);
@@ -689,7 +698,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                 TLRPC.EncryptedChat encryptedChat = MessagesController.getInstance().encryptedChats.get((int)(dialog_id >> 32));
                 identiconView.setBytes(encryptedChat.auth_key);
                 textView.setText(LocaleController.getString("EncryptionKey", R.string.EncryptionKey));
-            } else if (type == 5) {
+            }*/ else if (type == 5) {
                 if (view == null) {
                     LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = li.inflate(R.layout.settings_row_button_layout, viewGroup, false);

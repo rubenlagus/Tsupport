@@ -146,14 +146,16 @@ public class ApplicationLoader extends Application {
 
         java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
         java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
-
-        startPushService();
+        SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
+        if (preferences.getBoolean("pushService", false)) {
+            startPushService();
+        }
     }
 
     public static void startPushService() {
         SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
 
-        if (preferences.getBoolean("pushService", true)) {
+        if (preferences.getBoolean("pushService", false)) {
             applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
 
             if (android.os.Build.VERSION.SDK_INT >= 19) {

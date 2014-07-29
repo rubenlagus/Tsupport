@@ -292,7 +292,7 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                         NotificationsController.getInstance().setBadgeEnabled(!enabled);
                     } else if (i == notificationsServiceRow) {
                         final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                        boolean enabled = preferences.getBoolean("pushService", true);
+                        boolean enabled = preferences.getBoolean("pushService", false);
                         if (!enabled) {
                             final SharedPreferences.Editor editor = preferences.edit();
                             editor.putBoolean("pushService", !enabled);
@@ -595,7 +595,7 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                     textView.setText(LocaleController.getString("Pebble", R.string.Pebble));
                     divider.setVisibility(View.INVISIBLE);
                 } else if (i == notificationsServiceRow) {
-                    enabled = preferences.getBoolean("pushService", true);
+                    enabled = preferences.getBoolean("pushService", false);
                     textView.setText(LocaleController.getString("NotificationsService", R.string.NotificationsService));
                     divider.setVisibility(View.INVISIBLE);
                 } else if (i == badgeNumberRow) {

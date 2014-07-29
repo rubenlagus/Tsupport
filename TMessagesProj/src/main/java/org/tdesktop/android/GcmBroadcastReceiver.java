@@ -28,7 +28,8 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         FileLog.d("tdesktop", "GCM received intent: " + intent);
 
-        if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
+        // Avoid background connections
+        /*if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
             Utilities.RunOnUIThread(new Runnable() {
                 @Override
                 public void run() {
@@ -59,7 +60,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
                         FileLog.d("tdesktop", "GCM disabled");
                         return;
                     }*/
-
+/*
                     ConnectionsManager.getInstance().resumeNetworkMaybe();
                 }
             });
@@ -72,7 +73,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
             } else if (registration != null) {
                 FileLog.e("tdesktop", "registration id = " + registration);
             }
-        }
+        }*/
 
         setResultCode(Activity.RESULT_OK);
     }

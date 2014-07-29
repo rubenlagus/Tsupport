@@ -68,11 +68,12 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
     private MessagesActivityDelegate delegate;
 
-    private final static int messages_list_menu_new_messages = 1;
+    // Remove unneeded options
+/*    private final static int messages_list_menu_new_messages = 1;
     private final static int messages_list_menu_new_chat = 2;
     private final static int messages_list_menu_other = 6;
     private final static int messages_list_menu_new_secret_chat = 3;
-    private final static int messages_list_menu_contacts = 4;
+    private final static int messages_list_menu_contacts = 4;*/
     private final static int messages_list_menu_settings = 5;
 
     public static interface MessagesActivityDelegate {
@@ -171,11 +172,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             } else {
                 actionBarLayer.setDisplayUseLogoEnabled(true, R.drawable.ic_ab_logo);
                 actionBarLayer.setTitle(LocaleController.getString("AppName", R.string.AppName));
-                menu.addItem(messages_list_menu_new_messages, R.drawable.ic_ab_compose);
+                //menu.addItem(messages_list_menu_new_messages, R.drawable.ic_ab_compose);
                 ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_other);
-                item.addSubItem(messages_list_menu_new_chat, LocaleController.getString("NewGroup", R.string.NewGroup), 0);
-                item.addSubItem(messages_list_menu_new_secret_chat, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), 0);
-                item.addSubItem(messages_list_menu_contacts, LocaleController.getString("Contacts", R.string.Contacts), 0);
+                //item.addSubItem(messages_list_menu_new_chat, LocaleController.getString("NewGroup", R.string.NewGroup), 0);
+                //item.addSubItem(messages_list_menu_new_secret_chat, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), 0);
+                //item.addSubItem(messages_list_menu_contacts, LocaleController.getString("Contacts", R.string.Contacts), 0);
                 item.addSubItem(messages_list_menu_settings, LocaleController.getString("Settings", R.string.Settings), 0);
             }
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
@@ -185,24 +186,24 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 public void onItemClick(int id) {
                     if (id == messages_list_menu_settings) {
                         presentFragment(new SettingsActivity());
-                    } else if (id == messages_list_menu_contacts) {
+                    } /*else if (id == messages_list_menu_contacts) {
                         presentFragment(new ContactsActivity(null));
-                    } else if (id == messages_list_menu_new_messages) {
+                    } *//*else if (id == messages_list_menu_new_messages) {
                         Bundle args = new Bundle();
                         args.putBoolean("onlyUsers", true);
                         args.putBoolean("destroyAfterSelect", true);
                         args.putBoolean("usersAsSections", true);
                         presentFragment(new ContactsActivity(args));
-                    } else if (id == messages_list_menu_new_secret_chat) {
+                    } *//*else if (id == messages_list_menu_new_secret_chat) {
                         Bundle args = new Bundle();
                         args.putBoolean("onlyUsers", true);
                         args.putBoolean("destroyAfterSelect", true);
                         args.putBoolean("usersAsSections", true);
                         args.putBoolean("createSecretChat", true);
                         presentFragment(new ContactsActivity(args));
-                    } else if (id == messages_list_menu_new_chat) {
+                    }*//* else if (id == messages_list_menu_new_chat) {
                         presentFragment(new GroupCreateActivity());
-                    } else if (id == -1) {
+                    }*/ else if (id == -1) {
                         if (onlySelect) {
                             finishFragment();
                         }
