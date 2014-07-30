@@ -25,13 +25,6 @@ import org.tdesktop.android.LocaleController;
 import org.tdesktop.android.TemplateSupport;
 import org.tdesktop.messenger.FileLog;
 import org.tdesktop.messenger.R;
-import org.tdesktop.messenger.TLObject;
-import org.tdesktop.messenger.TLRPC;
-import org.tdesktop.messenger.ConnectionsManager;
-import org.tdesktop.android.MessagesController;
-import org.tdesktop.messenger.NotificationCenter;
-import org.tdesktop.messenger.RPCRequest;
-import org.tdesktop.messenger.UserConfig;
 import org.tdesktop.ui.Views.ActionBar.BaseFragment;
 
 public class SettingsChangeTemplateActivity extends BaseFragment {
@@ -39,7 +32,6 @@ public class SettingsChangeTemplateActivity extends BaseFragment {
     private String value;
     private EditText keyField;
     private EditText valueField;
-    private View headerLabelView;
     private View doneButton;
     private Boolean keyExists;
 
@@ -111,13 +103,13 @@ public class SettingsChangeTemplateActivity extends BaseFragment {
                 }
             });
 
-            if (key != null && key.compareToIgnoreCase("")!=0) {
-                keyField.setText(key);
-                keyField.setEnabled(false);
+            if (key != null && key.compareToIgnoreCase("")!=0) { // If key has content
+                keyField.setText(key);  // Set text in textfield
+                keyField.setEnabled(false); // Disable field
                 keyExists = true;
             }
-            else {
-                keyField.setSelection(keyField.length());
+            else { // If key hasn't
+                keyField.setSelection(keyField.length()); // Can edit
                 keyExists = false;
             }
             if (value != null && value.compareToIgnoreCase("") != 0) {
@@ -142,7 +134,7 @@ public class SettingsChangeTemplateActivity extends BaseFragment {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         boolean animations = preferences.getBoolean("view_animations", true);
         if (!animations) {
-            if (keyExists) {
+            if (!keyExists) {
                 keyField.requestFocus();
                 AndroidUtilities.showKeyboard(keyField);
             }
@@ -163,7 +155,7 @@ public class SettingsChangeTemplateActivity extends BaseFragment {
 
     @Override
     public void onOpenAnimationEnd() {
-        if (keyExists) {
+        if (!keyExists) {
             keyField.requestFocus();
             AndroidUtilities.showKeyboard(keyField);
         }
