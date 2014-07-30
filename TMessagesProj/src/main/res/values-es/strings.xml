@@ -440,6 +440,7 @@
     <string name="insertKey">Inserte la clave para la plantilla</string>
     <string name="templates">Plantillas</string>
     <string name="template">Plantilla</string>
+    <string name="deleteTemplateText">Manten pulsada una plantilla para eliminarla.</string>
     <string name="noTemplates">No se han encontraado plantillas</string>
     <string name="templateKey">Clave</string>
     <string name="templateValue">Valor</string>

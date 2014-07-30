@@ -210,8 +210,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
             listAdapter = new ListAdapter(getParentActivity());
 
             // Delete unneeded options.
-            /*TextView textView = (TextView)fragmentView.findViewById(R.id.start_secret_button_text);
-            textView.setText(LocaleController.getString("StartEncryptedChat", R.string.StartEncryptedChat));
+            TextView textView = (TextView)fragmentView.findViewById(R.id.start_secret_button_text);
+            textView.setVisibility(View.INVISIBLE);
+            /*textView.setText(LocaleController.getString("StartEncryptedChat", R.string.StartEncryptedChat));
 
             View startSecretButton = fragmentView.findViewById(R.id.start_secret_button);
             startSecretButton.setOnClickListener(new View.OnClickListener() {

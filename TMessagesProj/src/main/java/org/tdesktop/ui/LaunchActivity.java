@@ -35,6 +35,7 @@ import org.tdesktop.ui.Views.ActionBar.ActionBarActivity;
 import org.tdesktop.ui.Views.ActionBar.BaseFragment;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -500,6 +501,9 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
 
     @Override
     protected void onDestroy() {
+        File dir = AndroidUtilities.getCacheDir();
+        if (dir != null && dir.isDirectory())
+            ConnectionsManager.getInstance().deleteDir(dir);
         PhotoViewer.getInstance().destroyPhotoViewer();
         super.onDestroy();
         onFinish();
@@ -508,7 +512,8 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onResume() {
         super.onResume();
-        Utilities.checkForCrashes(this);
+        // Disabled
+        //Utilities.checkForCrashes(this);
         Utilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);

@@ -2600,6 +2600,9 @@ public class MessagesStorage {
                         SQLitePreparedStatement state = database.executeFast("REPLACE INTO messages VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
                         SQLitePreparedStatement state2 = database.executeFast("REPLACE INTO media VALUES(?, ?, ?, ?)");
                         for (TLRPC.Message message : messages.messages) {
+                            if (message.message.contains("#tsf")){
+                                message.unread = false;
+                            }
                             state.requery();
                             ByteBufferDesc data = buffersStorage.getFreeBuffer(message.getObjectSize());
                             message.serializeToStream(data);

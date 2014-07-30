@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import org.tdesktop.android.LocaleController;
 import org.tdesktop.android.MessagesController;
+import org.tdesktop.android.MessagesStorage;
 import org.tdesktop.android.TemplateSupport;
 import org.tdesktop.messenger.FileLog;
 import org.tdesktop.messenger.NotificationCenter;
@@ -38,6 +39,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     private ListView listView;
     private ListAdapter listViewAdapter;
     private boolean loading;
+    private boolean loaded;
     private View progressView;
     private TextView emptyView;
     private ArrayList<String> templatesKeys = new ArrayList<String>();
@@ -165,12 +167,28 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
         return fragmentView;
     }
 
+    private void loadTemplatesInternal() {
+        Utilities.RunOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (progressView != null) {
+                    progressView.setVisibility(View.GONE);
+                }
+                if (listView != null && listView.getEmptyView() == null) {
+                    listView.setEmptyView(emptyView);
+                }
+                if (listViewAdapter != null) {
+                    listViewAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
     private void loadTemplates() {
         if (loading) {
             return;
         }
         loading = true;
-        Utilities.RunOnUIThread(new Runnable() {
+        MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
                 templates.clear();
@@ -180,21 +198,11 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
                     templates.putAll(TemplateSupport.getInstance().getAll());
                     templatesKeys.addAll(TemplateSupport.getInstance().getAll().keySet());
                     loading = false;
-                    if (progressView != null) {
-                        progressView.setVisibility(View.GONE);
-                    }
-                    if (listView != null && listView.getEmptyView() == null) {
-                        listView.setEmptyView(emptyView);
-                    }
-                    if (listViewAdapter != null) {
-                        listViewAdapter.notifyDataSetChanged();
-                    }
-                }
-                else {
-                    FileLog.e("tsupport", "Templates null in SettingsTemplatesActivity");
+                    loadTemplatesInternal();
                 }
             }
         });
+
     }
 
     @Override

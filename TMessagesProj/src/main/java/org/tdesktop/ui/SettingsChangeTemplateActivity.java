@@ -117,11 +117,13 @@ public class SettingsChangeTemplateActivity extends BaseFragment {
                 keyExists = true;
             }
             else {
+                keyField.setSelection(keyField.length());
                 keyExists = false;
             }
             if (value != null && value.compareToIgnoreCase("") != 0) {
                 valueField.setText(value);
-                valueField.setSelection(valueField.length());
+                if(keyExists)
+                    valueField.setSelection(valueField.length());
             }
             TextView headerLabel = (TextView)fragmentView.findViewById(R.id.settings_section_text);
             headerLabel.setText(LocaleController.getString("template", R.string.template));

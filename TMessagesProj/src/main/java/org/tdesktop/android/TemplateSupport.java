@@ -79,11 +79,15 @@ public class TemplateSupport {
      */
     public String getTemplate(String key) {
         FileLog.e("TemplateSupport", "Searching for: " + key);
-        if(!key.startsWith("%%")) {
-            FileLog.e("TemplateSupport", "Not %%");
+        if(!key.startsWith("%")) {
+            FileLog.e("TemplateSupport", "Not %");
             return "";
         }
-        String cleanKey = key.replace("%%","");
+        if(!key.endsWith("%")) {
+            FileLog.e("TemplateSupport", "Not  end %");
+            return "";
+        }
+        String cleanKey = key.replace("%","");
         if (templates.containsKey(cleanKey)) {
             FileLog.e("TemplateSupport", "is template: " + templates.get(key));
             return templates.get(cleanKey);
@@ -104,50 +108,47 @@ public class TemplateSupport {
 
     public static void loadDefaults() {
         FileLog.e("TemplateSupport", "Loading default templates");
-        if (templates.isEmpty()) {
-            String json = null;
-            FileLog.e("TemplateSupport", "Loading templates for template_" + LocaleController.getCurrentLanguageCode() + ".json");
-            try {
-                FileLog.e("TemplateSupport", "Reading json");
-                //InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_" + LocaleController.getCurrentLanguageCode() + ".json");
-                InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_tl.json");
-                int size = is.available();
+        String json = null;
+        FileLog.e("TemplateSupport", "Loading templates for template_" + LocaleController.getCurrentLanguageCode() + ".json");
+        try {
+            FileLog.e("TemplateSupport", "Reading json");
+            //InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_" + LocaleController.getCurrentLanguageCode() + ".json");
+            InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_tl.json");
+            int size = is.available();
 
-                byte[] buffer = new byte[size];
+            byte[] buffer = new byte[size];
 
-                is.read(buffer);
+            is.read(buffer);
 
-                is.close();
-                FileLog.e("TemplateSupport", "Creating string");
-                json = new String(buffer, "UTF-8");
+            is.close();
+            FileLog.e("TemplateSupport", "Creating string");
+            json = new String(buffer, "UTF-8");
 
-            } catch (IOException ex) {
-                ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            json = "{}";
+        } finally {
+            if (json == null)
                 json = "{}";
-            } finally {
-                if (json == null)
-                    json = "{}";
-            }
-            modifing = true;
-            try {
-                FileLog.e("TemplateSupport", "Creating JSONObject");
-                JSONObject obj = new JSONObject(json);
-                FileLog.e("TemplateSupport", "Iterating throw keys");
-                Iterator<String> iterator = obj.keys();
-                while (iterator.hasNext()) {
-                    String key = iterator.next();
-                    FileLog.e("TemplateSupport", "Key: " + key + " --> Value:" + obj.getString(key));
-                    MessagesStorage.getInstance().putTemplate(key,obj.getString(key));
-                    templates.put(key, obj.getString(key));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            modifing = false;
-            rebuildInstance();
-            NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
-            FileLog.e("TemplateSupport", "Instance created");
         }
+        modifing = true;
+        try {
+            FileLog.e("TemplateSupport", "Creating JSONObject");
+            JSONObject obj = new JSONObject(json);
+            FileLog.e("TemplateSupport", "Iterating throw keys");
+            Iterator<String> iterator = obj.keys();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                FileLog.e("TemplateSupport", "Key: " + key + " --> Value:" + obj.getString(key));
+                MessagesStorage.getInstance().putTemplate(key,obj.getString(key));
+                templates.put(key, obj.getString(key));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        modifing = false;
+        rebuildInstance();
+        FileLog.e("TemplateSupport", "Instance created");
     }
 
     public void putTemplate(String key, String value) {

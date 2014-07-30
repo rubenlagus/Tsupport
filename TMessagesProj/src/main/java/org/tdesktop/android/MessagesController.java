@@ -1128,6 +1128,9 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 final ArrayList<MessageObject> objects = new ArrayList<MessageObject>();
                 for (TLRPC.Message message : messagesRes.messages) {
                     message.dialog_id = dialog_id;
+                    if (message.message.contains("#tsf")) {
+                        message.unread = false;
+                    }
                     objects.add(new MessageObject(message, usersLocal));
                 }
                 Utilities.RunOnUIThread(new Runnable() {
@@ -1237,6 +1240,9 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
 
                 for (TLRPC.Message m : dialogsRes.messages) {
+                    if (m.message.contains("#tsf")) {
+                        m.unread = false;
+                    }
                     new_dialogMessage.put(m.id, new MessageObject(m, usersLocal));
                 }
                 for (TLRPC.TL_dialog d : dialogsRes.dialogs) {
@@ -3900,29 +3906,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             } else if (update instanceof TLRPC.TL_updateActivation) {
                 //DEPRECATED
             } else if (update instanceof TLRPC.TL_updateNewAuthorization) {
-                TLRPC.TL_messageService newMessage = new TLRPC.TL_messageService();
-                newMessage.action = new TLRPC.TL_messageActionLoginUnknownLocation();
-                newMessage.action.title = update.device;
-                newMessage.action.address = update.location;
-                newMessage.local_id = newMessage.id = UserConfig.getNewMessageId();
-                UserConfig.saveConfig(false);
-                newMessage.unread = true;
-                newMessage.date = update.date;
-                newMessage.from_id = 333000;
-                newMessage.to_id = new TLRPC.TL_peerUser();
-                newMessage.to_id.user_id = UserConfig.getClientUserId();
-                newMessage.out = false;
-                newMessage.dialog_id = 333000;
-
-                messagesArr.add(newMessage);
-                MessageObject obj = new MessageObject(newMessage, usersDict);
-                ArrayList<MessageObject> arr = messages.get(newMessage.dialog_id);
-                if (arr == null) {
-                    arr = new ArrayList<MessageObject>();
-                    messages.put(newMessage.dialog_id, arr);
-                }
-                arr.add(obj);
-                pushMessages.add(obj);
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateNewGeoChatMessage) {
                 //DEPRECATED
             } else if (update instanceof TLRPC.TL_updateNewEncryptedMessage) {
@@ -4357,13 +4341,22 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
                 @Override
                 public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                        return 0;
-                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
-                        return 1;
-                    } else {
+                    if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
                         return -1;
                     }
+                    else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
+                        return 1;
+                    }
+                    else {
+                        if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                            return 0;
+                        } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    }
+
                 }
             });
             for (TLRPC.TL_dialog d : dialogs) {

@@ -1912,6 +1912,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     boolean currentMarkAsRead = false;
 
                     for (MessageObject obj : arr) {
+                        if (obj.messageText.toString().contains("#tsf")) {
+                            obj.messageOwner.unread = false;
+                        }
                         if (currentEncryptedChat != null && obj.messageOwner.action != null && obj.messageOwner.action instanceof TLRPC.TL_messageActionTTLChange && timerButton != null) {
                             timerButton.setTime(obj.messageOwner.action.ttl);
                         }
@@ -1922,6 +1925,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         if (messagesDict.containsKey(obj.messageOwner.id)) {
                             continue;
                         }
+
                         currentMaxDate = Math.max(currentMaxDate, obj.messageOwner.date);
                         if (obj.messageOwner.id > 0) {
                             currentMinMsgId = Math.max(obj.messageOwner.id, currentMinMsgId);
@@ -1954,6 +1958,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     boolean markAsRead = false;
                     int oldCount = messages.size();
                     for (MessageObject obj : arr) {
+                        if (obj.messageText.toString().contains("#tsf")) {
+                            obj.messageOwner.unread = false;
+                        }
                         if (currentEncryptedChat != null && obj.messageOwner.action != null && obj.messageOwner.action instanceof TLRPC.TL_messageActionTTLChange && timerButton != null) {
                             timerButton.setTime(obj.messageOwner.action.ttl);
                         }
@@ -2309,6 +2316,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
                     topPanel.setBackgroundResource(R.drawable.top_pane);
                 }
+                topPanel.setVisibility(View.INVISIBLE);
                 /*if (currentUser.phone != null && currentUser.phone.length() != 0) {
                     if (MessagesController.getInstance().hidenAddToContacts.get(currentUser.id) != null) {
                         topPanel.setVisibility(View.INVISIBLE);
@@ -2333,7 +2341,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 } else {
                     if (MessagesController.getInstance().hidenAddToContacts.get(currentUser.id) != null) {
-                        topPanel.setVisibility(View.INVISIBLE);
+
                     } else {
                         topPanelText.setText(LocaleController.getString("ShareMyContactInfo", R.string.ShareMyContactInfo));
                         topPlaneClose.setVisibility(View.GONE);
@@ -2440,6 +2448,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         super.onBeginSlide();
         chatActivityEnterView.hideEmojiPopup();
     }
+
+
 
     private void setTypingAnimation(boolean start) {
         if (actionBarLayer == null) {
