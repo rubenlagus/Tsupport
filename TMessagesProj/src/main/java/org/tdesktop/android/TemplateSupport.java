@@ -1,8 +1,11 @@
 package org.tdesktop.android;
 
+import android.widget.Adapter;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tdesktop.messenger.FileLog;
+import org.tdesktop.messenger.NotificationCenter;
 import org.tdesktop.ui.ApplicationLoader;
 
 import java.io.IOException;
@@ -23,13 +26,15 @@ public class TemplateSupport {
     /**
      * Static Map to keep pairs kay-values with the templates.
      */
-    private static Map<String,String> templates = new HashMap<String,String>();
+    private static HashMap<String,String> templates = new HashMap<String,String>();
 
     /**
      * Singleton Instance
      */
     private static volatile TemplateSupport Instance = null;
 
+
+    private static Boolean modifing = false;
     /**
      * Get the instance of the class, creating one if it doesn't exists.
      * @return TemplateSupport  instance.
@@ -39,7 +44,19 @@ public class TemplateSupport {
         if (localInstance == null) {
             synchronized (TemplateSupport.class) {
                 if (localInstance == null) {
-                    Instance = localInstance = new TemplateSupport();
+                    Instance = localInstance = new TemplateSupport(true);
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    public static TemplateSupport getInstanceWithDefault() {
+        TemplateSupport localInstance = Instance;
+        if (localInstance == null) {
+            synchronized (TemplateSupport.class) {
+                if (localInstance == null) {
+                    Instance = localInstance = new TemplateSupport(false);
                 }
             }
         }
@@ -49,46 +66,10 @@ public class TemplateSupport {
     /**
      * Private constructor of the class that read the template JSON file.
      */
-    private TemplateSupport() {
+    private TemplateSupport(Boolean rebuild) {
         FileLog.e("TemplateSupport", "Creating TemplateSupport instance");
-        String json = null;
-        try {
-            FileLog.e("TemplateSupport", "Reading json");
-            InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_tl.json");
-
-            int size = is.available();
-
-            byte[] buffer = new byte[size];
-
-            is.read(buffer);
-
-            is.close();
-            FileLog.e("TemplateSupport", "Creating string");
-            json = new String(buffer, "UTF-8");
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            json = "{}";
-        } finally {
-            if (json == null)
-                json = "{}";
-        }
-
-        try {
-            FileLog.e("TemplateSupport", "Creating JSONObject");
-            JSONObject obj = new JSONObject(json);
-            FileLog.e("TemplateSupport", "Iterating throw keys");
-            Iterator<String> iterator = obj.keys();
-            while(iterator.hasNext()) {
-                String key = iterator.next();
-                FileLog.e("TemplateSupport", "Key: " + key + " --> Value:" + obj.getString(key));
-                templates.put(key, obj.getString(key));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        FileLog.e("TemplateSupport", "Instance created");
+        if (rebuild)
+            rebuildInstance();
     }
 
     /**
@@ -102,11 +83,82 @@ public class TemplateSupport {
             FileLog.e("TemplateSupport", "Not %%");
             return "";
         }
-        if (templates.containsKey(key.replace("%%",""))) {
+        String cleanKey = key.replace("%%","");
+        if (templates.containsKey(cleanKey)) {
             FileLog.e("TemplateSupport", "is template: " + templates.get(key));
-            return templates.get(key.replace("%%",""));
+            return templates.get(cleanKey);
         }
         FileLog.e("TemplateSupport", "No template");
         return "";
+    }
+
+    public static void rebuildInstance() {
+        if (!modifing) {
+            modifing = true;
+            templates.clear();
+            templates.putAll(MessagesStorage.getInstance().getTemplates());
+            NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
+            modifing = false;
+        }
+    }
+
+    public static void loadDefaults() {
+        FileLog.e("TemplateSupport", "Loading default templates");
+        if (templates.isEmpty()) {
+            String json = null;
+            FileLog.e("TemplateSupport", "Loading templates for template_" + LocaleController.getCurrentLanguageCode() + ".json");
+            try {
+                FileLog.e("TemplateSupport", "Reading json");
+                //InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_" + LocaleController.getCurrentLanguageCode() + ".json");
+                InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_tl.json");
+                int size = is.available();
+
+                byte[] buffer = new byte[size];
+
+                is.read(buffer);
+
+                is.close();
+                FileLog.e("TemplateSupport", "Creating string");
+                json = new String(buffer, "UTF-8");
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                json = "{}";
+            } finally {
+                if (json == null)
+                    json = "{}";
+            }
+            modifing = true;
+            try {
+                FileLog.e("TemplateSupport", "Creating JSONObject");
+                JSONObject obj = new JSONObject(json);
+                FileLog.e("TemplateSupport", "Iterating throw keys");
+                Iterator<String> iterator = obj.keys();
+                while (iterator.hasNext()) {
+                    String key = iterator.next();
+                    FileLog.e("TemplateSupport", "Key: " + key + " --> Value:" + obj.getString(key));
+                    MessagesStorage.getInstance().putTemplate(key,obj.getString(key));
+                    templates.put(key, obj.getString(key));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            modifing = false;
+            rebuildInstance();
+            NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
+            FileLog.e("TemplateSupport", "Instance created");
+        }
+    }
+
+    public void putTemplate(String key, String value) {
+        MessagesStorage.getInstance().putTemplate(key, value);
+    }
+
+    public void removeTemplate(String key) {
+        MessagesStorage.getInstance().deleteTemplate(key);
+    }
+
+    public HashMap<String, String> getAll() {
+        return templates;
     }
 }

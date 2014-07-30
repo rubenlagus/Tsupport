@@ -55,7 +55,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         public abstract void needSendTyping();
     }
 
-    private EditText messsageEditText;
+    private EditText messsageEditText = null;
     private ImageButton sendButton;
     private PopupWindow emojiPopup;
     private ImageView emojiButton;
@@ -84,6 +84,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private long dialog_id;
     private boolean ignoreTextChange = false;
     private ChatActivityEnterViewDelegate delegate;
+    private TextWatcher textWatcher = null;
 
     public ChatActivityEnterView() {
         NotificationCenter.getInstance().addObserver(this, MediaController.recordStarted);
@@ -127,12 +128,12 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
 
         messsageEditText = (EditText)containerView.findViewById(R.id.chat_text_edit);
         messsageEditText.setHint(LocaleController.getString("TypeMessage", R.string.TypeMessage));
-
         sendButton = (ImageButton)containerView.findViewById(R.id.chat_send_button);
-        sendButton.setEnabled(false);
-        sendButton.setVisibility(View.INVISIBLE);
+        sendButton.setEnabled(true);
         emojiButton = (ImageView)containerView.findViewById(R.id.chat_smile_button);
         audioSendButton = (ImageButton)containerView.findViewById(R.id.chat_audio_send_button);
+        audioSendButton.setEnabled(false);
+        audioSendButton.setVisibility(View.INVISIBLE);
         recordPanel = containerView.findViewById(R.id.record_panel);
         recordTimeText = (TextView)containerView.findViewById(R.id.recording_time_text);
         slideText = containerView.findViewById(R.id.slideText);
@@ -257,7 +258,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             }
         });
 
-        messsageEditText.addTextChangedListener(new TextWatcher() {
+        textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
 
@@ -266,8 +267,16 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 String message = getTrimmedString(charSequence.toString());
-                sendButton.setEnabled(message.length() != 0);
-                checkSendButton();
+                String template = TemplateSupport.getInstance().getTemplate(message);
+                if ( template != null && template.compareToIgnoreCase("") != 0) {
+                    FileLog.d("tsupport", message + "-->" + template);
+                    messsageEditText.removeTextChangedListener(textWatcher);
+                    messsageEditText.setText(template);
+                    messsageEditText.addTextChangedListener(textWatcher);
+                    message = template;
+                }
+                //sendButton.setEnabled(message.length() != 0);
+                //checkSendButton();
 
                 if (message.length() != 0 && lastTypingTimeSend < System.currentTimeMillis() - 5000 && !ignoreTextChange) {
                     int currentTime = ConnectionsManager.getInstance().getCurrentTime();
@@ -302,9 +311,10 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     i++;
                 }
             }
-        });
+        };
+        messsageEditText.addTextChangedListener(textWatcher);
 
-        checkSendButton();
+        //checkSendButton();
     }
 
     private void sendMessage() {
@@ -332,7 +342,11 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             }
             return true;
         }
-        return false;
+        else { // Mark as read but send nothing
+            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification);
+            return false;
+        }
+
     }
 
     private String getTrimmedString(String src) {
@@ -349,7 +363,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         return src;
     }
 
-    private void checkSendButton() {
+    /*private void checkSendButton() {
         String message = getTrimmedString(messsageEditText.getText().toString());
         if (message.length() > 0) {
             sendButton.setVisibility(View.VISIBLE);
@@ -359,7 +373,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             audioSendButton.setVisibility(View.VISIBLE);
         }
     }
-
+*/
     private void updateAudioRecordIntefrace() {
         if (recordingAudio) {
             try {

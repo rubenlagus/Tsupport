@@ -67,7 +67,6 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
     private int inappVibrateRow;
     private int inappPreviewRow;
     private int eventsSectionRow;
-    private int contactJoinedRow;
     private int otherSectionRow;
     private int badgeNumberRow;
     private int pebbleAlertRow;
@@ -97,7 +96,6 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
         inappVibrateRow = rowCount++;
         inappPreviewRow = rowCount++;
         eventsSectionRow = rowCount++;
-        contactJoinedRow = rowCount++;
         otherSectionRow = rowCount++;
         badgeNumberRow = rowCount++;
         pebbleAlertRow = rowCount++;
@@ -142,10 +140,10 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                         SharedPreferences.Editor editor = preferences.edit();
                         boolean enabled;
                         if (i == messageAlertRow) {
-                            enabled = preferences.getBoolean("EnableAll", true);
+                            enabled = preferences.getBoolean("EnableAll", false);
                             editor.putBoolean("EnableAll", !enabled);
                         } else if (i == groupAlertRow) {
-                            enabled = preferences.getBoolean("EnableGroup", true);
+                            enabled = preferences.getBoolean("EnableGroup", false);
                             editor.putBoolean("EnableGroup", !enabled);
                         }
                         editor.commit();
@@ -156,10 +154,10 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                         SharedPreferences.Editor editor = preferences.edit();
                         boolean enabled;
                         if (i == messagePreviewRow) {
-                            enabled = preferences.getBoolean("EnablePreviewAll", true);
+                            enabled = preferences.getBoolean("EnablePreviewAll", false);
                             editor.putBoolean("EnablePreviewAll", !enabled);
                         } else if (i == groupPreviewRow) {
-                            enabled = preferences.getBoolean("EnablePreviewGroup", true);
+                            enabled = preferences.getBoolean("EnablePreviewGroup", false);
                             editor.putBoolean("EnablePreviewGroup", !enabled);
                         }
                         editor.commit();
@@ -170,10 +168,10 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                         SharedPreferences.Editor editor = preferences.edit();
                         boolean enabled;
                         if (i == messageVibrateRow) {
-                            enabled = preferences.getBoolean("EnableVibrateAll", true);
+                            enabled = preferences.getBoolean("EnableVibrateAll", false);
                             editor.putBoolean("EnableVibrateAll", !enabled);
                         } else if (i == groupVibrateRow) {
-                            enabled = preferences.getBoolean("EnableVibrateGroup", true);
+                            enabled = preferences.getBoolean("EnableVibrateGroup", false);
                             editor.putBoolean("EnableVibrateGroup", !enabled);
                         }
                         editor.commit();
@@ -265,14 +263,6 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                         SharedPreferences.Editor editor = preferences.edit();
                         boolean enabled = preferences.getBoolean("EnableInAppPreview", true);
                         editor.putBoolean("EnableInAppPreview", !enabled);
-                        editor.commit();
-                        listView.invalidateViews();
-                    } else if (i == contactJoinedRow) {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        boolean enabled = preferences.getBoolean("EnableContactJoined", true);
-                        MessagesController.getInstance().enableJoined = !enabled;
-                        editor.putBoolean("EnableContactJoined", !enabled);
                         editor.commit();
                         listView.invalidateViews();
                     } else if (i == pebbleAlertRow) {
@@ -413,12 +403,12 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
         req.settings.events_mask = 0;
         if (!group) {
             req.peer = new TLRPC.TL_inputNotifyUsers();
-            req.settings.mute_until = preferences.getBoolean("EnableAll", true) ? 0 : Integer.MAX_VALUE;
-            req.settings.show_previews = preferences.getBoolean("EnablePreviewAll", true);
+            req.settings.mute_until = preferences.getBoolean("EnableAll", false) ? 0 : Integer.MAX_VALUE;
+            req.settings.show_previews = preferences.getBoolean("EnablePreviewAll", false);
         } else {
             req.peer = new TLRPC.TL_inputNotifyChats();
-            req.settings.mute_until = preferences.getBoolean("EnableGroup", true) ? 0 : Integer.MAX_VALUE;
-            req.settings.show_previews = preferences.getBoolean("EnablePreviewGroup", true);
+            req.settings.mute_until = preferences.getBoolean("EnableGroup", false) ? 0 : Integer.MAX_VALUE;
+            req.settings.show_previews = preferences.getBoolean("EnablePreviewGroup", false);
         }
         ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
             @Override
@@ -547,8 +537,8 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                 ImageView checkButton = (ImageView)view.findViewById(R.id.settings_row_check_button);
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                 boolean enabled = false;
-                boolean enabledAll = preferences.getBoolean("EnableAll", true);
-                boolean enabledGroup = preferences.getBoolean("EnableGroup", true);
+                boolean enabledAll = preferences.getBoolean("EnableAll", false);
+                boolean enabledGroup = preferences.getBoolean("EnableGroup", false);
 
                 if (i == messageAlertRow || i == groupAlertRow) {
                     if (i == messageAlertRow) {
@@ -560,17 +550,17 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                     divider.setVisibility(View.VISIBLE);
                 } else if (i == messagePreviewRow || i == groupPreviewRow) {
                     if (i == messagePreviewRow) {
-                        enabled = preferences.getBoolean("EnablePreviewAll", true);
+                        enabled = preferences.getBoolean("EnablePreviewAll", false);
                     } else if (i == groupPreviewRow) {
-                        enabled = preferences.getBoolean("EnablePreviewGroup", true);
+                        enabled = preferences.getBoolean("EnablePreviewGroup", false);
                     }
                     textView.setText(LocaleController.getString("MessagePreview", R.string.MessagePreview));
                     divider.setVisibility(View.VISIBLE);
                 } else if (i == messageVibrateRow || i == groupVibrateRow) {
                     if (i == messageVibrateRow) {
-                        enabled = preferences.getBoolean("EnableVibrateAll", true);
+                        enabled = preferences.getBoolean("EnableVibrateAll", false);
                     } else if (i == groupVibrateRow) {
-                        enabled = preferences.getBoolean("EnableVibrateGroup", true);
+                        enabled = preferences.getBoolean("EnableVibrateGroup", false);
                     }
                     textView.setText(LocaleController.getString("Vibrate", R.string.Vibrate));
                     divider.setVisibility(View.VISIBLE);
@@ -585,10 +575,6 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                 } else if (i == inappPreviewRow) {
                     enabled = preferences.getBoolean("EnableInAppPreview", true);
                     textView.setText(LocaleController.getString("InAppPreview", R.string.InAppPreview));
-                    divider.setVisibility(View.INVISIBLE);
-                } else if (i == contactJoinedRow) {
-                    enabled = preferences.getBoolean("EnableContactJoined", true);
-                    textView.setText(LocaleController.getString("ContactJoined", R.string.ContactJoined));
                     divider.setVisibility(View.INVISIBLE);
                 } else if (i == pebbleAlertRow) {
                     enabled = preferences.getBoolean("EnablePebbleNotifications", false);
@@ -617,8 +603,8 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
                 TextView textViewDetail = (TextView)view.findViewById(R.id.settings_row_text_detail);
                 View divider = view.findViewById(R.id.settings_row_divider);
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                boolean enabledAll = preferences.getBoolean("EnableAll", true);
-                boolean enabledGroup = preferences.getBoolean("EnableGroup", true);
+                boolean enabledAll = preferences.getBoolean("EnableAll", false);
+                boolean enabledGroup = preferences.getBoolean("EnableGroup", false);
 
                 if (i == messageSoundRow || i == groupSoundRow) {
                     String name = null;
@@ -684,7 +670,6 @@ public class SettingsNotificationsActivity extends BaseFragment implements Notif
             } else if (i == messageAlertRow || i == messagePreviewRow || i == messageVibrateRow ||
                     i == groupAlertRow || i == groupPreviewRow || i == groupVibrateRow ||
                     i == inappSoundRow || i == inappVibrateRow || i == inappPreviewRow ||
-                    i == contactJoinedRow ||
                     i == pebbleAlertRow || i == notificationsServiceRow || i == badgeNumberRow) {
                 return 1;
             } else if (i == messageLedRow || i == groupLedRow) {

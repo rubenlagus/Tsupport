@@ -119,7 +119,7 @@ public class NotificationsController {
         if ((int)dialog_id != 0) {
             if (chat_id == 0 && user_id != 0) {
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
-                if (preferences.getBoolean("EnablePreviewAll", true)) {
+                if (preferences.getBoolean("EnablePreviewAll", false)) {
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionUserJoined) {
                             msg = LocaleController.formatString("NotificationContactJoined", R.string.NotificationContactJoined, Utilities.formatName(user.first_name, user.last_name));
@@ -155,7 +155,7 @@ public class NotificationsController {
                 }
             } else if (chat_id != 0) {
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
-                if (preferences.getBoolean("EnablePreviewGroup", true)) {
+                if (preferences.getBoolean("EnablePreviewGroup", false)) {
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChatAddUser) {
                             if (messageObject.messageOwner.action.user_id == UserConfig.getClientUserId()) {
@@ -252,7 +252,7 @@ public class NotificationsController {
 
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
             int notify_override = preferences.getInt("notify2_" + dialog_id, 0);
-            if (!notifyAboutLast || notify_override == 2 || (!preferences.getBoolean("EnableAll", true) || chat_id != 0 && !preferences.getBoolean("EnableGroup", true)) && notify_override == 0) {
+            if (!notifyAboutLast || notify_override == 2 || (!preferences.getBoolean("EnableAll", false) || chat_id != 0 && !preferences.getBoolean("EnableGroup", false)) && notify_override == 0) {
                 notifyDisabled = true;
             }
 
@@ -271,7 +271,7 @@ public class NotificationsController {
                     } else if (choosenSoundPath == null) {
                         choosenSoundPath = preferences.getString("GroupSoundPath", defaultPath);
                     }
-                    needVibrate = preferences.getBoolean("EnableVibrateGroup", true);
+                    needVibrate = preferences.getBoolean("EnableVibrateGroup", false);
                     ledColor = preferences.getInt("GroupLed", 0xff00ff00);
                 } else if (user_id != 0) {
                     if (choosenSoundPath != null && choosenSoundPath.equals(defaultPath)) {
@@ -279,7 +279,7 @@ public class NotificationsController {
                     } else if (choosenSoundPath == null) {
                         choosenSoundPath = preferences.getString("GlobalSoundPath", defaultPath);
                     }
-                    needVibrate = preferences.getBoolean("EnableVibrateAll", true);
+                    needVibrate = preferences.getBoolean("EnableVibrateAll", false);
                     ledColor = preferences.getInt("MessagesLed", 0xff00ff00);
                 }
                 if (preferences.contains("color_" + dialog_id)) {
@@ -532,7 +532,7 @@ public class NotificationsController {
             popup = preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
             if (value == null) {
                 int notify_override = preferences.getInt("notify2_" + dialog_id, 0);
-                value = !(notify_override == 2 || (!preferences.getBoolean("EnableAll", true) || isChat && !preferences.getBoolean("EnableGroup", true)) && notify_override == 0);
+                value = !(notify_override == 2 || (!preferences.getBoolean("EnableAll", false) || isChat && !preferences.getBoolean("EnableGroup", false)) && notify_override == 0);
                 settingsCache.put(dialog_id, value);
             }
             if (value) {
@@ -569,7 +569,7 @@ public class NotificationsController {
             int notify_override = preferences.getInt("notify2_" + dialog_id, 0);
             boolean isChat = (int)dialog_id < 0;
             Integer currentCount = pushDialogs.get(dialog_id);
-            if (!(notify_override == 2 || (!preferences.getBoolean("EnableAll", true) || isChat && !preferences.getBoolean("EnableGroup", true)) && notify_override == 0)) {
+            if (!(notify_override == 2 || (!preferences.getBoolean("EnableAll", false) || isChat && !preferences.getBoolean("EnableGroup", false)) && notify_override == 0)) {
                 Integer newCount = entry.getValue();
                 if (replace) {
                     if (currentCount != null) {
@@ -609,7 +609,7 @@ public class NotificationsController {
             long dialog_id = entry.getKey();
             int notify_override = preferences.getInt("notify2_" + dialog_id, 0);
             boolean isChat = (int)dialog_id < 0;
-            if (!(notify_override == 2 || (!preferences.getBoolean("EnableAll", true) || isChat && !preferences.getBoolean("EnableGroup", true)) && notify_override == 0)) {
+            if (!(notify_override == 2 || (!preferences.getBoolean("EnableAll", false) || isChat && !preferences.getBoolean("EnableGroup", false)) && notify_override == 0)) {
                 pushDialogs.put(dialog_id, entry.getValue());
                 total_unread_count += entry.getValue();
                 if (dialogsToLoad.length() != 0) {

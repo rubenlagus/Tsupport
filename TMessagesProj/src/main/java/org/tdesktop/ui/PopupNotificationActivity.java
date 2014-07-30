@@ -754,11 +754,11 @@ public class PopupNotificationActivity extends Activity implements NotificationC
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
 
         if (currentChat != null) {
-            downloadPhotos = preferences.getInt("photo_download_chat2", 0);
-            downloadAudios = preferences.getInt("audio_download_chat2", 0);
+            downloadPhotos = preferences.getInt("photo_download_chat2", 1);
+            downloadAudios = preferences.getInt("audio_download_chat2", 1);
         } else {
-            downloadPhotos = preferences.getInt("photo_download_user2", 0);
-            downloadAudios = preferences.getInt("audio_download_user2", 0);
+            downloadPhotos = preferences.getInt("photo_download_user2", 1);
+            downloadAudios = preferences.getInt("audio_download_user2", 1);
         }
 
         prepareLayouts(move);

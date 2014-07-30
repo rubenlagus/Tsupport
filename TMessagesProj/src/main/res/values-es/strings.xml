@@ -383,7 +383,7 @@
     <string name="ForwardFromMyName">reenviar desde mi nombre</string>
 
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Rápida</string>
     <string name="Page3Title">Gratis</string>
     <string name="Page4Title">Segura</string>
@@ -433,4 +433,14 @@
 
     <!--Don't change this! Not for localization!-->
     <string name="CacheTag">CACHE_TAG</string>
+
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">¿Deseas usar las plantillas por defecto (si fueron proporcionadas al desarrollador)?</string>
+    <string name="saveToTemplates">Guardar plantilla</string>
+    <string name="insertKey">Inserte la clave para la plantilla</string>
+    <string name="templates">Plantillas</string>
+    <string name="template">Plantilla</string>
+    <string name="noTemplates">No se han encontraado plantillas</string>
+    <string name="templateKey">Clave</string>
+    <string name="templateValue">Valor</string>
 </resources>

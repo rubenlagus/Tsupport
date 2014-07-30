@@ -14,6 +14,7 @@ import android.util.SparseArray;
 import org.tdesktop.PhoneFormat.PhoneFormat;
 import org.tdesktop.SQLite.SQLiteCursor;
 import org.tdesktop.SQLite.SQLiteDatabase;
+import org.tdesktop.SQLite.SQLiteException;
 import org.tdesktop.SQLite.SQLitePreparedStatement;
 import org.tdesktop.messenger.BuffersStorage;
 import org.tdesktop.messenger.ByteBufferDesc;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 public class MessagesStorage {
@@ -126,6 +128,7 @@ public class MessagesStorage {
                 database.executeFast("CREATE INDEX IF NOT EXISTS uid_date_mid_idx_messages ON messages(uid, date, mid);").stepThis().dispose();
                 database.executeFast("CREATE INDEX IF NOT EXISTS mid_out_idx_messages ON messages(mid, out);").stepThis().dispose();
                 database.executeFast("CREATE INDEX IF NOT EXISTS task_idx_messages ON messages(uid, out, read_state, ttl, date, send_state);").stepThis().dispose();
+                database.executeFast("CREATE TABLE IF NOT EXISTS template(key TEXT, value TEXT, PRIMARY KEY(key))").stepThis().dispose();
             } else {
                 SQLiteCursor cursor = database.queryFinalized("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='params'");
                 boolean create = false;
@@ -161,6 +164,7 @@ public class MessagesStorage {
                     }
                     cursor.dispose();
                 }
+                database.executeFast("CREATE TABLE IF NOT EXISTS template(key TEXT, value TEXT, PRIMARY KEY(key))").stepThis().dispose();
                 database.executeFast("CREATE TABLE IF NOT EXISTS user_photos(uid INTEGER, id INTEGER, data BLOB, PRIMARY KEY (uid, id))").stepThis().dispose();
 
                 database.executeFast("CREATE INDEX IF NOT EXISTS mid_idx_media ON media(mid);").stepThis().dispose();
@@ -827,6 +831,54 @@ public class MessagesStorage {
                 }
             }
         });
+    }
+
+    public void putTemplate(final String key, final String value) {
+        storageQueue.postRunnable(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    database.beginTransaction();
+                    String[] args = {key,value};
+                    database.execute("INSERT OR REPLACE INTO template (key, value) VALUES(?,?)", args);
+                    database.commitTransaction();
+                    TemplateSupport.rebuildInstance();
+                } catch (Exception e) {
+                    FileLog.e("tmessages", "Error adding template value");
+                    FileLog.e("tmessages", e);
+                }
+            }
+        });
+    }
+
+    public void deleteTemplate(final String key) {
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    database.executeFast("DELETE FROM template WHERE key = '" + key + "'").stepThis().dispose();
+                    TemplateSupport.rebuildInstance();
+                } catch (Exception e) {
+                    FileLog.e("tdesktop", e);
+                }
+            }
+        });
+    }
+
+    public HashMap<String, String> getTemplates() {
+        HashMap<String, String> templates = new HashMap<String, String>();
+        SQLiteCursor cursor = null;
+        try {
+            cursor = database.queryFinalized("SELECT * FROM template");
+            while (cursor.next()) {
+                templates.put(cursor.stringValue(0), cursor.stringValue(1));
+            }
+        } catch (SQLiteException e) {
+            FileLog.e("tmessages", e);
+        }
+
+        return templates;
     }
 
     public void searchDialogs(final Integer token, final String query, final boolean needEncrypted) {

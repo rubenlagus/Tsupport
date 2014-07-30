@@ -230,8 +230,8 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
     private void resumeNetworkInternal() {
         if (paused) {
-            lastPauseTime = System.currentTimeMillis();
-            nextSleepTimeout = 30000;
+            //lastPauseTime = System.currentTimeMillis();
+            //nextSleepTimeout = 30000;
             FileLog.e("tdesktop", "wakeup network in background");
         } else if (lastPauseTime != 0) {
             lastPauseTime = System.currentTimeMillis();

@@ -87,12 +87,13 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int messagesSectionRow;
     private int sendByEnterRow;
     private int terminateSessionsRow;
-    private int photoDownloadSection;
-    private int photoDownloadChatRow;
-    private int photoDownloadPrivateRow;
-    private int audioDownloadSection;
-    private int audioDownloadChatRow;
-    private int audioDownloadPrivateRow;
+    private int templatesRow;
+//    private int photoDownloadSection;
+//    private int photoDownloadChatRow;
+//    private int photoDownloadPrivateRow;
+//    private int audioDownloadSection;
+//    private int audioDownloadChatRow;
+//    private int audioDownloadPrivateRow;
     //private int telegramFaqRow;
     private int languageRow;
     private int versionRow;
@@ -183,15 +184,16 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         enableAnimationsRow = rowCount++;
         languageRow = rowCount++;
         notificationRow = rowCount++;
+        templatesRow = rowCount++;
         blockedRow = rowCount++;
         backgroundRow = rowCount++;
         terminateSessionsRow = rowCount++;
-        photoDownloadSection = rowCount++;
-        photoDownloadChatRow = rowCount++;
-        photoDownloadPrivateRow = rowCount++;
-        audioDownloadSection = rowCount++;
-        audioDownloadChatRow = rowCount++;
-        audioDownloadPrivateRow = rowCount++;
+//        photoDownloadSection = rowCount++;
+//        photoDownloadChatRow = rowCount++;
+//        photoDownloadPrivateRow = rowCount++;
+//        audioDownloadSection = rowCount++;
+//        audioDownloadChatRow = rowCount++;
+//        audioDownloadPrivateRow = rowCount++;
         messagesSectionRow = rowCount++;
         textSizeRow = rowCount++;
         sendByEnterRow = rowCount++;
@@ -292,6 +294,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                     } else if (i == notificationRow) {
                         presentFragment(new SettingsNotificationsActivity());
+                    } else if (i == templatesRow) {
+                        presentFragment(new SettingsTemplatesActivity());
                     } else if (i == blockedRow) {
                         presentFragment(new SettingsBlockedUsersActivity());
                     } else if (i == backgroundRow) {
@@ -419,7 +423,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    } else if (i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow) {
+                    }
+                    /*else if (i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow) {
                         if (getParentActivity() == null) {
                             return;
                         }
@@ -451,7 +456,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    }
+                    }*/
                 }
             });
         } else {
@@ -674,9 +679,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         @Override
         public boolean isEnabled(int i) {
             return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow || i == backgroundRow ||
-                   /* i == askQuestionRow ||*/ i == sendLogsRow || i == sendByEnterRow || i == terminateSessionsRow || i == photoDownloadPrivateRow ||
-                    i == photoDownloadChatRow || i == clearLogsRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow || i == languageRow ||
-                    i == switchBackendButtonRow /*|| i == telegramFaqRow*/ || i == contactsSortRow || i == contactsReimportRow;
+                   /* i == askQuestionRow ||*/ i == sendLogsRow || i == sendByEnterRow || i == terminateSessionsRow ||/* i == photoDownloadPrivateRow ||*/
+                    /*i == photoDownloadChatRow ||*/ i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow ||
+                    i == switchBackendButtonRow /*|| i == telegramFaqRow*/ || i == contactsSortRow || i == contactsReimportRow || i == templatesRow;
         }
 
         @Override
@@ -845,11 +850,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     textView.setText(LocaleController.getString("Support", R.string.Support));
                 }*/ else if (i == messagesSectionRow) {
                     textView.setText(LocaleController.getString("MessagesSettings", R.string.MessagesSettings));
-                } else if (i == photoDownloadSection) {
+                } /*else if (i == photoDownloadSection) {
                     textView.setText(LocaleController.getString("AutomaticPhotoDownload", R.string.AutomaticPhotoDownload));
                 } else if (i == audioDownloadSection) {
                     textView.setText(LocaleController.getString("AutomaticAudioDownload", R.string.AutomaticAudioDownload));
-                } else if (i == contactsSectionRow) {
+                }*/ else if (i == contactsSectionRow) {
                     textView.setText(LocaleController.getString("Contacts", R.string.Contacts).toUpperCase());
                 }
             } else if (type == 2) {
@@ -870,7 +875,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == notificationRow) {
                     textView.setText(LocaleController.getString("NotificationsAndSounds", R.string.NotificationsAndSounds));
                     divider.setVisibility(View.VISIBLE);
-                } else if (i == blockedRow) {
+                } else if (i == templatesRow) {
+                    textView.setText(LocaleController.getString("templates", R.string.templates));
+                    divider.setVisibility(View.VISIBLE);
+                }
+                else if (i == blockedRow) {
                     textView.setText(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));
                     divider.setVisibility(backgroundRow != 0 ? View.VISIBLE : View.INVISIBLE);
                 } else if (i == backgroundRow) {
@@ -1002,7 +1011,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     } else if (sort == 2) {
                         detailTextView.setText(LocaleController.getString("LastName", R.string.SortLastName));
                     }
-                } else if (i == photoDownloadChatRow) {
+                } /*else if (i == photoDownloadChatRow) {
                     textView.setText(LocaleController.getString("AutomaticPhotoDownloadGroups", R.string.AutomaticPhotoDownloadGroups));
                     divider.setVisibility(View.VISIBLE);
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -1050,7 +1059,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     } else if (value == 2) {
                         detailTextView.setText(LocaleController.getString("WiFiOnly", R.string.WiFiOnly));
                     }
-                }
+                }*/
             } else if (type == 6) {
                 if (view == null) {
                     LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -1071,9 +1080,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         public int getItemViewType(int i) {
             if (i == profileRow) {
                 return 0;
-            } else if (i == numberSectionRow || i == settingsSectionRow /*|| i == supportSectionRow*/ || i == messagesSectionRow || i == photoDownloadSection || i == audioDownloadSection || i == contactsSectionRow) {
+            } else if (i == numberSectionRow || i == settingsSectionRow /*|| i == supportSectionRow*/ || i == messagesSectionRow /*|| i == photoDownloadSection || i == audioDownloadSection*/ || i == contactsSectionRow) {
                 return 1;
-            } else if (i == textSizeRow || i == languageRow || i == contactsSortRow  || i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow) {
+            } else if (i == textSizeRow || i == languageRow || i == contactsSortRow  /*|| i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow*/) {
                 return 5;
             } else if (i == enableAnimationsRow || i == sendByEnterRow) {
                 return 3;

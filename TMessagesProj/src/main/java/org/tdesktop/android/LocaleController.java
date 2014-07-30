@@ -541,6 +541,9 @@ public class LocaleController {
         return getString("LanguageName", R.string.LanguageName);
     }
 
+    public static String getCurrentLanguageCode() {
+        return getString("LanguageCode", R.string.LanguageCode);
+    }
     public static String getString(String key, int res) {
         String value = getInstance().localeValues.get(key);
         if (value == null) {

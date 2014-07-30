@@ -12,6 +12,7 @@ import android.animation.Animator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,9 +24,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.tdesktop.android.AndroidUtilities;
+import org.tdesktop.android.MessagesController;
+import org.tdesktop.android.TemplateSupport;
 import org.tdesktop.messenger.FileLog;
 import org.tdesktop.android.LocaleController;
 import org.tdesktop.messenger.R;
+import org.tdesktop.messenger.UserConfig;
 import org.tdesktop.messenger.Utilities;
 import org.tdesktop.ui.Views.ActionBar.ActionBarLayer;
 import org.tdesktop.ui.Views.ActionBar.ActionBarMenu;
@@ -34,6 +38,8 @@ import org.tdesktop.ui.Views.SlideView;
 
 import java.util.Map;
 import java.util.Set;
+
+import javax.xml.transform.Templates;
 
 public class LoginActivity extends BaseFragment implements SlideView.SlideViewDelegate {
     private int currentViewNum = 0;
@@ -326,6 +332,23 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
 
     @Override
     public void needFinishActivity() {
+        /*AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+        builder.setMessage(LocaleController.getString("loaddefaulttemplates", R.string.loaddefaulttemplates));
+        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                TemplateSupport.getInstanceWithDefault();
+                TemplateSupport.loadDefaults();
+            }
+        });
+        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                TemplateSupport.getInstance();
+            }
+        });
+        showAlertDialog(builder);*/
         clearCurrentState();
         presentFragment(new MessagesActivity(null), true);
     }

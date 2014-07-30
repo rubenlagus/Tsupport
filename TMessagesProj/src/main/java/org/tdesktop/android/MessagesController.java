@@ -164,7 +164,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
     public static final int notificationsSettingsUpdated = 26;
 
-    public static final int readChatNotification = 27;
+    public static final int readChatNotification = 50;
+    public static final int updateTemplatesNotification = 51;
 
     private static volatile MessagesController Instance = null;
     public static MessagesController getInstance() {
@@ -187,7 +188,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         NotificationCenter.getInstance().addObserver(this, 10);
         addSupportUser();
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-        enableJoined = preferences.getBoolean("EnableContactJoined", true);
+        enableJoined = preferences.getBoolean("EnableContactJoined", false);
         preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         fontSize = preferences.getInt("fons_size", 16);
     }

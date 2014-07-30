@@ -2,7 +2,7 @@
 
 [Telegram](http://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
 
-This repo contains official [Telegram App for Android](https://play.google.com/store/apps/details?id=org.tdesktop.messenger) source code.
+This repo contains *Telegram Support App for Android* source code.
 
 ### API, Protocol documentation
 
@@ -12,8 +12,8 @@ Documentation for MTproto protocol is available here: http://core.telegram.org/m
 
 ### Usage
 
-Import the root folder into your IDE (tested on Android Studio), then run project.
+Import the root folder into Android Studio, then run project.
 
-### Localization
+### Based on
 
-We moved all translations to https://www.transifex.com/projects/p/telegram/. Please use it.
+Original [Telegram App for Android](https://play.google.com/store/apps/details?id=org.tdesktop.messenger)

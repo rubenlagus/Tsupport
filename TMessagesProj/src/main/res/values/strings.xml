@@ -383,7 +383,7 @@
     <string name="ForwardFromMyName">forward from my name</string>
 
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Fast</string>
     <string name="Page3Title">Free</string>
     <string name="Page4Title">Secure</string>
@@ -433,4 +433,16 @@
 
     <!--Don't change this! Not for localization!-->
     <string name="CacheTag">CACHE_TAG</string>
+
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
+    <string name="saveToTemplates">Save as template</string>
+    <string name="insertKey">Insert key for the template</string>
+    <string name="templates">Templates</string>
+    <string name="noTemplates">No templates found</string>
+    <string name="deleteTemplateText">Tap and hold on user to delete.</string>
+    <string name="templateKey">Key</string>
+    <string name="templateValue">Value</string>
+    <string name="template">Template</string>
+
 </resources>
