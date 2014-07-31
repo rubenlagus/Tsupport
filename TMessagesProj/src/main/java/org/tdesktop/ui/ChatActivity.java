@@ -449,25 +449,37 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         fragment.setDelegate(ChatActivity.this);
                         presentFragment(fragment);
                     } else if (id == chat_menu_avatar) {
-                        if (currentUser != null) {
-                            Bundle args = new Bundle();
-                            args.putInt("user_id", currentUser.id);
-                            if (currentEncryptedChat != null) {
-                                args.putLong("dialog_id", dialog_id);
+                        if (currentEncryptedChat != null) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                            builder.setMessage(LocaleController.getString("AreYouSureDeleteThisChat", R.string.AreYouSureDeleteThisChat));
+                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                            builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    MessagesController.getInstance().deleteDialog(dialog_id, 0, false);
+                                }
+                            });
+                            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                            showAlertDialog(builder);
+                        }
+                        else {
+                            if (currentUser != null) {
+                                Bundle args = new Bundle();
+                                args.putInt("user_id", currentUser.id);
+                                presentFragment(new UserProfileActivity(args));
+                            } else if (currentChat != null) {
+                                if (info != null && info instanceof TLRPC.TL_chatParticipantsForbidden) {
+                                    return;
+                                }
+                                if (currentChat.participants_count == 0 || currentChat.left || currentChat instanceof TLRPC.TL_chatForbidden) {
+                                    return;
+                                }
+                                Bundle args = new Bundle();
+                                args.putInt("chat_id", currentChat.id);
+                                ChatProfileActivity fragment = new ChatProfileActivity(args);
+                                fragment.setChatInfo(info);
+                                presentFragment(fragment);
                             }
-                            presentFragment(new UserProfileActivity(args));
-                        } else if (currentChat != null) {
-                            if (info != null && info instanceof TLRPC.TL_chatParticipantsForbidden) {
-                                return;
-                            }
-                            if (currentChat.participants_count == 0 || currentChat.left || currentChat instanceof TLRPC.TL_chatForbidden) {
-                                return;
-                            }
-                            Bundle args = new Bundle();
-                            args.putInt("chat_id", currentChat.id);
-                            ChatProfileActivity fragment = new ChatProfileActivity(args);
-                            fragment.setChatInfo(info);
-                            presentFragment(fragment);
                         }
                     } else if (id == copy) {
                         String str = "";
@@ -1902,7 +1914,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                 boolean updateChat = false;
                 ArrayList<MessageObject> arr = (ArrayList<MessageObject>)args[1];
-
+                ArrayList<Long> readChats = new ArrayList<Long>();
                 if (!unread_end_reached) {
                     int currentMaxDate = Integer.MIN_VALUE;
                     int currentMinMsgId = Integer.MIN_VALUE;

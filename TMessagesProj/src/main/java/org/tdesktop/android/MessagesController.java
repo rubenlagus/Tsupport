@@ -1234,18 +1234,27 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 final HashMap<Integer, MessageObject> new_dialogMessage = new HashMap<Integer, MessageObject>();
                 final HashMap<Integer, TLRPC.User> usersLocal = new HashMap<Integer, TLRPC.User>();
                 final HashMap<Long, Integer> dialogsToUpdate = new HashMap<Long, Integer>();
-
+                final ArrayList<Long> readChats = new ArrayList<Long>();
                 for (TLRPC.User u : dialogsRes.users) {
                     usersLocal.put(u.id, u);
                 }
-
+                for (TLRPC.TL_dialog dialog: dialogsRes.dialogs) {
+                    int lastMessageId = dialog.top_message;
+                    TLRPC.Message message = dialogsRes.messages.get(dialogsRes.messages.indexOf(lastMessageId));
+                    if (message.from_id == UserConfig.getClientUserId()) {
+                        readChats.add(dialog.id);
+                    }
+                }
                 for (TLRPC.Message m : dialogsRes.messages) {
                     if (m.message.contains("#tsf")) {
                         m.unread = false;
                     }
+                    if (readChats.contains(m.dialog_id))
+                        m.unread = false;
                     new_dialogMessage.put(m.id, new MessageObject(m, usersLocal));
                 }
                 for (TLRPC.TL_dialog d : dialogsRes.dialogs) {
+
                     if (d.last_message_date == 0) {
                         MessageObject mess = new_dialogMessage.get(d.top_message);
                         if (mess != null) {
