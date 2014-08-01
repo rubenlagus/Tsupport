@@ -5,12 +5,12 @@
     android:background="#fafafa"
     android:fillViewport="true">
 
-    <org.tdesktop.ui.Views.FrameLayoutFixed
+    <org.tsupport.ui.Views.FrameLayoutFixed
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|left">
 
-        <org.tdesktop.ui.LoginActivityPhoneView
+        <org.tsupport.ui.LoginActivityPhoneView
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -108,9 +108,9 @@
                 android:layout_marginBottom="10dp"
                 android:lineSpacingExtra="2dp"/>
 
-        </org.tdesktop.ui.LoginActivityPhoneView>
+        </org.tsupport.ui.LoginActivityPhoneView>
 
-        <org.tdesktop.ui.LoginActivitySmsView
+        <org.tsupport.ui.LoginActivitySmsView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="16dp"
@@ -192,9 +192,9 @@
 
             </LinearLayout>
 
-        </org.tdesktop.ui.LoginActivitySmsView>
+        </org.tsupport.ui.LoginActivitySmsView>
 
-        <org.tdesktop.ui.LoginActivityRegisterView
+        <org.tsupport.ui.LoginActivityRegisterView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="30dp"
@@ -255,7 +255,7 @@
                 <!--android:layout_below="@+id/login_register_info"-->
                 <!--android:id="@+id/login_avatar_button">-->
 
-                <!--<org.tdesktop.ui.Views.BackupImageView-->
+                <!--<tsupport.ui.Views.BackupImageView-->
                     <!--android:id="@+id/settings_avatar_image"-->
                     <!--android:layout_width="fill_parent"-->
                     <!--android:layout_height="fill_parent"-->
@@ -289,8 +289,8 @@
 
             </LinearLayout>
 
-        </org.tdesktop.ui.LoginActivityRegisterView>
+        </org.tsupport.ui.LoginActivityRegisterView>
 
-    </org.tdesktop.ui.Views.FrameLayoutFixed>
+    </org.tsupport.ui.Views.FrameLayoutFixed>
 
 </ScrollView>

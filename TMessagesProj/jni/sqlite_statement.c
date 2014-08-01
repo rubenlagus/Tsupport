@@ -3,12 +3,12 @@
 jfieldID queryArgsCountField;
 
 jint sqliteOnJNILoad(JavaVM *vm, void *reserved, JNIEnv *env) {
-	jclass class = (*env)->FindClass(env, "org/tdesktop/SQLite/SQLitePreparedStatement");
+	jclass class = (*env)->FindClass(env, "org/tsupport/SQLite/SQLitePreparedStatement");
 	queryArgsCountField = (*env)->GetFieldID(env, class, "queryArgsCount", "I");
 	return JNI_VERSION_1_4;
 }
 
-int Java_org_tdesktop_SQLite_SQLitePreparedStatement_step(JNIEnv* env, jobject object, int statementHandle) {
+int Java_org_tsupport_SQLite_SQLitePreparedStatement_step(JNIEnv* env, jobject object, int statementHandle) {
 	sqlite3_stmt *handle = (sqlite3_stmt *)statementHandle;
     
     int errcode = sqlite3_step(handle);
@@ -22,7 +22,7 @@ int Java_org_tdesktop_SQLite_SQLitePreparedStatement_step(JNIEnv* env, jobject o
 	throw_sqlite3_exception(env, sqlite3_db_handle(handle), errcode);
 }
 
-int Java_org_tdesktop_SQLite_SQLitePreparedStatement_prepare(JNIEnv *env, jobject object, int sqliteHandle, jstring sql) {
+int Java_org_tsupport_SQLite_SQLitePreparedStatement_prepare(JNIEnv *env, jobject object, int sqliteHandle, jstring sql) {
 	sqlite3* handle = (sqlite3 *)sqliteHandle;
 
     char const *sqlStr = (*env)->GetStringUTFChars(env, sql, 0);
@@ -44,7 +44,7 @@ int Java_org_tdesktop_SQLite_SQLitePreparedStatement_prepare(JNIEnv *env, jobjec
     return (int)stmt_handle;
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_reset(JNIEnv *env, jobject object, int statementHandle) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_reset(JNIEnv *env, jobject object, int statementHandle) {
 	sqlite3_stmt *handle = (sqlite3_stmt *)statementHandle;
 
 	int errcode = sqlite3_reset(handle);
@@ -53,7 +53,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_reset(JNIEnv *env, jobject
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_finalize(JNIEnv *env, jobject object, int statementHandle) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_finalize(JNIEnv *env, jobject object, int statementHandle) {
 	sqlite3_stmt *handle = (sqlite3_stmt *)statementHandle;
 
 	int errcode = sqlite3_finalize (handle);
@@ -62,7 +62,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_finalize(JNIEnv *env, jobj
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindByteBuffer(JNIEnv *env, jobject object, int statementHandle, int index, jobject value, int length) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindByteBuffer(JNIEnv *env, jobject object, int statementHandle, int index, jobject value, int length) {
 	sqlite3_stmt *handle = (sqlite3_stmt *)statementHandle;
     jbyte *buf = (*env)->GetDirectBufferAddress(env, value);
     
@@ -72,7 +72,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindByteBuffer(JNIEnv *env
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindString(JNIEnv *env, jobject object, int statementHandle, int index, jstring value) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindString(JNIEnv *env, jobject object, int statementHandle, int index, jstring value) {
 	sqlite3_stmt *handle = (sqlite3_stmt*)statementHandle;
 
 	char const *valueStr = (*env)->GetStringUTFChars(env, value, 0);
@@ -87,7 +87,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindString(JNIEnv *env, jo
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindInt(JNIEnv *env, jobject object, int statementHandle, int index, int value) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindInt(JNIEnv *env, jobject object, int statementHandle, int index, int value) {
 	sqlite3_stmt *handle = (sqlite3_stmt*)statementHandle;
 
 	int errcode = sqlite3_bind_int(handle, index, value);
@@ -96,7 +96,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindInt(JNIEnv *env, jobje
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindLong(JNIEnv *env, jobject object, int statementHandle, int index, long long value) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindLong(JNIEnv *env, jobject object, int statementHandle, int index, long long value) {
 	sqlite3_stmt *handle = (sqlite3_stmt*)statementHandle;
     
 	int errcode = sqlite3_bind_int64(handle, index, value);
@@ -105,7 +105,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindLong(JNIEnv *env, jobj
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindDouble(JNIEnv* env, jobject object, int statementHandle, int index, double value) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindDouble(JNIEnv* env, jobject object, int statementHandle, int index, double value) {
 	sqlite3_stmt *handle = (sqlite3_stmt*)statementHandle;
 
 	int errcode = sqlite3_bind_double(handle, index, value);
@@ -114,7 +114,7 @@ void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindDouble(JNIEnv* env, jo
     }
 }
 
-void Java_org_tdesktop_SQLite_SQLitePreparedStatement_bindNull(JNIEnv* env, jobject object, int statementHandle, int index) {
+void Java_org_tsupport_SQLite_SQLitePreparedStatement_bindNull(JNIEnv* env, jobject object, int statementHandle, int index) {
 	sqlite3_stmt *handle = (sqlite3_stmt*)statementHandle;
 
 	int errcode = sqlite3_bind_null(handle, index);

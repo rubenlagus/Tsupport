@@ -9,7 +9,7 @@
     android:paddingTop="1dp"
     android:layout_gravity="top">
 
-    <org.tdesktop.ui.Views.BackupImageView
+    <org.tsupport.ui.Views.BackupImageView
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_marginLeft="6dp"
@@ -33,7 +33,7 @@
             android:id="@+id/shared_layout"
             android:layout_weight="1">
 
-            <org.tdesktop.ui.Views.BackupImageView
+            <org.tsupport.ui.Views.BackupImageView
                 android:layout_height="42dp"
                 android:layout_width="42dp"
                 android:id="@+id/contact_avatar"/>

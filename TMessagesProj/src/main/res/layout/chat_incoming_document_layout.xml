@@ -8,7 +8,7 @@
     android:layout_gravity="top"
     android:gravity="left">
 
-    <org.tdesktop.ui.Views.FrameLayoutFixed
+    <org.tsupport.ui.Views.FrameLayoutFixed
         android:orientation="horizontal"
         android:layout_height="78dp"
         android:layout_width="wrap_content"
@@ -18,13 +18,13 @@
         android:layout_gravity="top|left"
         android:id="@+id/chat_bubble_layout">
 
-        <org.tdesktop.ui.Views.FrameLayoutFixed
+        <org.tsupport.ui.Views.FrameLayoutFixed
             android:layout_height="69dp"
             android:layout_width="wrap_content"
             android:layout_gravity="top|right"
             android:id="@+id/shared_layout">
 
-            <org.tdesktop.ui.Views.BackupImageView
+            <org.tsupport.ui.Views.BackupImageView
                 android:layout_width="42dp"
                 android:layout_height="42dp"
                 android:background="#40b7c9d7"
@@ -68,11 +68,11 @@
                 android:layout_gravity="bottom|right"
                 android:layout_marginBottom="5dp"/>
 
-        </org.tdesktop.ui.Views.FrameLayoutFixed>
+        </org.tsupport.ui.Views.FrameLayoutFixed>
 
-    </org.tdesktop.ui.Views.FrameLayoutFixed>
+    </org.tsupport.ui.Views.FrameLayoutFixed>
 
-    <org.tdesktop.ui.Views.FrameLayoutFixed
+    <org.tsupport.ui.Views.FrameLayoutFixed
         android:layout_height="wrap_content"
         android:layout_width="140dp"
         android:layout_marginLeft="10dp"
@@ -103,7 +103,7 @@
             android:id="@+id/chat_view_action_progress"
             android:max="100"/>
 
-    </org.tdesktop.ui.Views.FrameLayoutFixed>
+    </org.tsupport.ui.Views.FrameLayoutFixed>
 
     <TextView
         android:layout_width="wrap_content"

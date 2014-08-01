@@ -433,4 +433,16 @@
 
     <!--Don't change this! Not for localization!-->
     <string name="CacheTag">CACHE_TAG</string>
+
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">Möchtest du die Standardvorlagen verwenden (sofern sie dem App Entwickler zur Verfügung gestanden haben)?</string>
+    <string name="saveToTemplates">Als Vorlage speichern</string>
+    <string name="insertKey">Schlüsselwort der Vorlage hinzufügen</string>
+    <string name="templates">Vorlagen</string>
+    <string name="noTemplates">Keine Vorlagen gefunden</string>
+    <string name="deleteTemplateText">Antippen und gedrückt halten um eine Vorlage zu löschen</string>
+    <string name="templateKey">Schlüssel</string>
+    <string name="templateValue">Wert</string>
+    <string name="template">Vorlage</string>
+    <string name="templatesRemoved">All templates have been removed</string>
 </resources>

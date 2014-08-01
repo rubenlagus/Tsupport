@@ -3,7 +3,7 @@
     android:layout_width="100dp"
     android:layout_height="100dp">
 
-    <org.tdesktop.ui.Views.BackupImageView
+    <org.tsupport.ui.Views.BackupImageView
         android:id="@+id/media_photo_image"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"/>

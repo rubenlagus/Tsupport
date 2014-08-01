@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.tdesktop.messenger"
+    package="org.tsupport.messenger"
     android:installLocation="auto">
-
+    <uses-sdk android:minSdkVersion="9"/>
     <supports-screens android:anyDensity="true"
                       android:smallScreens="true"
                       android:normalScreens="true"
@@ -22,7 +22,6 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
@@ -42,12 +41,12 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/AppName"
         android:theme="@style/Theme.TMessages.Start"
-        android:name="org.tdesktop.ui.ApplicationLoader"
+        android:name="org.tsupport.ui.ApplicationLoader"
         android:hardwareAccelerated="true"
         android:largeHeap="true">
 
         <activity
-            android:name="org.tdesktop.ui.LaunchActivity"
+            android:name="org.tsupport.ui.LaunchActivity"
             android:windowSoftInputMode="adjustResize"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
@@ -90,16 +89,16 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.tdesktop.messenger.android.profile"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.tsupport.messenger.android.profile"/>
             </intent-filter>
         </activity>
         <activity
-            android:name="org.tdesktop.ui.IntroActivity"
+            android:name="org.tsupport.ui.IntroActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:screenOrientation="portrait">
         </activity>
         <activity
-            android:name="org.tdesktop.ui.PopupNotificationActivity"
+            android:name="org.tsupport.ui.PopupNotificationActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
@@ -108,13 +107,7 @@
             android:theme="@style/Theme.TMessages.PopupNotification">
         </activity>
 
-        <receiver android:name="org.tdesktop.android.SmsListener">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
-
-        <service android:name="org.tdesktop.android.AuthenticatorService"
+        <service android:name="org.tsupport.android.AuthenticatorService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
@@ -123,18 +116,7 @@
                 android:resource="@xml/auth"/>
         </service>
 
-        <service android:name="org.tdesktop.android.ContactsSyncAdapterService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_contacts" />
-            <meta-data android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/contacts" />
-        </service>
-
-        <service android:name="org.tdesktop.android.NotificationsService" android:enabled="true"/>
+        <service android:name="org.tsupport.android.NotificationsService" android:enabled="true"/>
 
         <uses-library android:name="com.sec.android.app.multiwindow" android:required="false" />
         <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />

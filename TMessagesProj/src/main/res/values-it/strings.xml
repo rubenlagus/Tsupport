@@ -433,4 +433,16 @@
 
     <!--Don't change this! Not for localization!-->
     <string name="CacheTag">CACHE_TAG</string>
+
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">Vuoi usare i modelli preimpostati ( se sono state fornite allo sviluppatore)?</string>
+    <string name="saveToTemplates">Salva come modello</string>
+    <string name="insertKey">Inserisci la chiave per il modello</string>
+    <string name="templates">Modelli</string>
+    <string name="noTemplates">Nessun modello trovato</string>
+    <string name="deleteTemplateText">Tieni premuto su un modello per eliminarlo</string>
+    <string name="templateKey">Chiave</string>
+    <string name="templateValue">Valore</string>
+    <string name="template">Modello</string>
+    <string name="templatesRemoved">All templates have been removed</string>
 </resources>

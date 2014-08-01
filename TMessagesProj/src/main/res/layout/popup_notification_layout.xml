@@ -1,4 +1,4 @@
-<org.tdesktop.ui.Views.SizeNotifierRelativeLayout
+<org.tsupport.ui.Views.SizeNotifierRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -71,7 +71,7 @@
                     android:textCursorDrawable="@null"
                     android:textColor="#000000"/>
 
-                <org.tdesktop.ui.Views.FrameLayoutFixed
+                <org.tsupport.ui.Views.FrameLayoutFixed
                     android:layout_height="48dp"
                     android:layout_width="fill_parent"
                     android:layout_marginTop="2dp"
@@ -133,7 +133,7 @@
 
                     </LinearLayout>
 
-                </org.tdesktop.ui.Views.FrameLayoutFixed>
+                </org.tsupport.ui.Views.FrameLayoutFixed>
 
                 <ImageButton
                     android:layout_width="48dp"
@@ -154,4 +154,4 @@
 
     </RelativeLayout>
 
-</org.tdesktop.ui.Views.SizeNotifierRelativeLayout>
+</org.tsupport.ui.Views.SizeNotifierRelativeLayout>

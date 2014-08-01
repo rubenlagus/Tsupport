@@ -437,4 +437,16 @@
 
     <!--Don't change this! Not for localization!-->
     <string name="CacheTag">CACHE_TAG</string>
+
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
+    <string name="saveToTemplates">Save as template</string>
+    <string name="insertKey">Insert key for the template</string>
+    <string name="templates">Templates</string>
+    <string name="noTemplates">No templates found</string>
+    <string name="deleteTemplateText">Tap and hold on a template to delete.</string>
+    <string name="templateKey">Key</string>
+    <string name="templateValue">Value</string>
+    <string name="template">Template</string>
+    <string name="templatesRemoved">All templates have been removed</string>
 </resources>

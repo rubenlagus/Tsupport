@@ -9,7 +9,7 @@
     android:paddingTop="1dp"
     android:layout_gravity="top">
 
-    <org.tdesktop.ui.Views.BackupImageView
+    <org.tsupport.ui.Views.BackupImageView
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_marginLeft="6dp"
@@ -17,7 +17,7 @@
         android:layout_marginBottom="2dp"
         android:layout_gravity="bottom"/>
 
-    <org.tdesktop.ui.Views.FrameLayoutFixed
+    <org.tsupport.ui.Views.FrameLayoutFixed
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="13dp"
@@ -25,7 +25,7 @@
         android:id="@+id/chat_bubble_layout"
         android:addStatesFromChildren="true">
 
-        <org.tdesktop.ui.Views.BackupImageView
+        <org.tsupport.ui.Views.BackupImageView
             android:layout_height="100dp"
             android:layout_width="100dp"
             android:layout_margin="6dp"
@@ -54,7 +54,7 @@
 
         </LinearLayout>
 
-    </org.tdesktop.ui.Views.FrameLayoutFixed>
+    </org.tsupport.ui.Views.FrameLayoutFixed>
 
     <TextView
         android:layout_width="wrap_content"

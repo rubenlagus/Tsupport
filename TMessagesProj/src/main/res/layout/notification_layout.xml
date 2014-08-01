@@ -1,4 +1,4 @@
-<org.tdesktop.ui.Views.NotificationView
+<org.tsupport.ui.Views.NotificationView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -11,7 +11,7 @@
         android:layout_weight="1"
         android:background="#ffffff">
 
-        <org.tdesktop.ui.Views.BackupImageView
+        <org.tsupport.ui.Views.BackupImageView
             android:layout_height="48dp"
             android:layout_width="48dp"
             android:id="@+id/avatar_image"/>
@@ -59,4 +59,4 @@
 
     </FrameLayout>
 
-</org.tdesktop.ui.Views.NotificationView>
+</org.tsupport.ui.Views.NotificationView>

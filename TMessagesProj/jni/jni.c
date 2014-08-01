@@ -30,7 +30,7 @@ void JNI_OnUnload(JavaVM *vm, void *reserved) {
     gifOnJNIUnload(vm, reserved);
 }
 
-JNIEXPORT void Java_org_tdesktop_messenger_Utilities_aesIgeEncryption(JNIEnv *env, jclass class, jobject buffer, jbyteArray key, jbyteArray iv, jboolean encrypt, int offset, int length) {
+JNIEXPORT void Java_org_tsupport_messenger_Utilities_aesIgeEncryption(JNIEnv *env, jclass class, jobject buffer, jbyteArray key, jbyteArray iv, jboolean encrypt, int offset, int length) {
     jbyte *what = (*env)->GetDirectBufferAddress(env, buffer) + offset;
     unsigned char *keyBuff = (unsigned char *)(*env)->GetByteArrayElements(env, key, NULL);
     unsigned char *ivBuff = (unsigned char *)(*env)->GetByteArrayElements(env, iv, NULL);
@@ -56,7 +56,7 @@ uint64_t gcd(uint64_t a, uint64_t b){
     return b == 0 ? a : b;
 }
 
-JNIEXPORT jlong Java_org_tdesktop_messenger_Utilities_doPQNative(JNIEnv* env, jclass class, jlong _what) {
+JNIEXPORT jlong Java_org_tsupport_messenger_Utilities_doPQNative(JNIEnv* env, jclass class, jlong _what) {
     uint64_t what = _what;
     int it = 0, i, j;
     uint64_t g = 0;

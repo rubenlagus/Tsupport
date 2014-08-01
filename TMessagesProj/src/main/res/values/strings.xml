@@ -444,5 +444,5 @@
     <string name="templateKey">Key</string>
     <string name="templateValue">Value</string>
     <string name="template">Template</string>
-
+    <string name="templatesRemoved">All templates have been removed</string>
 </resources>

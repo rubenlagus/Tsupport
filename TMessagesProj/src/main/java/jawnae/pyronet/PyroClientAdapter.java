@@ -18,8 +18,8 @@
 
 package jawnae.pyronet;
 
-import org.tdesktop.messenger.BuildVars;
-import org.tdesktop.messenger.FileLog;
+import org.tsupport.messenger.BuildVars;
+import org.tsupport.messenger.FileLog;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,14 +31,14 @@ public class PyroClientAdapter implements PyroClientListener {
 
     public void unconnectableClient(PyroClient client, Exception cause) {
         if (BuildVars.DEBUG_VERSION) {
-            FileLog.e("tdesktop", "unconnectable");
+            FileLog.e("tsupport", "unconnectable");
         }
     }
 
     public void droppedClient(PyroClient client, IOException cause) {
         if (cause != null) {
             if (BuildVars.DEBUG_VERSION) {
-                FileLog.e("tdesktop", this.getClass().getSimpleName() + ".droppedClient() caught exception: " + cause);
+                FileLog.e("tsupport", this.getClass().getSimpleName() + ".droppedClient() caught exception: " + cause);
             }
         }
     }

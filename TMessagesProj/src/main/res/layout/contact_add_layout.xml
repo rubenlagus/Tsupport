@@ -19,7 +19,7 @@
             android:paddingTop="12dp"
             android:paddingBottom="12dp">
 
-            <org.tdesktop.ui.Views.BackupImageView
+            <org.tsupport.ui.Views.BackupImageView
                 android:id="@+id/settings_avatar_image"
                 android:layout_width="64dp"
                 android:layout_height="64dp"/>

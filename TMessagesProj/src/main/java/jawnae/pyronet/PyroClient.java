@@ -18,7 +18,7 @@
 
 package jawnae.pyronet;
 
-import org.tdesktop.messenger.ByteBufferDesc;
+import org.tsupport.messenger.ByteBufferDesc;
 
 import java.io.EOFException;
 import java.io.IOException;

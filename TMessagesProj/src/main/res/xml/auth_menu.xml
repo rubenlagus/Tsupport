@@ -5,8 +5,8 @@
     <PreferenceScreen android:key="account_settings"
         android:title="Account Settings"
         android:summary="">
-        <intent android:action="org.tdesktop.messenger.OPEN_ACCOUNT"
-            android:targetPackage="org.tdesktop.messenger"
-            android:targetClass="org.tdesktop.ui.LaunchActivity"/>
+        <intent android:action="org.tsupport.messenger.OPEN_ACCOUNT"
+            android:targetPackage="org.tsupport.messenger"
+            android:targetClass="org.tsupport.ui.LaunchActivity"/>
     </PreferenceScreen>
 </PreferenceScreen>

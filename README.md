@@ -16,4 +16,4 @@ Import the root folder into Android Studio, then run project.
 
 ### Based on
 
-Original [Telegram App for Android](https://play.google.com/store/apps/details?id=org.tdesktop.messenger)
+Original [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger)

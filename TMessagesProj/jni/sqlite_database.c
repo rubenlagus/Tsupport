@@ -1,6 +1,6 @@
 #include "sqlite.h"
 
-void Java_org_tdesktop_SQLite_SQLiteDatabase_closedb(JNIEnv *env, jobject object, int sqliteHandle) {
+void Java_org_tsupport_SQLite_SQLiteDatabase_closedb(JNIEnv *env, jobject object, int sqliteHandle) {
 	sqlite3 *handle = (sqlite3 *)sqliteHandle;
 	int err = sqlite3_close(handle);
 	if (SQLITE_OK != err) {
@@ -8,17 +8,17 @@ void Java_org_tdesktop_SQLite_SQLiteDatabase_closedb(JNIEnv *env, jobject object
 	}
 }
 
-void Java_org_tdesktop_SQLite_SQLiteDatabase_beginTransaction(JNIEnv *env, jobject object, int sqliteHandle) {
+void Java_org_tsupport_SQLite_SQLiteDatabase_beginTransaction(JNIEnv *env, jobject object, int sqliteHandle) {
     sqlite3 *handle = (sqlite3 *)sqliteHandle;
     sqlite3_exec(handle, "BEGIN", 0, 0, 0);
 }
 
-void Java_org_tdesktop_SQLite_SQLiteDatabase_commitTransaction(JNIEnv *env, jobject object, int sqliteHandle) {
+void Java_org_tsupport_SQLite_SQLiteDatabase_commitTransaction(JNIEnv *env, jobject object, int sqliteHandle) {
     sqlite3 *handle = (sqlite3 *)sqliteHandle;
     sqlite3_exec(handle, "COMMIT", 0, 0, 0);
 }
 
-int Java_org_tdesktop_SQLite_SQLiteDatabase_opendb(JNIEnv *env, jobject object, jstring fileName, jstring tempDir) {
+int Java_org_tsupport_SQLite_SQLiteDatabase_opendb(JNIEnv *env, jobject object, jstring fileName, jstring tempDir) {
     char const *fileNameStr = (*env)->GetStringUTFChars(env, fileName, 0);
     char const *tempDirStr = (*env)->GetStringUTFChars(env, tempDir, 0);
     

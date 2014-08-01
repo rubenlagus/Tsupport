@@ -441,7 +441,8 @@
     <string name="templates">Plantillas</string>
     <string name="template">Plantilla</string>
     <string name="deleteTemplateText">Manten pulsada una plantilla para eliminarla.</string>
-    <string name="noTemplates">No se han encontraado plantillas</string>
+    <string name="noTemplates">No se han encontrado plantillas</string>
     <string name="templateKey">Clave</string>
     <string name="templateValue">Valor</string>
+    <string name="templatesRemoved">Todas las plantillas han sido eliminadas</string>
 </resources>
