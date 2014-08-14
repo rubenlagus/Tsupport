@@ -445,4 +445,5 @@
     <string name="templateKey">Clave</string>
     <string name="templateValue">Valor</string>
     <string name="templatesRemoved">Todas las plantillas han sido eliminadas</string>
+    <string name="loadtemplatesfromfile">El archivo que desea cargar debe tener formato JSON, en caso contrario, las plantillas no se cargarán</string>
 </resources>

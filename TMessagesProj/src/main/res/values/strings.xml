@@ -445,4 +445,5 @@
     <string name="templateValue">Value</string>
     <string name="template">Template</string>
     <string name="templatesRemoved">All templates have been removed</string>
+    <string name="loadtemplatesfromfile">The file you will load must have JSON format, otherwise templates won't be load.</string>
 </resources>

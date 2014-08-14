@@ -1,9 +1,12 @@
 package org.tsupport.android;
 
+import android.widget.Toast;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.NotificationCenter;
+import org.tsupport.messenger.R;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.IOException;
@@ -102,13 +105,17 @@ public class TemplateSupport {
 
     public static void loadDefaults() {
         FileLog.e("TemplateSupport", "Loading default templates");
-        String json = null;
         FileLog.e("TemplateSupport", "Loading templates for template_" + LocaleController.getCurrentLanguageCode() + ".json");
         InputStream is = null;
-        try {
-            FileLog.e("TemplateSupport", "Reading json");
-            String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".json";
+        FileLog.e("TemplateSupport", "Reading json");
+        String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".json";
+        loadFile(fileName, true);
+    }
 
+    public static void loadFile(String fileName, boolean loadDefault) {
+        String json = null;
+        InputStream is = null;
+        try {
             is = ApplicationLoader.applicationContext.getAssets().open(fileName);
 
             int size = is.available();
@@ -123,16 +130,21 @@ public class TemplateSupport {
             //InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_es.json");
         } catch (IOException ex) {
             try {
-                is = ApplicationLoader.applicationContext.getAssets().open("template_en.json");
-                int size = is.available();
+                if (loadDefault) {
+                    is = ApplicationLoader.applicationContext.getAssets().open("template_en.json");
+                    int size = is.available();
 
-                byte[] buffer = new byte[size];
+                    byte[] buffer = new byte[size];
 
-                is.read(buffer);
+                    is.read(buffer);
 
-                is.close();
-                FileLog.e("TemplateSupport", "Creating string");
-                json = new String(buffer, "UTF-8");
+                    is.close();
+                    FileLog.e("TemplateSupport", "Creating string");
+                    json = new String(buffer, "UTF-8");
+                }
+                else {
+                    FileLog.e("TemplateSupport", "File not found");
+                }
             } catch (IOException ex2) {
                 json = "";
             }
@@ -152,7 +164,7 @@ public class TemplateSupport {
                 templates.put(key, obj.getString(key));
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            FileLog.e("TemplateSupport", "File not JSON");
         }
         modifing = false;
         rebuildInstance();

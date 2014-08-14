@@ -11,6 +11,7 @@ package org.tsupport.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +36,8 @@ import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-public class SettingsTemplatesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+public class SettingsTemplatesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate,
+        DocumentSelectActivity.DocumentSelectActivityDelegate {
     private ListView listView;
     private ListAdapter listViewAdapter;
     private boolean loading;
@@ -48,6 +50,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
 
     private final static int add_template = 1;
     private final static int reload_default = 2;
+    private final static int attach_document = 3;
 
     @Override
     public boolean onFragmentCreate() {
@@ -73,6 +76,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
             actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
             menu.addItem(add_template, R.drawable.addmember);
             menu.addItem(reload_default,R.drawable.ic_refresh);
+            menu.addItem(attach_document,R.drawable.ic_ab_doc);
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
             actionBarLayer.setTitle(LocaleController.getString("templates", R.string.templates));
 
@@ -94,6 +98,20 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 TemplateSupport.loadDefaults();
+                            }
+                        });
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        showAlertDialog(builder);
+                    } else if (id == attach_document) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                        builder.setMessage(LocaleController.getString("loadtemplatesfromfile", R.string.loadtemplatesfromfile));
+                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                DocumentSelectActivity fragment = new DocumentSelectActivity();
+                                fragment.setDelegate(SettingsTemplatesActivity.this);
+                                presentFragment(fragment);
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -217,6 +235,33 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
         super.onResume();
         if (listViewAdapter != null) {
             listViewAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void didSelectFile(DocumentSelectActivity activity, final String path) {
+        activity.finishFragment();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                processLoadDocument(path);
+            }
+        }).start();
+
+    }
+
+    private void processLoadDocument(String path) {
+        TemplateSupport.loadFile(path, false);
+    }
+
+    @Override
+    public void startDocumentSelectActivity() {
+        try {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("*/*");
+            getParentActivity().startActivityForResult(photoPickerIntent, 21);
+        } catch (Exception e) {
+            FileLog.e("tsupport", e);
         }
     }
 
