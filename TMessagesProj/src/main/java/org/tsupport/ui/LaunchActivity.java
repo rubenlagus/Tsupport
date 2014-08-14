@@ -511,7 +511,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     protected void onResume() {
         super.onResume();
         // Disabled
-        //Utilities.checkForCrashes(this);
+        Utilities.checkForCrashes(this);
         Utilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);

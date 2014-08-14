@@ -80,7 +80,7 @@ public class MessagesStorage {
     public void openDatabase() {
         //cacheFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "cache4.db");
         databaseFileInternal = new File(ApplicationLoader.applicationContext.getFilesDir(), "tsupportInternal.db");
-        databaseFileCache = new File(ApplicationLoader.applicationContext.getFilesDir(), "tsupportCache.db");
+        databaseFileCache = new File(ApplicationLoader.applicationContext.getCacheDir(), "tsupportCache.db");
         //boolean createTable = false;
         boolean createTableInternal = false;
         boolean createTableCache = false;

@@ -82,6 +82,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private float startedDraggingX = -1;
     private float distCanMove = AndroidUtilities.dp(80);
     private boolean recordingAudio = false;
+    private boolean searchForTemplate = true;
 
     private Activity parentActivity;
     private long dialog_id;
@@ -197,6 +198,9 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         messsageEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (messsageEditText.getText().length() < 5) {
+                    searchForTemplate = true;
+                }
                 if (emojiPopup != null && emojiPopup.isShowing()) {
                     showEmojiPopup(false);
                 }
@@ -297,13 +301,20 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 String message = getTrimmedString(charSequence.toString());
-                String template = TemplateSupport.getInstance().getTemplate(message);
-                if ( template != null && template.compareToIgnoreCase("") != 0) {
-                    FileLog.d("tsupport", message + "-->" + template);
-                    messsageEditText.removeTextChangedListener(textWatcher);
-                    messsageEditText.setText(template);
-                    messsageEditText.addTextChangedListener(textWatcher);
-                    message = template;
+                if (searchForTemplate) {
+                    if (message.contains(" ")) {
+                        searchForTemplate = false;
+                    }
+                    else {
+                        String template = TemplateSupport.getInstance().getTemplate(message);
+                        if (template != null && template.compareToIgnoreCase("") != 0) {
+                            FileLog.d("tsupport", message + "-->" + template);
+                            messsageEditText.removeTextChangedListener(textWatcher);
+                            messsageEditText.setText(template);
+                            messsageEditText.addTextChangedListener(textWatcher);
+                            message = template;
+                        }
+                    }
                 }
                 //sendButton.setEnabled(message.length() != 0);
                 //checkSendButton();

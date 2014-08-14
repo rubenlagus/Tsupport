@@ -1207,6 +1207,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
                 NotificationsController.getInstance().processDialogsUpdateRead(dialogsToUpdate, true);
                 NotificationCenter.getInstance().postNotificationName(dialogsNeedReload);
+                NotificationCenter.getInstance().postNotificationName(updateInterfaces);
             }
         });
     }

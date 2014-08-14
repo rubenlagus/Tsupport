@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.NotificationsService;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
@@ -192,6 +193,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     if (id == messages_list_menu_settings) {
                         presentFragment(new SettingsActivity());
                     } else if (id == messages_list_menu_refresh) {
+                        NotificationCenter.getInstance().postNotificationName(MessagesController.dialogsNeedReload);
                         MessagesController.getInstance().loadDialogs(0, 0, 110, false);
                         Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("Loading", R.string.Loading) , Toast.LENGTH_SHORT).show();
                         if (messagesListViewAdapter != null) {
