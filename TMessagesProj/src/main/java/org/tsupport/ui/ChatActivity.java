@@ -1912,11 +1912,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     boolean currentMarkAsRead = false;
 
                     for (MessageObject obj : arr) {
-                        if (obj.messageText.toString().contains("#tsf")) {
+                        /*if (obj.messageText.toString().contains("#tsf")) {
                             obj.messageOwner.unread = false;
-                        }
+                        }*/
                         if (currentEncryptedChat != null && obj.messageOwner.action != null && obj.messageOwner.action instanceof TLRPC.TL_messageActionTTLChange && timerButton != null) {
-                            timerButton.setTime(obj.messageOwner.action.ttl);
+                            // Disabled
                         }
                         if (obj.isOut() && obj.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SENDING) {
                             scrollToLastMessage();
@@ -1949,7 +1949,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithMid = currentMinMsgId;
                         } else {
                             if (messages.size() > 0) {
-                                //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true);
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true);
                             }
                         }
                     }
@@ -1958,9 +1958,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     boolean markAsRead = false;
                     int oldCount = messages.size();
                     for (MessageObject obj : arr) {
-                        if (obj.messageText.toString().contains("#tsf")) {
+                       /* if (obj.messageText.toString().contains("#tsf")) {
                             obj.messageOwner.unread = false;
-                        }
+                        }*/
                         if (currentEncryptedChat != null && obj.messageOwner.action != null && obj.messageOwner.action instanceof TLRPC.TL_messageActionTTLChange && timerButton != null) {
                             timerButton.setTime(obj.messageOwner.action.ttl);
                         }
@@ -2053,7 +2053,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithDate = maxDate;
                             readWithMid = minMessageId;
                         } else {
-                            //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true);
+                            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true);
                         }
                     }
                 }

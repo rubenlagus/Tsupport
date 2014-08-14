@@ -1113,9 +1113,9 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 final ArrayList<MessageObject> objects = new ArrayList<MessageObject>();
                 for (TLRPC.Message message : messagesRes.messages) {
                     message.dialog_id = dialog_id;
-                    if (message.message.contains("#tsf")) {
+                    /*if (message.message.contains("#tsf")) {
                         message.unread = false;
-                    }
+                    }*/
                     objects.add(new MessageObject(message, usersLocal));
                 }
                 Utilities.RunOnUIThread(new Runnable() {
@@ -1223,19 +1223,19 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 for (TLRPC.User u : dialogsRes.users) {
                     usersLocal.put(u.id, u);
                 }
-                for (TLRPC.TL_dialog dialog: dialogsRes.dialogs) {
+                /*for (TLRPC.TL_dialog dialog: dialogsRes.dialogs) {
                     int lastMessageId = dialog.top_message;
                     TLRPC.Message message = dialogsRes.messages.get(dialogsRes.messages.indexOf(lastMessageId));
                     if (message.from_id == UserConfig.getClientUserId()) {
                         readChats.add(dialog.id);
                     }
-                }
+                }*/
                 for (TLRPC.Message m : dialogsRes.messages) {
-                    if (m.message.contains("#tsf")) {
+                    /*if (m.message.contains("#tsf")) {
                         m.unread = false;
                     }
                     if (readChats.contains(m.dialog_id))
-                        m.unread = false;
+                        m.unread = false;*/
                     new_dialogMessage.put(m.id, new MessageObject(m, usersLocal));
                 }
                 for (TLRPC.TL_dialog d : dialogsRes.dialogs) {
