@@ -1023,24 +1023,8 @@ public class MessagesStorage {
     }
 
     public void applyPhoneBookUpdates(final String adds, final String deletes) {
-        if (adds.length() == 0 && deletes.length() == 0) {
-            return;
-        }
-        storageQueue.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (adds.length() != 0) {
-                        database.executeFastCache(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 0 WHERE sphone IN(%s)", adds)).stepThis().dispose();
-                    }
-                    if (deletes.length() != 0) {
-                        database.executeFastCache(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 1 WHERE sphone IN(%s)", deletes)).stepThis().dispose();
-                    }
-                } catch (Exception e) {
-                    FileLog.e("tsupport", e);
-                }
-            }
-        });
+        // Removed phoneBook updates
+        return;
     }
 
     public void putCachedPhoneBook(final HashMap<Integer, ContactsController.Contact> contactHashMap) {
