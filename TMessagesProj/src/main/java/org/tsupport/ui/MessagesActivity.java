@@ -29,8 +29,8 @@ import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
-import org.tsupport.android.NotificationsService;
 import org.tsupport.messenger.R;
+import org.tsupport.android.NotificationsService;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
 import org.tsupport.android.ContactsController;
@@ -453,7 +453,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 updateVisibleRows(0);
             }
         } else if (id == MessagesController.updateInterfaces) {
-            updateVisibleRows((Integer)args[0]);
+            updateVisibleRows(0);
         } else if (id == MessagesController.reloadSearchResults) {
             int token = (Integer)args[0];
             if (token == activityToken) {
