@@ -9,6 +9,8 @@ import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.ui.ApplicationLoader;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
@@ -114,9 +116,14 @@ public class TemplateSupport {
 
     public static void loadFile(String fileName, boolean loadDefault) {
         String json = null;
-        InputStream is = null;
+        InputStream is;
         try {
-            is = ApplicationLoader.applicationContext.getAssets().open(fileName);
+            if (loadDefault)
+                is = ApplicationLoader.applicationContext.getAssets().open(fileName);
+            else {
+                File f = new File(fileName);
+                is = new FileInputStream(f);
+            }
 
             int size = is.available();
 
