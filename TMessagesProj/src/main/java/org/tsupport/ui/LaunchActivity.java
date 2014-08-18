@@ -25,6 +25,7 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
@@ -32,6 +33,7 @@ import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
+import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.ActionBarActivity;
@@ -67,13 +69,11 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear().commit();
-            NotificationCenter.getInstance().postNotificationName(1234);
             MessagesController.getInstance().unregistedPush();
             MessagesController.getInstance().logOut();
             UserConfig.clearConfig();
-            MessagesStorage.getInstance().cleanUpForLoadTSupportUserID();
-            MessagesController.getInstance().cleanUp();
             ContactsController.getInstance().deleteAllAppAccounts();
+            NotificationCenter.getInstance().postNotificationName(1234);
         }
 
         if (!UserConfig.isClientActivated()) {
