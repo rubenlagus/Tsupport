@@ -8,7 +8,9 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
@@ -330,20 +332,16 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             delegate.needShowAlert(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
             return;
         } else if (countryState == 2) {
-            FileLog.d("tsupport","Number to check1: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("WrongCountry", R.string.WrongCountry));
             return;
         }
         if (codeField.length() == 0) {
-            FileLog.e("tsupport", "invalid phone number onNextPressed1");
-            FileLog.d("tsupport","Number to check2: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
             return;
         }
         TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
         String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
         ConnectionsManager.getInstance().applyCountryPortNumber(phone);
-        FileLog.e("tsupport", "Phone for request:" + phone);
         req.api_hash = BuildVars.APP_HASH;
         req.api_id = BuildVars.APP_ID;
         req.sms_type = 0;
@@ -353,12 +351,10 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             req.lang_code = "en";
         }
 
-        FileLog.e("tsupport", "Lang code: " + req.lang_code);
-        FileLog.e("tsupport", "api_hash: " + req.api_hash);
-        FileLog.e("tsupport", "api_id: " + req.api_id);
-        FileLog.e("tsupport", "sms_type: " + req.sms_type);
-        FileLog.e("tsupport", "phone_number: " + req.phone_number);
-
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+        userNumberEditor.putLong("userId", Long.parseLong("42"+phoneField.getText()));
+        userNumberEditor.commit();
         final Bundle params = new Bundle();
         params.putString("phone", "+" + codeField.getText() + phoneField.getText());
         params.putString("phoneFormated", phone);
@@ -384,10 +380,6 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                         } else {
                             if (delegate != null && error.text != null) {
                                 if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                                    FileLog.e("tsupport", "invalid phone number onNextPressed2");
-                                    FileLog.d("tsupport","Number to check3: " + codeField.getText() + phoneField.getText());
-                                    FileLog.d("tsupport","Code to check3: " + error.code);
-                                    FileLog.d("tsupport","tostring to check3: " + error.toString());
                                     delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                 } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                                     delegate.needShowAlert(LocaleController.getString("InvalidCode", R.string.InvalidCode));

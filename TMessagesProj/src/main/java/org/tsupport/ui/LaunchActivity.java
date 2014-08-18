@@ -8,6 +8,7 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
+import org.tsupport.android.ContactsController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
@@ -55,6 +57,24 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ApplicationLoader.postInitApplication();
+
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        Long userId = userNumberPreferences.getLong("userId", new Long(0));
+        if (userId > new Long(0)) {
+
+        }
+        else {
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear().commit();
+            NotificationCenter.getInstance().postNotificationName(1234);
+            MessagesController.getInstance().unregistedPush();
+            MessagesController.getInstance().logOut();
+            UserConfig.clearConfig();
+            MessagesStorage.getInstance().cleanUpForLoadTSupportUserID();
+            MessagesController.getInstance().cleanUp();
+            ContactsController.getInstance().deleteAllAppAccounts();
+        }
 
         if (!UserConfig.isClientActivated()) {
             Intent intent = getIntent();
@@ -498,24 +518,32 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
 
     @Override
     protected void onDestroy() {
+        PhotoViewer.getInstance().destroyPhotoViewer();
         File dir = AndroidUtilities.getCacheDir();
+        MessagesStorage.getInstance().closeDBandDeleteCache();
         if (dir != null && dir.isDirectory())
             ConnectionsManager.getInstance().deleteDir(dir);
-        MessagesStorage.getInstance().closeDBandDeleteCache();
-        PhotoViewer.getInstance().destroyPhotoViewer();
         super.onDestroy();
-        onFinish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Disabled
-        Utilities.checkForCrashes(this);
-        Utilities.checkForUpdates(this);
+//        Utilities.checkForCrashes(this);
+//        Utilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);
         actionBar.setBackOverlayVisible(currentConnectionState != 0);
+    }
+
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override

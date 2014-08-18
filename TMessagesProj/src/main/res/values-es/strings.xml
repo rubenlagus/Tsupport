@@ -446,4 +446,6 @@
     <string name="templateValue">Valor</string>
     <string name="templatesRemoved">Todas las plantillas han sido eliminadas</string>
     <string name="loadtemplatesfromfile">El archivo que desea cargar debe tener formato JSON, en caso contrario, las plantillas no se cargarán</string>
+    <string name="ConversationOwnedByOther">Otro miembro de TSF está respondiendo esta pregunta, ten cuidado.</string>
+    <string name="ConversationOwnedByMe">Esta conversación la tienes asignada.</string>
 </resources>

@@ -963,6 +963,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
+                                    SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                                    SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+                                    userNumberEditor.clear().commit();
                                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.clear().commit();

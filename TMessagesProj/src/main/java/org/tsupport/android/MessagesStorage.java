@@ -272,6 +272,43 @@ public class MessagesStorage {
         });
     }
 
+    public void cleanUpForLoadTSupportUserID() {
+        storageQueue.cleanupQueue();
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                lastDateValue = 0;
+                lastSeqValue = 0;
+                lastPtsValue = 0;
+                lastQtsValue = 0;
+                lastSecretVersion = 0;
+
+                lastSavedSeq = 0;
+                lastSavedPts = 0;
+                lastSavedDate = 0;
+                lastSavedQts = 0;
+
+                secretPBytes = null;
+                secretG = 0;
+                if (database != null) {
+                    database.close();
+                    database = null;
+                }
+//                if (cacheFile != null) {
+//                    cacheFile.delete();
+//                    cacheFile = null;
+//                }
+                if (databaseFileCache != null) {
+                    databaseFileCache.delete();
+                    databaseFileCache = null;
+                }
+
+                storageQueue.cleanupQueue();
+                openDatabase();
+            }
+        });
+    }
+
     public void saveSecretParams(final int lsv, final int sg, final byte[] pbytes) {
         storageQueue.postRunnable(new Runnable() {
             @Override
