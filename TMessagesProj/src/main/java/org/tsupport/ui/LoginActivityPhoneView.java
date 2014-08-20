@@ -16,6 +16,7 @@ import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -27,23 +28,42 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
 import org.tsupport.messenger.BuildVars;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.RPCRequest;
+import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.SlideView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import static org.tsupport.messenger.BuildVars.*;
 
 public class LoginActivityPhoneView extends SlideView implements AdapterView.OnItemSelectedListener {
     private EditText codeField;
@@ -342,8 +362,8 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
         TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
         String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
         ConnectionsManager.getInstance().applyCountryPortNumber(phone);
-        req.api_hash = BuildVars.APP_HASH;
-        req.api_id = BuildVars.APP_ID;
+        req.api_hash = APP_HASH;
+        req.api_id = APP_ID;
         req.sms_type = 0;
         req.phone_number = phone;
         req.lang_code = Locale.getDefault().getCountry();
@@ -353,7 +373,8 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
 
         SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
         SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
-        userNumberEditor.putLong("userId", Long.parseLong("42"+phoneField.getText()));
+        String userId = "42"+phoneField.getText();
+        userNumberEditor.putString("userId", userId);
         userNumberEditor.commit();
         final Bundle params = new Bundle();
         params.putString("phone", "+" + codeField.getText() + phoneField.getText());

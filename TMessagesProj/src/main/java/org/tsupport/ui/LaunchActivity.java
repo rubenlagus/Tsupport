@@ -17,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.util.Base64;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,8 +44,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class LaunchActivity extends ActionBarActivity implements NotificationCenter.NotificationCenterDelegate, MessagesActivity.MessagesActivityDelegate {
     private boolean finished = false;
@@ -61,28 +73,37 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         ApplicationLoader.postInitApplication();
 
         SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
-        Long userId = userNumberPreferences.getLong("userId", new Long(0));
-        if (userId > new Long(0)) {
-
+        String userId = "";
+        try {
+            userId = userNumberPreferences.getString("userId", "");
+        } catch (ClassCastException e) { // Compatibility with older versions of the app
+            userId = "";
+        }
+        FileLog.e("tsupport", "PASO 1");
+        if (userId.compareToIgnoreCase("") !=  0) {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                TsupportApi.getInstance().addUser();
+            }
         }
         else {
+            FileLog.e("tsupport", "PASO 2");
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear().commit();
-            MessagesController.getInstance().unregistedPush();
-            MessagesController.getInstance().logOut();
             UserConfig.clearConfig();
-            ContactsController.getInstance().deleteAllAppAccounts();
-            NotificationCenter.getInstance().postNotificationName(1234);
+            FileLog.e("tsupport", "PASO 3");
         }
 
+        FileLog.e("tsupport", "PASO 4");
         if (!UserConfig.isClientActivated()) {
+            FileLog.e("tsupport", "PASO 5");
             Intent intent = getIntent();
             if (intent != null && intent.getAction() != null && (Intent.ACTION_SEND.equals(intent.getAction()) || intent.getAction().equals(Intent.ACTION_SEND_MULTIPLE))) {
                 super.onCreateFinish(savedInstanceState);
                 finish();
                 return;
             }
+            FileLog.e("tsupport", "PASO 6");
             if (intent != null && !intent.getBooleanExtra("fromIntro", false)) {
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("logininfo", MODE_PRIVATE);
                 Map<String, ?> state = preferences.getAll();
@@ -94,8 +115,9 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                     return;
                 }
             }
+            FileLog.e("tsupport", "PASO 7");
         }
-
+        FileLog.e("tsupport", "PASO 8");
         super.onCreate(savedInstanceState);
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");

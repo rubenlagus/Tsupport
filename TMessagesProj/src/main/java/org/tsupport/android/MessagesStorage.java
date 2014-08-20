@@ -34,6 +34,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
 
 public class MessagesStorage {
@@ -221,14 +222,37 @@ public class MessagesStorage {
     }
 
     public void closeDBandDeleteCache() {
-        if (database != null) {
-            database.close();
-            database = null;
-        }
-        if (databaseFileCache != null) {
-            databaseFileCache.delete();
-            databaseFileCache = null;
-        }
+        storageQueue.cleanupQueue();
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                lastDateValue = 0;
+                lastSeqValue = 0;
+                lastPtsValue = 0;
+                lastQtsValue = 0;
+                lastSecretVersion = 0;
+
+                lastSavedSeq = 0;
+                lastSavedPts = 0;
+                lastSavedDate = 0;
+                lastSavedQts = 0;
+
+                secretPBytes = null;
+                secretG = 0;
+                if (database != null) {
+                    database.close();
+                    database = null;
+                }
+
+                if (databaseFileCache != null) {
+                    databaseFileCache.delete();
+                    databaseFileCache = null;
+                }
+
+                storageQueue.cleanupQueue();
+                openDatabase();
+            }
+        });
     }
 
     public void cleanUp() {

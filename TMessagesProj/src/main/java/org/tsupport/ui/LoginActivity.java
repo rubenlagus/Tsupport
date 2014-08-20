@@ -26,6 +26,7 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
 import org.tsupport.messenger.R;
+import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
@@ -343,6 +344,9 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
             }
         });
         showAlertDialog(builder);*/
+        if (android.os.Build.VERSION.SDK_INT >= 11) {
+            TsupportApi.getInstance().addUser();
+        }
         clearCurrentState();
         presentFragment(new MessagesActivity(null), true);
     }

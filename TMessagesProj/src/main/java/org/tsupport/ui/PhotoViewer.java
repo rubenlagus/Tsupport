@@ -16,6 +16,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PixelFormat;
@@ -1131,7 +1132,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (currentDialogId != 0 && totalImagesCount == 0) {
             MessagesController.getInstance().getMediaCount(currentDialogId, classGuid, true);
         } else if (avatarsUserId != 0) {
-            MessagesController.getInstance().loadUserPhotos(avatarsUserId, 0, 30, 0, true, classGuid);
+            SharedPreferences mainconfigPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+            if (mainconfigPreferences.getBoolean("loadUserPhotos", true))
+                MessagesController.getInstance().loadUserPhotos(avatarsUserId, 0, 30, 0, true, classGuid);
         }
     }
 
