@@ -43,6 +43,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,6 +55,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public ConcurrentHashMap<Integer, TLRPC.User> users = new ConcurrentHashMap<Integer, TLRPC.User>(100, 1.0f, 2);
     public ArrayList<TLRPC.TL_dialog> dialogs = new ArrayList<TLRPC.TL_dialog>();
     public ArrayList<TLRPC.TL_dialog> dialogsServerOnly = new ArrayList<TLRPC.TL_dialog>();
+    public HashMap<Integer,TLRPC.TL_dialog> dialogsFromSearch = new HashMap<Integer,TLRPC.TL_dialog>();
+    public ArrayList<TLRPC.TL_dialog> dialogsFromSearchOrdered = new ArrayList<TLRPC.TL_dialog>();
     public ConcurrentHashMap<Long, TLRPC.TL_dialog> dialogs_dict = new ConcurrentHashMap<Long, TLRPC.TL_dialog>(100, 1.0f, 2);
     public HashMap<Integer, MessageObject> dialogMessage = new HashMap<Integer, MessageObject>();
     public ConcurrentHashMap<Long, ArrayList<PrintingUser>> printingUsers = new ConcurrentHashMap<Long, ArrayList<PrintingUser>>(100, 1.0f, 2);
@@ -166,6 +169,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
     public static final int readChatNotification = 50;
     public static final int updateTemplatesNotification = 51;
+    public static final int reloadSearchChatResults = 52;
+
 
     private static volatile MessagesController Instance = null;
     public static MessagesController getInstance() {
@@ -640,6 +645,111 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             });
             ConnectionsManager.getInstance().bindRequestToGuid(reqId, classGuid);
         }
+    }
+
+    public void searchDialogs(final Integer token, final String query, final int classGuid) {
+
+        TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
+        req.offset = 0;
+        req.limit = 1000;
+        req.max_id = 0;
+        req.max_date = 0;
+        req.min_date = 0;
+        req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
+        req.q = query;
+        req.peer = new TLRPC.TL_inputPeerEmpty();
+        long reqId = ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+            @Override
+            public void run(TLObject response, TLRPC.TL_error error) {
+                if (error == null) {
+                    FileLog.e("tsupportSearch", "Bien");
+                    final TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
+                    processLoadedSearchDialogs(res, classGuid, token);
+                }
+                else {
+                    FileLog.e("tsupportSearch", error.text);
+                    FileLog.e("tsupportSearch", error.code+"");
+                }
+            }
+        });
+        ConnectionsManager.getInstance().bindRequestToGuid(reqId, classGuid);
+    }
+
+    public void processLoadedSearchDialogs(final TLRPC.messages_Messages res, final int classGuid, final int token) {
+        MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
+        FileLog.e("tsupportSearch", "Users and chats saved");
+        Utilities.RunOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                FileLog.e("tsupportSearch", "Poniendo users");
+                for (TLRPC.User user : res.users) {
+                    MessagesController.getInstance().users.put(user.id, user);
+                    if (user.id == UserConfig.getClientUserId()) {
+                        UserConfig.setCurrentUser(user);
+                    }
+                }
+                FileLog.e("tsupportSearch", "Poniendo chats");
+                for (TLRPC.Chat chat : res.chats) {
+                    MessagesController.getInstance().chats.put(chat.id, chat);
+                }
+
+                FileLog.e("tsupportSearch", "Poniendo dialogs");
+                TLRPC.TL_dialog dialog = null;
+                int last_message_date;
+                dialogsFromSearch.clear();
+                dialogsFromSearchOrdered.clear();
+                for (TLRPC.Message message : res.messages) {
+                    if (dialogsFromSearch.containsKey(message.from_id)) {
+                        dialog = dialogsFromSearch.get(message.from_id);
+                        last_message_date = dialog.last_message_date;
+                        if (message.unread)
+                            dialog.unread_count += 1;
+                        if (last_message_date < message.date) {
+                            dialog.last_message_date = message.date;
+                            dialog.top_message = message.id;
+                        }
+                        dialogsFromSearch.put(message.from_id, dialog);
+                    } else {
+                        dialog = new TLRPC.TL_dialog();
+                        dialog.id = message.from_id;
+                        dialog.peer = new TLRPC.TL_peerUser();
+                        dialog.peer.user_id = message.from_id;
+                        dialog.top_message = message.id;
+                        if (message.unread)
+                            dialog.unread_count += 1;
+                        dialog.notify_settings = new TLRPC.PeerNotifySettings();
+                        dialog.last_message_date = message.date;
+                        dialogsFromSearch.put(message.from_id, dialog);
+                    }
+                }
+                for (TLRPC.TL_dialog dial : dialogsFromSearch.values())
+                    FileLog.e("tsupportSearch", "Dialogo: " + dial.id + " -> user: " + dial.peer.user_id);
+                FileLog.e("tsupportSearch", "Ordenando dialogs");
+                dialogsFromSearchOrdered.addAll(dialogsFromSearch.values());
+                Collections.sort(dialogsFromSearchOrdered, new Comparator<TLRPC.TL_dialog>() {
+                    @Override
+                    public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
+                        if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
+                            return -1;
+                        }
+                        else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
+                            return 1;
+                        }
+                        else {
+                            if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                                return 0;
+                            } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                    }
+                });
+                FileLog.e("tsupportSearch", "Notificando");
+                NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token, res);
+            }
+        });
     }
 
     public void processLoadedMediaCount(final int count, final long uid, final int classGuid, final boolean fromCache) {
@@ -1172,6 +1282,29 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             });
         }
     }
+
+//    public void loadDialogsList(ArrayList<Long> searchDialogResult) {
+//        if (loadingDialogs) {
+//            return;
+//        }
+//        loadingDialogs = true;
+//
+//        for (Long i: searchDialogResult) {
+//            TLRPC.TL_messages_getDialogs req = new TLRPC.TL_messages_getDialogs();
+//            req.offset = 0;
+//            req.limit = 1;
+//            req.max_id
+//                    ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+//                @Override
+//                public void run(TLObject response, TLRPC.TL_error error) {
+//                    if (error == null) {
+//                        final TLRPC.messages_Dialogs dialogsRes = (TLRPC.messages_Dialogs) response;
+//                        processLoadedDialogs(dialogsRes, null, offset, serverOffset, count, false, false);
+//                    }
+//                }
+//            });
+//        }
+//    }
 
     private void applyDialogsNotificationsSettings(ArrayList<TLRPC.TL_dialog> dialogs) {
         SharedPreferences.Editor editor = null;

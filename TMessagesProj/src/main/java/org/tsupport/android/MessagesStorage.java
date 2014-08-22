@@ -22,6 +22,7 @@ import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.DispatchQueue;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.NotificationCenter;
+import org.tsupport.messenger.RPCRequest;
 import org.tsupport.messenger.TLClassStore;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
@@ -935,10 +936,17 @@ public class MessagesStorage {
         return templates;
     }
 
-    public void searchDialogs(final Integer token, final String query, final boolean needEncrypted) {
-        storageQueue.postRunnable(new Runnable() {
+
+
+
+    public void searchDialogs(final Integer token, final String query, final int classGuid) {
+        return;
+        /*storageQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
+
+
+
                 try {
                     ArrayList<TLRPC.User> encUsers = new ArrayList<TLRPC.User>();
                     String q = query.trim().toLowerCase();
@@ -946,7 +954,7 @@ public class MessagesStorage {
                         NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchResults, token, new ArrayList<TLObject>(), new ArrayList<CharSequence>(), new ArrayList<CharSequence>());
                         return;
                     }
-                    ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
+
                     ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
 
                     SQLiteCursor cursor = database.queryFinalizedCache("SELECT u.data, u.status, u.name FROM users as u INNER JOIN contacts as c ON u.uid = c.uid");
@@ -1029,7 +1037,7 @@ public class MessagesStorage {
                     FileLog.e("tsupport", e);
                 }
             }
-        });
+        });*/
     }
 
     public void putContacts(final ArrayList<TLRPC.TL_contact> contacts, final boolean deleteAll) {

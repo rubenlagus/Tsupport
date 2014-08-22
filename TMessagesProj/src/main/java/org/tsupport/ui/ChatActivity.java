@@ -293,7 +293,23 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             TsupportApi.getInstance().ownConversation(new Long(dialog_id));
         }
         else {
-            NotificationCenter.getInstance().postNotificationName(TsupportApi.ConversationOwnedNotSupported);
+            topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
+            if (isCustomTheme) {
+                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
+                topPanel.setBackgroundResource(R.drawable.top_pane_custom);
+            } else {
+                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
+                topPanel.setBackgroundResource(R.drawable.top_pane);
+            }
+            topPanelText.setText(LocaleController.getString("ConversationOwnedNotSupported", R.string.ConversationOwnedNotSupported));
+            topPanel.setVisibility(View.VISIBLE);
+            topPlaneClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    topPanel.setVisibility(View.GONE);
+                }
+            });
+
         }
 
         chatActivityEnterView = new ChatActivityEnterView();
@@ -2312,7 +2328,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             topPanel.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // do nothing
+                    topPanel.setVisibility(View.GONE);
                 }
             });
         } else if (id == TsupportApi.ConversationNotOwned) {
@@ -2343,10 +2359,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             topPanelText.setText(LocaleController.getString("ConversationOwnedNotSupported", R.string.ConversationOwnedNotSupported));
             topPanel.setVisibility(View.VISIBLE);
-            topPanel.setOnClickListener(new View.OnClickListener() {
+            topPlaneClose.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // do nothing
+                    topPanel.setVisibility(View.GONE);
                 }
             });
         }
