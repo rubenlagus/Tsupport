@@ -48,6 +48,8 @@ import org.tsupport.ui.ApplicationLoader;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatActivityEnterView implements NotificationCenter.NotificationCenterDelegate, SizeNotifierRelativeLayout.SizeNotifierRelativeLayoutDelegate {
 
@@ -72,6 +74,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private ArrayList<MessageObject> messages = new ArrayList<MessageObject>();
     private int minMessageId = Integer.MIN_VALUE;
     private int maxDate = Integer.MIN_VALUE;
+    private static Pattern pattern = Pattern.compile("((?:[^\\s(]+\\()|(?:\\.{2}[^\\s\\.]+\\.{2}))");
 
     private int keyboardHeight = 0;
     private int keyboardHeightLand = 0;
@@ -301,24 +304,25 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 String message = getTrimmedString(charSequence.toString());
-                if (searchForTemplate) {
-                    if (message.contains(" ")) {
-                        searchForTemplate = false;
-                    }
-                    else {
-                        String template = TemplateSupport.getInstance().getTemplate(message);
+                if (searchForTemplate && message.length() > 0 && message.length() < 100) {
+                    Matcher matcher = pattern.matcher(message);
+                    String newMessage = message;
+                    boolean found = false;
+                    while(matcher.find()) {
+                        String template = TemplateSupport.getInstance().getTemplate(matcher.group(1));
                         if (template != null && template.compareToIgnoreCase("") != 0) {
-                            FileLog.d("tsupport", message + "-->" + template);
-                            messsageEditText.removeTextChangedListener(textWatcher);
-                            messsageEditText.setText(template);
-                            messsageEditText.addTextChangedListener(textWatcher);
-                            message = template;
+                            newMessage = newMessage.replace(matcher.group(1),template);
+                            found = true;
                         }
                     }
+                    if (found) {
+                        messsageEditText.removeTextChangedListener(textWatcher);
+                        messsageEditText.setText(newMessage);
+                        messsageEditText.setSelection(messsageEditText.getText().length());
+                        messsageEditText.addTextChangedListener(textWatcher);
+                        searchForTemplate = false;
+                    }
                 }
-                //sendButton.setEnabled(message.length() != 0);
-                //checkSendButton();
-
                 if (message.length() != 0 && lastTypingTimeSend < System.currentTimeMillis() - 5000 && !ignoreTextChange) {
                     int currentTime = ConnectionsManager.getInstance().getCurrentTime();
                     TLRPC.User currentUser = null;
@@ -379,7 +383,18 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             int count = (int)Math.ceil(text.length() / 2048.0f);
             for (int a = 0; a < count; a++) {
                 String mess = text.substring(a * 2048, Math.min((a + 1) * 2048, text.length()));
-                MessagesController.getInstance().sendMessage(mess, dialog_id);
+                Pattern pattern = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
+                Matcher matcher = pattern.matcher(mess);
+                if (matcher.find()) {
+                    String number = matcher.group(1);
+                    String name = matcher.group(2);
+                    String surname = matcher.group(3);
+                    mess = mess.replace(matcher.group(),"");
+                    MessagesController.getInstance().sendMessage(mess, dialog_id);
+                    MessagesController.getInstance().sendMessageSupport(number, name, surname, dialog_id, "");
+                } else {
+                    MessagesController.getInstance().sendMessage(mess, dialog_id);
+                }
             }
             return true;
         }

@@ -45,6 +45,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="top|left"
                 android:lines="15"
+                android:minLines="5"
                 android:singleLine="false"
                 android:inputType="textMultiLine|textCapSentences|textAutoCorrect"
                 android:imeOptions="actionDone"

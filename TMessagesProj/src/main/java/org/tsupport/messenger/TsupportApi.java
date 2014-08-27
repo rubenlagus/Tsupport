@@ -24,7 +24,10 @@ public class TsupportApi {
     private static com.appspot.tsupport_de.ownedConversation.OwnedConversation apiServiceOwnConversationDE = null;
     private static com.appspot.tsupport_la.ownedConversation.OwnedConversation apiServiceOwnConversationLA = null;
     private static com.appspot.tsupport_mx.ownedConversation.OwnedConversation apiServiceOwnConversationMX = null;
-    private static com.appspot.tsupport_sg.ownedConversation.OwnedConversation apiServiceOwnConversationSG = null;
+    private static com.appspot.tsupport_sg.ownedConversation.OwnedConversation apiServiceOwnConversationSG= null;
+    private static com.appspot.tsupport_ru.ownedConversation.OwnedConversation apiServiceOwnConversationRU = null;
+    private static com.appspot.tsupport_in.ownedConversation.OwnedConversation apiServiceOwnConversationIN = null;
+    private static com.appspot.tsupport_ar.ownedConversation.OwnedConversation apiServiceOwnConversationAR = null;
     private static com.appspot.tsupport_android.ownedConversation.OwnedConversation apiServiceOwnConversationOT = null;
 
     private static com.appspot.tsupport_us.users.Users apiServiceUsersUS = null;
@@ -35,6 +38,9 @@ public class TsupportApi {
     private static com.appspot.tsupport_la.users.Users apiServiceUsersLA = null;
     private static com.appspot.tsupport_mx.users.Users apiServiceUsersMX = null;
     private static com.appspot.tsupport_sg.users.Users apiServiceUsersSG = null;
+    private static com.appspot.tsupport_ru.users.Users apiServiceUsersRU = null;
+    private static com.appspot.tsupport_in.users.Users apiServiceUsersIN = null;
+    private static com.appspot.tsupport_ar.users.Users apiServiceUsersAR = null;
     private static com.appspot.tsupport_android.users.Users apiServiceUsersOT = null;
     private static String userId = "";
     private static String country = null;
@@ -50,6 +56,9 @@ public class TsupportApi {
         apiServiceOwnConversationMX = AppContantsOwnConversation.getApiServiceHandleMX();
         apiServiceOwnConversationSG = AppContantsOwnConversation.getApiServiceHandleSG();
         apiServiceOwnConversationOT = AppContantsOwnConversation.getApiServiceHandleOT();
+        apiServiceOwnConversationRU = AppContantsOwnConversation.getApiServiceHandleRU();
+        apiServiceOwnConversationIN = AppContantsOwnConversation.getApiServiceHandleIN();
+        apiServiceOwnConversationAR = AppContantsOwnConversation.getApiServiceHandleAR();
 
         apiServiceUsersUS = AppContantsUser.getApiServiceHandleUS();
         apiServiceUsersNL = AppContantsUser.getApiServiceHandleNL();
@@ -60,6 +69,9 @@ public class TsupportApi {
         apiServiceUsersMX = AppContantsUser.getApiServiceHandleMX();
         apiServiceUsersSG = AppContantsUser.getApiServiceHandleSG();
         apiServiceUsersOT = AppContantsUser.getApiServiceHandleOT();
+        apiServiceUsersRU = AppContantsUser.getApiServiceHandleRU();
+        apiServiceUsersIN = AppContantsUser.getApiServiceHandleIN();
+        apiServiceUsersAR = AppContantsUser.getApiServiceHandleAR();
 
     }
 
@@ -83,6 +95,12 @@ public class TsupportApi {
                 country = "MX"; // Mexico
             else if (userId.startsWith("42460"))
                 country = "SG"; // Malaysia, Singapore and Indonesia
+            else if (userId.startsWith("42470"))
+                country = "RU"; // Russia
+            else if (userId.startsWith("42490"))
+                country = "IN"; // India
+            else if (userId.startsWith("42497"))
+                country = "AR"; // Arabian world
             else
                 country = "OT"; // Other
         }
@@ -92,30 +110,36 @@ public class TsupportApi {
 
     }
 
-    public void addUser() {
+    public void addUser(final String userId) {
         AsyncTask<Void, Void, Void> addUser =
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... params) {
                         try {
                             if (country.compareToIgnoreCase("US") == 0)
-                                apiServiceUsersUS.addUser(userId);
+                                apiServiceUsersUS.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("NL") == 0)
-                                apiServiceUsersNL.addUser(userId);
+                                apiServiceUsersNL.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("ES") == 0)
-                                apiServiceUsersES.addUser(userId);
+                                apiServiceUsersES.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("IT") == 0)
-                                apiServiceUsersIT.addUser(userId);
+                                apiServiceUsersIT.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("DE") == 0)
-                                apiServiceUsersDE.addUser(userId);
+                                apiServiceUsersDE.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("LA") == 0)
-                                apiServiceUsersLA.addUser(userId);
+                                apiServiceUsersLA.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("MX") == 0)
-                                apiServiceUsersMX.addUser(userId);
+                                apiServiceUsersMX.addUser(userId.replace(" ", ""));
                             else if (country.compareToIgnoreCase("SG") == 0)
-                                apiServiceUsersSG.addUser(userId);
+                                apiServiceUsersSG.addUser(userId.replace(" ", ""));
+                            else if (country.compareToIgnoreCase("RU") == 0)
+                                apiServiceUsersRU.addUser(userId.replace(" ", ""));
+                            else if (country.compareToIgnoreCase("IN") == 0)
+                                apiServiceUsersIN.addUser(userId.replace(" ", ""));
+                            else if (country.compareToIgnoreCase("AR") == 0)
+                                apiServiceUsersAR.addUser(userId.replace(" ", ""));
                             else
-                                apiServiceUsersOT.addUser(userId);
+                                apiServiceUsersOT.addUser(userId.replace(" ", ""));
                         } catch (IOException e) {
                             return null;
                         }
@@ -135,23 +159,29 @@ public class TsupportApi {
                         try {
                             Boolean value = null;
                             if (country.compareToIgnoreCase("US") == 0)
-                                value = apiServiceOwnConversationUS.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationUS.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("NL") == 0)
-                                value = apiServiceOwnConversationNL.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationNL.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("ES") == 0)
-                                value = apiServiceOwnConversationES.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationES.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("IT") == 0)
-                                value = apiServiceOwnConversationIT.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationIT.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("DE") == 0)
-                                value = apiServiceOwnConversationDE.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationDE.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("LA") == 0)
-                                value = apiServiceOwnConversationLA.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationLA.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("MX") == 0)
-                                value = apiServiceOwnConversationMX.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationMX.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else if (country.compareToIgnoreCase("SG") == 0)
-                                value = apiServiceOwnConversationSG.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationSG.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
+                            else if (country.compareToIgnoreCase("RU") == 0)
+                                value = apiServiceOwnConversationRU.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
+                            else if (country.compareToIgnoreCase("IN") == 0)
+                                value = apiServiceOwnConversationIN.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
+                            else if (country.compareToIgnoreCase("AR") == 0)
+                                value = apiServiceOwnConversationAR.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
                             else
-                                value = apiServiceOwnConversationOT.addOwnedConversation(dialogId + "", userId).execute().getBool();
+                                value = apiServiceOwnConversationOT.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
 
                             return value;
                         } catch (IOException e) {

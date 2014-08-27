@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.objects.MessageObject;
+import org.tsupport.ui.ChatActivity;
 
 public class ChatMessageCell extends ChatBaseCell {
 

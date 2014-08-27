@@ -1132,9 +1132,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (currentDialogId != 0 && totalImagesCount == 0) {
             MessagesController.getInstance().getMediaCount(currentDialogId, classGuid, true);
         } else if (avatarsUserId != 0) {
-            SharedPreferences mainconfigPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-            if (mainconfigPreferences.getBoolean("loadUserPhotos", true))
-                MessagesController.getInstance().loadUserPhotos(avatarsUserId, 0, 30, 0, true, classGuid);
+            MessagesController.getInstance().loadUserPhotos(avatarsUserId, 0, 30, 0, true, classGuid);
         }
     }
 

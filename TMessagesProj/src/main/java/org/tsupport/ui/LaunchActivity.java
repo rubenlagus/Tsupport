@@ -79,31 +79,25 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         } catch (ClassCastException e) { // Compatibility with older versions of the app
             userId = "";
         }
-        FileLog.e("tsupport", "PASO 1");
         if (userId.compareToIgnoreCase("") !=  0) {
             if (android.os.Build.VERSION.SDK_INT >= 11) {
-                TsupportApi.getInstance().addUser();
+                TsupportApi.getInstance().addUser(userId);
             }
         }
         else {
-            FileLog.e("tsupport", "PASO 2");
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear().commit();
             UserConfig.clearConfig();
-            FileLog.e("tsupport", "PASO 3");
         }
 
-        FileLog.e("tsupport", "PASO 4");
         if (!UserConfig.isClientActivated()) {
-            FileLog.e("tsupport", "PASO 5");
             Intent intent = getIntent();
             if (intent != null && intent.getAction() != null && (Intent.ACTION_SEND.equals(intent.getAction()) || intent.getAction().equals(Intent.ACTION_SEND_MULTIPLE))) {
                 super.onCreateFinish(savedInstanceState);
                 finish();
                 return;
             }
-            FileLog.e("tsupport", "PASO 6");
             if (intent != null && !intent.getBooleanExtra("fromIntro", false)) {
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("logininfo", MODE_PRIVATE);
                 Map<String, ?> state = preferences.getAll();
@@ -115,9 +109,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                     return;
                 }
             }
-            FileLog.e("tsupport", "PASO 7");
         }
-        FileLog.e("tsupport", "PASO 8");
         super.onCreate(savedInstanceState);
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -561,6 +553,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
 //        Utilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);
+        MessagesController.getInstance().getDifference();
         actionBar.setBackOverlayVisible(currentConnectionState != 0);
     }
 

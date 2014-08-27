@@ -1,0 +1,624 @@
+{KEYS}
+hola
+hi
+{VALUE}
+Hola, bienvenido al centro de soporte de Telegram.
+
+{KEYS}
+denada
+np
+{VALUE}
+¡De nada!
+
+{KEYS}
+graciasati
+ati
+{VALUE}
+Gracias a ti por confiar en Telegram :)
+
+{KEYS}
+1
+{VALUE}
+¡Hola! ¿Necesitas ayuda con Telegram?
+
+{KEYS}
+2
+{VALUE}
+Dime en qué puedo ayudarte.
+
+{KEYS}
+3
+{VALUE}
+¿Puedo ayudarte con cualquier otra duda sobre Telegram?
+
+{KEYS}
+muybien
+vale
+ok
+{VALUE}
+¡Muy bien!, si necesitas ayuda o tienes alguna pregunta o duda sobre Telegram estaremos encantados de ayudarte.
+
+{KEYS}
+eliminarcuenta
+delete
+del
+{VALUE}
+Hola, puedes eliminar tu cuenta desde aquí: https://telegram.org/deactivate
+
+- Introduce tu número de teléfono con el prefijo +34 (España).
+
+- Recibirás una contraseña vía Telegram, cópiala bien e introdúcela para eliminar la cuenta.
+
+Recuerda que este proceso es irreversible, perderás todos tus mensajes, grupos, fotos almacenadas en Telegram...
+
+Por curiosidad, ¿puedo preguntarte por qué nos dejas?
+
+{KEYS}
+últimaconexión
+lastseen
+ls
+{VALUE}
+Por el momento, no tenemos un modo 'invisible' en Telegram. Puede que lo agreguemos a futuro.
+
+Sin embargo, si bloqueas a uno de tus contactos, él no podrá ver tu estado de conexión (aparecerás como desconectado/a o invisible, dependiendo de la app) ni tampoco tu foto de perfil. Puede ser bastante útil si quieres desaparecer para alguien.
+
+{KEYS}
+estado
+status
+st
+{VALUE}
+Telegram no tiene estados. Estudios muestran que los usuarios modernos rara vez usan los mensajes de estado para propósitos prácticos. Este dato también lo confirmamos a partir de nuestra propia impresión. Por eso es muy poco probable que los incorporemos.
+
+{KEYS}
+bloquearusuario
+bloquear
+lock
+{VALUE}
+¡Hola! Puedes bloquear a quien quieras en Ajustes - Usuarios bloqueados.
+
+{KEYS}
+locka
+{VALUE}
+Hola, para bloquear un contacto, primero debes entrar en el chat del usuario y pulsar en su fotografía (situada en la esquina superior derecha). A continuación, pulsa el botón de menú y selecciona 'Bloquear'.
+
+{KEYS}
+recomendamoshd
+hd
+{VALUE}
+Te recomiendo que instales la nueva App disponible para iPhone y iPad, con nuevas características, Telegram HD (debes eliminar Telegram normal una vez instales la versión HD)
+
+Puedes descargarla desde el siguiente enlace: http://telegram.org/dl
+
+Para facilitar la migración, descárgala e inicia sesión antes de desinstalar la aplicación antigua.
+
+{KEYS}
+googleplay
+play
+{VALUE}
+Por favor, ve a la Google Play Store y actualiza tu aplicación. Ya hay una versión más nueva disponible.
+
+Puedes descargarla en el siguiente enlace: http://telegram.org/dl
+
+{KEYS}
+añadircontactos
+contactos
+agenda
+{VALUE}
+¡Hola!
+
+Tienes que añadirlo a tus contactos, con sus números de teléfono, en la agenda de contactos de tu dispositivo. Tras eso, se importarán en Telegram.
+
+Quienes tengan ya instalado Telegram, aparecerán en la parte alta de la lista de contactos de la aplicación, con sus respectivas fotos de perfil.
+
+Si tras añadirlos tienes problemas para visualizarlos, por favor, revisa estos pasos para solucionarlo: https://telegram.org/faq/es#problemas-con-contactos
+
+{KEYS}
+edadtelegram
+released
+firsttg
+{VALUE}
+Telegram para iPhone se lanzó el 14 de agosto de 2013. La versión alfa de Telegram para Android fue lanzada oficialmente el 20 de octubre de 2013.
+Cada día van aparecido nuevos clientes de Telegram, elaborados por desarrolladores independientes usando la plataforma abierta de Telegram.
+
+{KEYS}
+mehanbloqueado
+desconectado
+bloqueado
+locked
+off
+{VALUE}
+¡Hola! Si te aparece como desconectado y sin foto de perfil, significa que te ha bloqueado.
+
+{KEYS}
+cualestunombre
+comotellamas
+nombre
+name
+n
+{VALUE}
+Puedes llamarme T.
+
+{KEYS}
+cerrarsesionios
+sesionios
+sesi
+{VALUE}
+Puedes cerrar sesión en Ajustes de Telegram - Pulsa en Editar y te aparecerá 'Cerrar sesión' abajo de todo.
+
+{KEYS}
+cerrarsesionandroid
+sesionandroid
+sesa
+{VALUE}
+¡Hola! Entra en Ajustes de Telegram - Cerrar sesión.
+
+{KEYS}
+pesado
+pesao
+troll
+{VALUE}
+Por favor, si de verdad necesitas ayuda con Telegram, nos avisas.
+
+Si bien este servicio es cercano y coloquial en el trato con los usuarios, no debes olvidar que es un canal de soporte. Estamos aquí para ayudar a quienes tengan dudas sobre el funcionamiento de Telegram o problemas con la aplicación. Así, podemos mejorar el servicio.
+
+{KEYS}
+horadiferente
+hora
+{VALUE}
+¡Hola! La hora que te aparece en Telegram es la que configures en los ajustes de tu Android. Por favor, ve a los ajustes de hora y fecha y pon la zona horaria correspondiente a tu ubicación geográfica.
+
+{KEYS}
+editarcontacto
+editar
+edit
+{VALUE}
+Pulsa la foto de perfil del contacto, dentro del chat que tienes con él. Pulsa el lápiz que está junto a su nombre y podrás modificarlo.
+
+{KEYS}
+actualizartelegram
+update
+up
+{VALUE}
+Puedes actualizar Telegram a través de tu tienda de aplicaciones habitual (Google Play / App Store...)
+
+{KEYS}
+eliminarfotoperfil
+delperfil
+{VALUE}
+¡Hola! Pulsa sobre la foto de perfil, en Ajustes de Telegram, y elige 'Eliminar foto'. Podrás borrar todas las que quieras, desde la actual hacia las pasadas.
+
+{KEYS}
+fotoperfil
+perfil
+{VALUE}
+¡Hola! Puedes hacerlo en Ajustes de Telegram - Establecer foto de perfil.
+
+{KEYS}
+queespebble
+pebble
+{VALUE}
+¡Hola! Pebble es el nombre de un reloj inteligente. Si activas esa opción, puedes recibir las notificaciones de Telegram en él.
+
+{KEYS}
+sms
+codigo
+{VALUE}
+El código que te enviamos por SMS cuando iniciaste sesión es un método de seguridad, para estar seguros de que has sido tú quien ha intentado iniciar sesión usando tu número de teléfono. Cada vez que inicies sesión en Telegram te mandaremos un código diferente, así que no es necesario que lo conserves o lo memorices ;-)
+
+{KEYS}
+enviarvideoyoutube
+youtube
+yt
+{VALUE}
+Hola, para enviar un vídeo de YouTube a través de Telegram debes pegar la dirección url en una conversación, puedes obtenerla desde la App Youtube en la opción de compartir, o desde la barra de direcciones de tu navegador web.
+
+{KEYS}
+eliminarchatandroid
+deletechatandroid
+delchata
+{VALUE}
+Para eliminar una conversación, mantén pulsado sobre ella en la lista de chats, y elige la opción que prefieras.
+
+{KEYS}
+eliminarchatios
+deletechatios
+delchati
+{VALUE}
+Para eliminar una conversación, pulsa 'Editar' y elige las que quieras eliminar.
+
+Otra opción es deslizar el chat de derecha a izquierda y pulsar 'Eliminar'.
+
+{KEYS}
+accessibilidad
+acc
+{VALUE}
+Hola, sentimos no tener todavía soporte pata lectores de pantalla. Mejorar la accesbilidad de Telegram está entre nuestros planes de desarrollo, aunque todavía no tenemos fecha.
+
+{KEYS}
+gracias
+feedback
+{VALUE}
+¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Te aseguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
+
+{KEYS}
+llamadas
+call
+{VALUE}
+¡Hola! No tenemos llamadas en Telegram.
+
+Aunque que las llamadas de voz y de vídeo pueden parecer atractivas, no consideramos que sean parte del núcleo de la experiencia de mensajería. Y, ya que ambas características requieren considerables recursos en términos de tiempo, trabajo y mantenimiento - preferimos utilizar toda esa energía para lograr una mensajería rápida, segura y fiable, capaz de transferir archivos de gran tamaño, la sincronización a través de muchos dispositivos y mantenerte feliz, sin esas molestas llamadas entrantes.
+
+{KEYS}
+colores
+color
+{VALUE}
+¡Hola! No tenemos opciones para cambiar el color en Telegram.
+
+{KEYS}
+vaciarchatandroid
+vaciarchat
+{VALUE}
+Mantén pulsado sobre el chat, en la lista de chats, y elige 'Borrar historial'.
+
+{KEYS}
+recuperarchats
+recuperarconversación
+rollback
+{VALUE}
+Hola, actualmente no disponemos de una opción que permita hacer eso. Siempre puedes pedir a tu contacto que haga un copia y pega de la conversación y que te la vuelva a enviar.
+
+{KEYS}
+descargaautomatica
+fotos
+a
+{VALUE}
+¡Hola! Puedes activar el guardado automático de fotos en tu Carrete en Ajustes de tu Telegram. Tienes que activar la opción que aparece en la parte baja de la ventana.
+
+{KEYS}
+desbloquear
+quitarbloqueo
+unlock
+{VALUE}
+Hola, entra en Ajustes > Usuarios bloqueados y elimina los contactos que quieras permitir que te envíen mensajes.
+
+{KEYS}
+autodestruccion
+auto
+cont
+bomb
+{VALUE}
+Hola, el contador de autodestrucción está disponible para los chats secretos.
+
+Para poner el contador, debes ir a la información del chat secreto (toca la pequeña foto en la esquina superior derecha de la pantalla de chat), luego selecciona Autodestrucción y elige un tiempo límite.
+
+El temporizador es aplicado al mensaje desde el momento en el que se despliega en la pantalla del receptor (dos ticks verdes). Tan pronto como se acabe el tiempo, el mensaje desaparece de ambos dispositivos y no deja rastros.
+
+{KEYS}
+fondo
+{VALUE}
+Puedes hacerlo en Ajustes de Telegram - Fondo de chat.
+
+{KEYS}
+c
+{VALUE}
+Hola, no disponemos de una opción que permita hacer eso. Siempre puedes volver a agregarlo a tu agenda teléfonica, y si has perdido el número no te queda otra que volver a pedirlo.
+
+{KEYS}
+enviarmusicaiphone
+song
+{VALUE}
+¡Hola!
+
+En Telegram para iOS, los archivos se envían de diferente modo. Necesitas una app para visualizar y seleccionar los archivos (como Dropbox, Google Drive u otras, por ejemplo).
+
+Una vez elegido el archivo, debes seleccionar la opción 'Abrir con Telegram'. Podrás enviarlo al chat que gustes.
+
+{KEYS}
+somospersonas
+persona
+robot
+{VALUE}
+Hola, somos personas, nos encargamos de atender todas tus preguntas o dudas sobre Telegram.
+
+{KEYS}
+cambiarnúmero
+nuevonumero
+numero
+change
+number
+{VALUE}
+Si quieres cambiar de número, tendrás que crear una nueva cuenta. No tenemos opciones para fusionar cuentas o editar una ya existente.
+
+Si no vas a usar más tu número viejo, te recomiendo que elimines la cuenta de Telegram asociada a él.
+
+Puedes eliminar la cuenta aquí:
+https://telegram.org/deactivate
+
+Ten en cuenta que perderás los chats de la antigua cuenta.
+
+{KEYS}
+quiencreotelegram
+fundador
+boss
+{VALUE}
+Pavel y Nikolai Durov fueron precursores de VK, en Rusia. Sin embargo, esa red social no tiene ninguna relación con Telegram.
+
+Somos un proyecto completamente independiente. Recibimos un generoso aporte de parte de Pavel y pudimos dar forma a esta app. Claro que este proyecto incluye algunas de sus ideas :)
+
+{KEYS}
+temaspersonales
+personales
+pers
+{VALUE}
+Prefiero no hablar de mis datos personales. Lo siento.
+
+{KEYS}
+enviarmensaje
+mensaje
+emsg
+em
+{VALUE}
+Para enviar un mensaje, necesitas tener a tus amigos en los contactos del teléfono. Y ellos necesitan tener Telegram.
+
+iOS: En la pantalla 'Chats', pulsa el botón de la esquina superior derecha (el botón del lápiz), luego elige a tu amigo y envía el mensaje.
+
+Android: En la pantalla principal, pulsa el botón de nuevo mensaje, luego elige a tu amigo en la lista y envía el mensaje.
+{KEYS}
+telegram
+tg
+{VALUE}
+Telegram es como los SMS y el correo electrónico combinados. Rápida, versátil y poderosa. Puedes enviar mensajes, fotos, vídeos y archivos de cualquier tipo (doc, zip, mp3, etc.) a gente que esté en tus contactos del teléfono y tenga Telegram. También puedes crear grupos de hasta 200 personas.
+
+Con Telegram puedes hacer todo esto en todos tus dispositivos, de forma simultánea (incluyendo ordenadores).
+Aquí tienes una lista de aplicaciones de Telegram:
+https://telegram.org/apps
+
+Si quieres aprender más sobre Telegram, mira nuestras Preguntas Frecuentes:
+https://telegram.org/faq/es
+
+Y si quieres leer algunos artículos sobre Telegram:
+https://telegram.org/press
+
+{KEYS}
+creargrupo
+grupo
+{VALUE}
+Pulsa el ícono de la esquina superior derecha, en Chats, y elige 'Nuevo grupo'.
+
+{KEYS}
+gratis
+{VALUE}
+Telegram es un proyecto de código abierto y no comercial. Es 100% gratis y seguirá gratis - sin publicidad, sin cuotas, sin suscripciones. Puedes leer más al respecto aquí: https://telegram.org/faq/es#p-cmo-ganarn-dinero-a-partir-de-esto
+
+Recuerda: Telegram necesita internet para funcionar. Si no tienes wifi, tu operador puede cobrar por datos móviles.
+
+{KEYS}
+eliminaruncontacto
+remove
+rem
+{VALUE}
+Para eliminar un contacto:
+
+iOS - Abre un chat con él, pulsa su foto de perfil, selecciona ‘Editar’ y ‘Eliminar contacto’. Desaparecerá de la agenda de contactos de tu dispositivo, también. Otra vía es, justamente, eliminarlo desde allá.
+
+Android - Abre un chat con él, pulsa su foto de perfil, luego los tres puntos blancos de la esquina superior derecha (o el botón de menú físico de tu dispositivo) y elige ‘Eliminar’.
+
+{KEYS}
+sug
+{VALUE}
+¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Ten aseguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
+
+{KEYS}
+call
+{VALUE}
+Hola, por el momento, las llamadas de audio y vídeo no entran en nuestros planes de desarrollo.
+
+{KEYS}
+invitefriends
+inv
+{VALUE}
+Para invitar a un amigo, sólo tienes que enviarle este enlace:
+https://telegram.org/dl
+
+Recuerda que tu amigo necesita saber tu número de teléfono para enviarte un mensaje.
+
+Aquí tienes una lista completa de aplicaciones de Telegram:
+https://telegram.org/apps
+
+{KEYS}
+sendmsg
+sm
+{VALUE}
+Para enviar un mensaje, necesitas tener a tus amigos en los contactos del teléfono. Y ellos necesitan tener Telegram.
+
+iOS: En la pantalla 'Chats', pulsa el botón de la esquina superior derecha (el botón del lápiz), luego elige a tu amigo y envía el mensaje.
+
+Android: En la pantalla principal, pulsa el botón de nuevo mensaje, luego elige a tu amigo en la lista y envía el mensaje.
+
+{KEYS}
+whatsapp
+wa
+{VALUE}
+A diferencia de WhatsApp, Telegram está basada en la nube y está fuertemente cifrada. Como resultado, puedes acceder a tus mensajes desde diferentes dispositivos (¡incluyendo computadores!) y almacenar y compartir un número ilimitado de fotos, vídeos y archivos (doc, zip, png, etc.) en la nube. Gracias a nuestra infraestructura de múltiples centros de datos y cifrado, Telegram es también más rápida y mucho más segura. Además, Telegram es gratis y seguirá siéndolo – sin avisos, sin cuotas de suscripción, para siempre.
+
+{KEYS}
+free
+{VALUE}
+Telegram es un proyecto de código abierto y no comercial. Es 100% gratis y seguirá siéndolo - sin publicidad, sin cuotas, sin suscripciones. Puedes leer más al respecto aquí: https://telegram.org/faq/es#p-cmo-ganarn-dinero-a-partir-de-esto
+
+Recuerda: Telegram necesita internet para funcionar. Si no tienes wifi, tu compañía de teléfono puede cobrarte por los datos móviles.
+
+{KEYS}
+dondeestatelegram
+lugar
+base
+b
+{VALUE}
+Telegram es un proyecto global con infraestructura alrededor de todo el mundo. Intentamos mantenerlo descentralizado y extendido en cuantas jurisdicciones diferentes nos es posible. Si quieres aprender más sobre la gente detrás de Telegram, por favor, mira nuestras Preguntas Frecuentes:
+https://telegram.org/faq/es#preguntas-generales
+
+Puedes encontrar interesantes estos artículos, también:
+http://telegram.org/press
+
+{KEYS}
+seguridad
+sec
+{VALUE}
+Trabajamos duro para hacer de Telegram la mensajería masiva más segura. Y estamos trabajando contínuamente con la comunidad para mejorar la seguridad de nuestro protocolo y clientes.
+
+Puedes aprender más sobre la seguridad de Telegram aquí:
+https://telegram.org/faq/es#seguridad
+
+{KEYS}
+secreto
+secretos
+chatsecreto
+{VALUE}
+Los chats secretos son el tipo de comunicación más segura en Telegram. Todos los mensajes y archivos en los chats secretos son cifrados de móvil a móvil, lo que significa que sólo tú y tu compañero de chat podéis acceder a ellos. También puedes establecer la autodestrucción en los chats secretos - una vez que el tiempo acabe, los mensajes desaparecen de ambos dispositivos. En las últimas versiones de las aplicaciones oficiales de Telegram, cuando un mensaje es eliminado de un chat secreto en tu dispositivo, también es eliminado desde el dispositivo de tu compañero.
+
+Puedes encontrar más información sobre chats secretos y autodestrucción en las Preguntas Frecuentes:
+https://telegram.org/faq/es#chats-secretos
+
+{KEYS}
+iniciarchatsecreto
+abrirchatsecreto
+iniciarsecreto
+osc
+scs
+{VALUE}
+Para comenzar un chat secreto:
+
+iPhone — Inicia un nuevo mensaje (pulsa el botón de la esquina superior derecha), luego elige 'Nuevo chat secreto'
+Android — Elige 'Nuevo chat secreto' en el menú '...' (en la esquina superior derecha)
+
+Puedes encontrar más información sobre los chats secretos en nuestras Preguntas Frecuentes:
+https://telegram.org/faq/es#chats-secretos
+
+{KEYS}
+emoji
+iconos
+{VALUE}
+Para enviar emoticonos en iOS, necesitas el teclado emoji. Ve a Ajustes - General - Teclado - Teclados - Añadir nuevo teclado... Emoji.
+
+Luego, puedes cambiar al teclado cada vez que quieras usar un emoticono.
+
+{KEYS}
+creargrupo
+cg
+{VALUE}
+Para crear un grupo:
+
+iOS - Empieza un nuevo mensaje, luego selecciona 'Nuevo grupo'
+
+Android - Selecciona 'Nuevo grupo' en el menú '...'
+
+{KEYS}
+tick
+check
+leido
+{VALUE}
+En Telegram:
+1 tick = mensaje entregado
+2 ticks = mensaje leído (abierto)
+
+{KEYS}
+sdfilecache
+sdpath
+sd
+{VALUE}
+Los archivos descargados se almacenan automáticamente en esta carpeta:
+/sdcard/android/data/org.telegram.messenger/cache
+
+Puedes acudir a esa carpeta y, vía copiar/pegar, pasarla al directorio que prefieras.
+
+Siempre puedes pulsar justo al lado del archivo en Telegram (no sobre él, sino junto a él en la misma línea) y seleccionar 'Guardar en descargas'.
+
+{KEYS}
+panic
+dp
+{VALUE}
+Telegram es un proyecto no comercial y de código abierto. Cualquiera puede revisar nuestro código y ver exactamente lo que hace nuestra aplicación:
+https://telegram.org/apps
+
+Aquí hay algunos artículos sobre Telegram en medios respetables, como la BBC, Reuters y otros:
+https://telegram.org/press
+
+{KEYS}
+contactosiphone
+contactiphone
+coni
+{VALUE}
+Prueba con estos dos trucos, a ver qué tal:
+
+1. Cambia, temporalmente, el nombre del contacto en los contactos del teléfono (añade algunos símbolos, guárdalo y luego vuélvelo a la normalidad)
+2. Si eso no ayuda, reinicia tu sesión (en Telegram: ve a Ajustes - Editar - Cerrar sesión, luego inicia sesión nuevamente. Es un poco rollo pero funciona)
+
+{KEYS}
+contactandroid
+cona
+{VALUE}
+Prueba con estos dos trucos, a ver qué tal:
+
+1. Fuerza el cierre de la aplicación y vuelve a abrirla. Para hacer esto, ve a la lista de las aplicaciones actualmente abiertas y desliza la aplicación fuera de ella.
+2. Cambia, temporalmente, el nombre del contacto en los contactos del teléfono (añade algunos símbolos, guárdalo y luego vuélvelo a la normalidad)
+
+{KEYS}
+notificacionesios
+noti
+{VALUE}
+1. Por favor, asegúrate que las notificaciones estén activadas en Telegram y en los ajustes del teléfono (Ajustes - Centro de notificaciones).
+
+2. ¿Estás seguro que las notificaciones no están desactivadas para un chat específico o grupo? (Ve a la Info del chat o grupo - Editar - asegúrate que las notificaciones estén establecidas como Activas)
+
+3. Si todo está activado, prueba esto: apaga Telegram (ve a la pantalla de inicio, presiona dos veces el botón home, cierra Telegram (deslízalo hacia arriba)), luego ve a los Ajustes del teléfono, pon el estilo de alertas de Telegram en Nada. Vuelve a abrir Telegram, ve a los Ajustes del teléfono, pon las alertas nuevamente en el estilo Tiras.
+
+{KEYS}
+notificacionesandroid
+nota
+{VALUE}
+¡Hola! Por favor, ve a Ajustes - Notificaciones y sonidos - Restablecer todas las notificaciones. Tras eso, no deberías tener problemas.
+
+Ten en cuenta que, si hay apps que 'maten' procesos en segundo plano, pueden existir problemas con el Servicio de notificaciones de Telegram.
+
+{KEYS}
+motivo
+{VALUE}
+¡Gracias por exponer tu motivo y esperamos verte pronto de nuevo por Telegram!
+
+{KEYS}
+dontunderstand
+{VALUE}
+Sorry, I don't understand you.
+
+{KEYS}
+no
+{VALUE}
+Lo siento, Telegram aún no incorpora esa característica, pero puede que en un futuro la incorporemos ;-)
+
+{KEYS}
+ayudar
+{VALUE}
+No somos una organización comercial, así que estamos buscando voluntarios que nos ayuden con el soporte para los usuarios. Si estás interesado en responder preguntas sobre Telegram a usuarios de tu país, por favor, echa un vistazo a la Iniciativa del Soporte de Telegram. https://core.telegram.org/tsi
+
+{KEYS}
+downloads
+down
+nube
+{VALUE}
+Para evitar ocupar más memoria de la necesaria en tu dispositivo, Telegram no descarga automáticamente los archivos que te envían. Para hacerlo, tan sólo tienes que tocar al lado del archivo en cuestión (pero no encima, sino al lado en la conversación) y seleccionar Guardar en Descargas ;-)
+
+{KEYS}
+loginotherphone
+liop
+{VALUE}
+¡Hola! Telegram importa automáticamente contactos desde el dispositivo en el que se inicie la cuenta.
+
+De ese modo, si iniciaste Telegram en otro equipo, se importaron los contactos que estaban almacenados ahí.
+
+Tienes dos opciones:
+
+- Eliminar los contactos uno a uno. Eso sí, sólo podrás quitar los contactos que estén usando Telegram. Los que no, no pueden ser quitados de manera manual.
+
+- Eliminar tu cuenta por completo y volver a crearla. Es una solución bastante radical, pero te ayudará a quitar todos los contactos que tenías importados por error y volver a importar los que tú quieras.
+
+Ten en cuenta que, en caso de elegir la segunda opción, perderás todos los datos vinculados a la cuenta ya existente.

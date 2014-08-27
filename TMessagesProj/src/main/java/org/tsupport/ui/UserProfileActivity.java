@@ -315,10 +315,12 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
 
     public void didReceivedNotification(int id, Object... args) {
         if (id == MessagesController.updateInterfaces) {
-            int mask = (Integer)args[0];
-            if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 || (mask & MessagesController.UPDATE_MASK_NAME) != 0) {
-                if (listView != null) {
-                    listView.invalidateViews();
+            if (args.length >  0) {
+                int mask = (Integer) args[0];
+                if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 || (mask & MessagesController.UPDATE_MASK_NAME) != 0) {
+                    if (listView != null) {
+                        listView.invalidateViews();
+                    }
                 }
             }
         } else if (id == MessagesController.contactsDidLoaded) {

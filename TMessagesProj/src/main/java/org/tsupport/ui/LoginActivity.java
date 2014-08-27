@@ -344,9 +344,6 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
             }
         });
         showAlertDialog(builder);*/
-        if (android.os.Build.VERSION.SDK_INT >= 11) {
-            TsupportApi.getInstance().addUser();
-        }
         clearCurrentState();
         presentFragment(new MessagesActivity(null), true);
     }

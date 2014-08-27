@@ -1,0 +1,365 @@
+{KEYS}
+
+telegram
+
+tg
+
+{VALUE}
+
+Telegram is like SMS and email combined — fast, versatile and powerful. You can send messages, photos, videos and files of any type (doc, zip, mp3, etc.) to people who are in your phone contacts and have Telegram. You can also create groups for up to 200 people.
+
+With Telegram you can do all of this on all your devices at the same time.
+
+Here is a list of Telegram apps for mobile devices and desktops:
+
+https://telegram.org/apps
+
+If you want to learn more about Telegram, check out our FAQ:
+
+https://telegram.org/faq
+
+And here you can find a selection of articles about us:
+
+https://telegram.org/press
+
+{KEYS}
+
+invitefriends
+
+inv
+
+{VALUE}
+
+To invite friends just send them this link:
+
+https://telegram.org/dl
+
+Remember, that your friend need to know your phone number to send you a message.
+
+Here is a full list of Telegram apps:
+
+https://telegram.org/apps
+
+{KEYS}
+
+sendmsg
+
+sm
+
+{VALUE}
+
+To send a message, you need to have your friends in your phone contacts. And they need to have Telegram.
+
+iOS: On the 'Chats' screen, tap the button in the top-right corner (the 'compose' button), then select your friend from the list and send the message.
+
+Android: On the main screen, tap the new message button, then select your friend from the list and send the message.
+
+{KEYS}
+
+whatsapp
+
+wa
+
+{VALUE}
+
+Telegram is free, secure and powerful. With Telegram you can create groups for up to 200 members and share an unlimited amount of photos, large videos and files of any type (.doc, .ppt, .zip, etc.). Telegram is a noncommercial open source project.
+
+You can use Telegram on all your devices at once (including desktop computers and no-wifi devices). Here's a full list of Telegram apps:
+
+https://telegram.org/apps
+
+If you want to learn more about Telegram, check out our FAQ:
+
+https://telegram.org/faq
+
+You may also find these articles about Telegram interesting:
+
+https://telegram.org/press
+
+{KEYS}
+
+free
+
+fr
+
+{VALUE}
+
+Telegram is a noncommercial open-source project. It is 100% free and will stay free forever — no ads, no fees, no subscriptions. You can read more about this here: https://telegram.org/faq#q-how-are-you-going-to-make-money-out-of-this
+
+Remember: Telegram needs internet to work. So if you are not on wifi, your carrier may charge you for mobile data.
+
+{KEYS}
+
+base
+
+b
+
+{VALUE}
+
+Telegram is a global project with infrastructure all over the world. We tried to keep it as decentralized and spread across as many different jurisdictions as possible. If you want to learn more about the people behind Telegram, please check out our FAQ:
+
+https://telegram.org/faq#general-questions
+
+You may also find these articles interesting:
+
+http://telegram.org/press
+
+{KEYS}
+
+security
+
+sec
+
+{VALUE}
+
+We worked hard to make Telegram the most secure mass-market messenger. And we are continuously working with the community to improve the security of our protocol and clients.
+
+You can learn more about Telegram security here:
+
+https://telegram.org/faq#security
+
+{KEYS}
+
+secretchats
+
+sc
+
+{VALUE}
+
+Secret chats are the most secure type of communication in Telegram. All messages and media in Secret Chats are encrypted using end-to-end encryption, which means only you and your chat partner can access them. You can also set a self-destruct timer in Secret Chats — once the timer runs out, the messages disappear from both devices.
+
+In the latest version of official Telegram apps, when a message is deleted from a Secret Chat on your device (even without the timer) it is also deleted from your partner's device.
+
+You can find more info on Secret Chats and self-destruct timers in the FAQ:
+
+https://telegram.org/faq#secret-chats
+
+{KEYS}
+
+secretstart
+
+scs
+
+{VALUE}
+
+To start a secret chat:
+
+iPhone — start a new message (button in the top-right corner), then choose 'New secret chat'
+
+Android — choose 'New secret chat' in the '…' menu (top-right corner)
+
+You can find more info on Secret Chats in the FAQ:
+
+https://telegram.org/faq#secret-chats
+
+{KEYS}
+
+timer
+
+sd
+
+{VALUE}
+
+Self-destruct timers are available in Secret Chats.
+
+You can learn more about them here:
+
+https://telegram.org/faq#q-how-do-self-destructing-messages-work
+
+{KEYS}
+
+delete
+
+del
+
+{VALUE}
+
+You can delete your account here:
+
+https://telegram.org/deactivate
+
+May I ask why you are leaving?
+
+{KEYS}
+
+lastseen
+
+ls
+
+{VALUE}
+
+For the moment, we don't have an 'invisible' mode in Telegram. But we may add it in the future.
+
+{KEYS}
+
+emoji
+
+{VALUE}
+
+To send emoticons in iOS you need the emoji keyboard. Go to Settings — Keyboard — Keyboards — Add a keyboard.. Then find Emoji in the list.
+
+You can switch to this keyboard whenever you want to use an emoticon.
+
+{KEYS}
+
+creategroup
+
+gr
+
+{VALUE}
+
+To create a group:
+
+iPhone — start a new message (button in the top-right corner), then choose 'New group'
+
+Android — choose 'New group' in the '…' menu (top-right corner)
+
+{KEYS}
+
+deliverystatus
+
+check
+
+2
+
+{VALUE}
+
+In Telegram:
+
+1 check = message delivered
+
+2 checks = message read (open)
+
+{KEYS}
+
+sdfilecache
+
+sdpath
+
+{VALUE}
+
+Downloaded files are automatically stored in this folder:
+
+/sdcard/android/data/org.telegram.messenger/cache
+
+You can always tap next to a file in Telegram (not on it, but next to it on the same line) and choose 'save to download folder'.
+
+{KEYS}
+
+panic
+
+dp
+
+{VALUE}
+
+Telegram is a noncommercial open-source project. Anyone can check our code and see exactly what our apps do:
+
+https://telegram.org/apps
+
+Here are some articles about Telegram in respectable media like the BBC, Reuters and others:
+
+https://telegram.org/press
+
+{KEYS}
+
+contactiphone
+
+coni
+
+{VALUE}
+
+Could I ask you to try these two magic tricks?
+
+1. Temporarily change the name of the missing contact in Phone Contacts (not in Telegram) — add a few symbols, then change back again
+
+2. If that doesn’t help, try to relogin (in Telegram: go to Settings — Edit — Log out, then log in again).
+
+{KEYS}
+
+contactandroid
+
+cona
+
+{VALUE}
+
+Could I ask you to try these two magic tricks?
+
+1. Please force quit and relaunch the app. To do this, go to the currently-running-apps list and swipe the app off the list.
+
+2. Temporarily change the name of the contact in phone contacts (add a few symbols, then change back again)
+
+{KEYS}
+
+contactbug
+
+conb
+
+{VALUE}
+
+Looks like something is wrong. We need to look into this situation. Could you please tell me:
+
+1. Your friend's phone number
+
+2. How exactly this numbers are stored in your phone book (international or local format?)
+
+Thanks!
+
+{KEYS}
+
+notifyiphone
+
+noti
+
+{VALUE}
+
+1. Please make sure notifications are on in Telegram AND in phone settings (Settings — Notification Center).
+
+2. Are you sure notifications aren't disabled for a specific chat or group? (Go to Chat info — edit — make sure Notifications are set to Enabled).
+
+3. If everything is ON, try this: shut down Telegram (go to home screen, hold home button, kill Telegram (swipe upwards), then go to Phone Settings, set alert style for Telegram to NONE. Relaunch Telegram, go to Phone Settings, set alert style back to banners.
+
+Should work. Tell me if it doesn't.
+
+{KEYS}
+
+notifyandroid
+
+nota
+
+{VALUE}
+
+1. Are you sure notifications aren't disabled for a specific chat or group? (Go to Chat or Group Info — make sure Notifications are set to ON).
+
+2. If you have the unofficial Telegram, S-edition installed, check if notifications are enabled in both apps.
+
+3. Follow this link and see if you have Google Play Services: https://play.google.com/store/apps/details?id=com.google.android.gms
+
+4. Do you have a google account connected to your phone?
+
+{KEYS}
+
+e
+
+{VALUE}
+
+Sorry, we only speak English and -insert language- for the moment. I don't understand you.
+
+{KEYS}
+
+dontunderstand
+
+du
+
+{VALUE}
+
+Sorry, I don't understand you.
+
+{KEYS}
+
+nofeature
+
+no
+
+{VALUE}
+
+Sorry, we don't have this feature at the moment. But we will consider adding it later.

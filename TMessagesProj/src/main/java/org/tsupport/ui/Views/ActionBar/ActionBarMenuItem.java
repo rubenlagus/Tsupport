@@ -43,9 +43,9 @@ public class ActionBarMenuItem extends ImageView {
     private ActionBarMenu parentMenu;
     private ActionBarPopupWindow popupWindow;
     private ActionBar parentActionBar;
-    private EditText searchField;
+    public EditText searchField;
     private boolean isSearchField = false;
-    private ActionBarMenuItemSearchListener listener;
+    public ActionBarMenuItemSearchListener listener;
     private Rect rect = null;
     private int[] location = null;
     private View selectedMenuView = null;
@@ -210,6 +210,16 @@ public class ActionBarMenuItem extends ImageView {
         } else {
             popupWindow.showAsDropDown(this, parentActionBar.getMeasuredWidth() - popupLayout.getMeasuredWidth() - getLeft() - parentMenu.getLeft(), 0);
         }
+    }
+
+    public boolean isSearchFieldVisible() {
+        if (searchField != null) {
+            if (searchField.getVisibility() == VISIBLE) {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     public boolean toggleSearch() {

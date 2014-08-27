@@ -450,4 +450,7 @@
     <string name="ConversationOwnedByMe">Esta conversación la tienes asignada.</string>
     <string name="ConversationOwnedNotSupported">Tu dispositivo no soporta la asignación de conversaciones, ten cuidado.</string>
     <string name="loadUserPhotos">Fotos de usuario</string>
+    <string name="searching">Buscando...</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="search">Busqueda</string>
 </resources>

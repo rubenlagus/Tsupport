@@ -1,0 +1,340 @@
+{KEYS}
+hi
+
+{VALUE}
+Hallo! Willkommen im Telegram Support-Chat. Wie darf ich dir helfen?
+
+
+{KEYS}
+wasist
+
+{VALUE}
+Telegram ist wie SMS schreiben, nur viel besser. Man kann über Telegram Textnachrichten, Fotos, Videos und Dateien jeglicher Art an Freunde und Bekannte senden, welche ebenfalls Telegram benutzen.
+
+Telegram in Kurzform:
+
+- schnell und sicher kommunizieren, auch per Sprachnachricht
+- alle Chats sind verschlüsselt
+- senden und empfangen von beliebigen Dateitypen
+- Gruppen mit bis zu 200 Mitgliedern
+- Broadcast-Listen (Verteilerlisten)
+- für Handys, Tablets, Desktops und sogar Browser erhältlich
+- normale Chats und Gruppenchats werden synchronisiert
+- geheime Chats mit Ende-zu-Ende-Verschlüsselung
+- Selbstzerstörungstimer für Chatnachrichten
+- alle offiziellen Telegram Apps sind OpenSource
+- absolut kostenfrei, denn Telegram ist kein kommerzielles Projekt
+
+Übersicht der Telegram Apps für mobile Geräte und Desktops:
+https://telegram.org
+
+{KEYS}
+einladen
+
+{VALUE}
+Um Freunde einzuladen, schicke ihnen einfach folgenden Link:
+https://telegram.org/dl
+
+Vergiss nicht, dass deine Freundin / dein Freund deine Telefonnummer wissen muss, um dich zu kontaktieren.
+
+Eine Übersicht aller Telegram Apps:
+https://telegram.org/apps
+
+{KEYS}
+neu
+
+{VALUE}
+Um eine neue Nachricht zu senden, musst du auf jeden Fall deine Freunde in deinem Telefonadressbuch abgespeichert haben und sie müssen natürlich auch Telegram benutzen.
+
+Auf der Chat-Übersicht einfach auf den Knopf für “neue Nachricht” tippen und den Empfänger aus der Liste auswählen.
+
+{KEYS}
+standort
+
+{VALUE}
+Telegram ist ein internationales Projekt mit weltweit verteilter Infrastruktur. Wir haben versucht Telegram so weit wie möglich zu dezentralisieren, um lokalen Rechtssprechungen aus dem Wege zu gehen.
+
+{KEYS}
+unsichtbar
+
+{VALUE}
+Wir bieten derzeit leider keinen "Unsichtbarkeitsmodus" an. Wußtest du, dass blockierte Personen weder dein Profilbild, noch deinen letzten Status sehen können? Du kannst also bestimmte Kontakte aussuchen, für die du als offline aufscheinst.
+
+
+{KEYS}
+na
+
+{VALUE}
+Wir werden in der Zukunft noch viele interessante Funktionen einbauen. Wir sind sehr dankbar über jede Anregung. Ob und welche Funktion wann eingebaut wird, können wir aber leider zum aktuellen Zeitpunkt noch nicht sagen.
+
+{KEYS}
+updt
+
+{VALUE}
+Leider können wir keine Updatetermine mitteilen, da trotz größter Planung immer mal wieder was dazwischen kommen könnte. Am besten wäre es, wenn du automatische Updates bei Google Play (ehemals Playstore für Android) oder im Appstore von Apple aktivieren würdest. So bist du stets auf dem aktuellsten Stand und einer der ersten Nutzer, die ein Update bekommen.
+
+{KEYS}
+update
+
+{VALUE}
+Bitte mache ein Update von uns, du benutzt noch eine alte Version von Telegram. Die aktuellste Version von Telegram für Android findest du unter https://telegram.org/dl/android
+
+{KEYS}
+pfad
+
+{VALUE}
+Alle Medien, also Bilder, Videos, etc. werden bei Android unter “/sdcard/android/data/org.telegram.messenger/cache” abgelegt. Diesen Pfad einfach mit einem Datei-Explorer oder der Galerie-App öffnen.
+
+{KEYS}
+del
+
+{VALUE}
+Du kannst dein Konto hier löschen:
+https://telegram.org/deactivate
+
+Dürfen wir wissen, warum du Telegram verlassen möchtest?
+
+{KEYS}
+warum
+
+{VALUE}
+Wir wollten einen guten Messenger für uns selbst.
+
+Ein Messenger, der schnell und gleichzeitig extrem sicher ist und in dem keine Nachrichten von Betreibern mitgelesen werden können.
+
+Es sollte aber ein Messenger sein, der nicht nur vom Handy, sondern auch von PCs und anderen Geräten aus benutzt werden kann und mit dem man große Dateien aller Art (nicht nur Fotos und Videos sondern auch Musik, etc.) versenden kann.
+
+Da es so etwas noch nicht gab, haben wir es selbst programmiert.
+
+Telegram ist übrigens ein nicht-kommerzielles Projekt. Kommerzielle Interessen werden niemals unserer Mission, einen Messenger für Jedermann anzubieten, im Wege sein.
+
+{KEYS}
+hga
+
+{VALUE}
+Im Hauptmenü auf die drei kleinen Quadrate rechts oben tippen und danach Einstellungen wählen. Bei älteren Androiversionen oder bei Handys mit Hardwaretasten bitte die Menütaste antippen. In den Einstellungen findest du einen Verweis zu den Chathintergründen.
+
+Sofern du ein eigenes Foto als Hintergrund für alle Chats festlegen möchtest, tippe auf das erste Platzhalterfoto und schon sollte sich deine Galerie öffnen und du kannst ein Foto von deinem Handy festlegen.
+
+{KEYS}
+hgi
+
+{VALUE}
+In die Telegram-Einstellungen wechseln, "Chat-Hintergrundbild" wählen und schon kannst du ein eines unserer Beispielbilder festlegen. Die Beispiele sind zu langweilig? Einfach auf "Foto-Bibliothek" tippen um eigene Fotos von deinem Handy zu wählen.
+
+{KEYS}
+gratis
+
+{VALUE}
+Wir glauben an einen schnellen und sicheren Nachrichtenaustausch, der außerdem noch 100% kostenfrei ist.
+
+Kommerzielle Unternehmen stehen häufig vor der Notwendigkeit, ihre ideologische Einstellung zu verändern um einfach mehr Gewinn zu machen. Das ist der Grund, warum Telegram ein nicht-kommerzielles Projekt ist.
+
+Um unabhängig zu bleiben, macht Telegram keinerlei Umsatz, es wird niemals Werbung verkauft und ebenso wenig kann man Geld in das Telegram Projekt investieren. Telegram ist einfach ein sicherer Messenger für Jedermann. Dank eines Fonds, haben wir genug Geld, um den Dienst dauerhaft kostenfrei anzubieten.
+
+{KEYS}
+haken
+
+{VALUE}
+Ein Haken: Nachricht zugestellt
+
+Zwei Haken: Nachricht gelesen
+
+Sieht man einen Haken dauerhaft, kann es bedeuten, dass die Nachricht vom Empfänger ignoriert wird oder man wurde einfach blockiert.
+
+{KEYS}
+timer
+
+{VALUE}
+Der Selbstzerstörungstimer ist nur in geheimen Chats verfügbar. Nach der ausgewählten Zeit werden dann Nachrichten auf beiden Endgeräten gelöscht. Der Countdown beginnt natürlich erst, sobald die andere Person die Nachricht auch gelesen hat (zwei Haken im Chat) und gilt auch nur für neue Nachrichten ab der Aktivierung des Timers.
+
+iPhone: Um den Timer auf iPhones zu aktivieren, einfach in die "Geheimen Chat Informationen" wechseln. Dazu tippt man das kleine Profilfoto rechts oben im Chat an und wählt unten die Zeit aus.
+
+Android: Um den Timer auf Android-Geräten zu aktivieren, einfach im geheimen Chat den Timer oben aktivieren.
+
+{KEYS}
+status
+
+{VALUE}
+Da wir an eine direkte Kommunikation zwischen Nutzern glauben, bieten wir keinen Status an. Wenn du jemandem etwas mitteilen möchtest, schreib’ der Person doch einfach eine Nachricht oder gleich einer Gruppe mit bis zu 200 Mitgliedern. Das ist eindeutig persönlicher und Kontakte freuen sich über eine Nachricht hier und da.
+
+{KEYS}
+geheim
+
+{VALUE}
+Telegram bietet zwei verschiedene Arten von Chats an. Alle Chats sind natürlich stark verschlüsselt.
+
+Normale Chats (dazu zählen auch Gruppenchats):
+
+- werden verschlüsselt bei uns in der Cloud gespeichert
+- kannst du auch von anderen Geräten fortführen
+- Synchronisation deines Chatverlaufs
+- für PC, Mac, Browser, Tablets und Handys verfügbar
+- keine Datensicherung notwendig
+
+Die normalen Chats bleiben natürlich bei uns nur so lange auf unseren Servern bestehen, bis du sie auf deinem Handy löschst.
+
+Geheime Chats:
+
+- Ende-zu-Ende Verschlüsselung
+- Nachrichtenselbstzerstörung dank Timerfunktion
+- sind auf ein Endgerät beschränkt
+- keine Speicherung bei Telegram, daher auch keine Chatsynchronisation
+- keine Datensicherung möglich
+- keine Weiterleitung innerhalb von Telegram
+- beliebig viele geheime Chats mit dem gleichen Kontakt
+
+
+Entscheide selbst, was für deine Zwecke der richtige Chat ist.
+
+
+{KEYS}
+blockiert
+
+{VALUE}
+Man wird nicht benachrichtigt, wenn man von einer Person blockiert wurde. Nachrichten werden jedoch nicht mehr zugestellt. Es steht dauerhaft ein Haken im Chat bei der abgesendeten Nachricht.
+
+Blockierte Personen sehen:
+- Dein Profilbild nicht
+- Deinen letzten Status nicht; du erscheinst als offline
+
+Diese Veränderungen können ein wenig dauern, nachdem du eine Person blockiert hast.
+
+{KEYS}
+blockieren
+
+{VALUE}
+Die Blockierungsliste findest du direkt in den Telegram-Einstellungen. Die Einstellung nennt sich "Blockierte Benutzer". Dort kannst du den oder die Benutzer später auch wieder von der Blockierungsliste entfernen.
+
+{KEYS}
+nonc
+
+{VALUE}
+Telegram kann nicht übernommen werden, da es als nicht-kommerzielles Projekt so organisiert ist, dass dies schlichtweg nicht möglich ist.
+
+{KEYS}
+datum
+
+{VALUE}
+Die erste Telegramversion wurde im August 2013 veröffentlicht. Seit dem Start benutzen Telegram bereits weit über 35 Millionen aktive Nutzer weltweit und täglich werden es mehr.
+
+{KEYS}
+bena
+
+{VALUE}
+Wenn du keine Benachrichtigungen bei Android erhältst, kann das verschiedene Ursachen haben.
+
+Bitte stelle vorab sicher, dass du unsere aktuellste Version installiert hast.
+
+Da Telegram ein OpenSource Projekt ist, kann jeder Entwickler sich einen eigenen Telegram-Client erstellen. https://telegram.org/dl/android wäre die Downloadadresse unserer offiziellen Android App.
+
+Häufige Fehlerquellen:
+
+1. Du hast die Benachrichtigungen innerhalb von Telegram deaktiviert. Schau dazu bitte in den Telegram-Einstellungen in den Bereich "Benachrichtigungen und Töne".
+
+
+2. Ein Blick in die Android-Einstellungen, Unterrubrik "Konten" und dann "Telegram" könnte auch hilfreich sein. Dort sollte Telegram aktiviert sein.
+
+
+3. Wir setzen bei unserer Android-Variante auf Google und parallel auf einen eigenen Benachrichtigungsdienst, den man in den Telegram Einstellungen aktivieren und deaktivieren kann. Wir empfehlen dringend, den Telegram-Benachrichtigungsdienst aktiviert zu lassen.
+
+
+Telegram kann geschlossen werden, darf aber auf keinen Fall per Taskmanager beendet werden, da damit auch der Benachrichtigungsdienst beendet werden würde.
+
+
+4. Besonders ältere Android-Endgeräte verfügen leider nur über sehr wenig Arbeitsspeicher. Der zuständige Benachrichtigungsdienst verbraucht teilweise etwas mehr Speicher und so könnte Android den Dienst einfach aufgrund von Speichermangel selbstständig beenden. Da hilft leider nur noch ein regelmäßiger Neustart des Endgerätes (Tablet, Smartphone…), damit wieder Speicher freigegeben wird.
+
+
+{KEYS}
+beni
+
+{VALUE}
+Wenn du keine Benachrichtigungen erhältst, kann das verschiedene Ursachen haben.
+
+Bitte stelle vorab sicher, dass du unsere aktuellste Version installiert hast.
+
+Da Telegram ein OpenSource Projekt ist, kann jeder Entwickler sich einen eigenen Telegram-Client erstellen. Unsere offizielle iOS App findest du unter https://telegram.org/dl/ios
+
+1. Möglicherweise hast du in der App die Benachrichtigungen deaktiviert. Überprüfe bitte, ob du in den Telegram-Einstellungen unter "Benachrichtigungen" die gewünschte Option aktiviert hast. Sollte das Problem nur in einem bestimmten Chat bestehen, so tippe im Chat auf den Kontakt und dann auf "Info". Danach oben rechts auf "Bearbeiten" und dann die überprüfen, ob bei "Benachrichtigung" wirklich auch "Aktiviert" steht.
+
+2. Vielleicht haben sich Einstellungen auf deinem Handy zurückgesetzt. Schau dazu bitte in den iOS Einstellungen im Untermenü "Allgemein" nach den Hintergrundaktualisierungen. Telegram sollte dort aktiv (grün) sein.
+
+3. Des Weiteren könntest du Telegram kurz mal per Multitasking schließen. Danach in die iOS Einstellungen wechseln und dort "Mitteilungen → Telegram" auswählen. Dort die Benachrichtigungen mal auf "Keine" stellen und Telegram einmal kurz starten und wieder per Multitasking beenden um erneut in die iOS Einstellungen zu wechseln (wie zuvor, also Mitteilungen → Telegram) und entsprechend die Einstellung "Keine" in deine Wunschbenachrichtigungsform zu ändern.
+
+
+Sehr wichtig: Das Schließen von Telegram per Multitasking sollte man nur in absoluten Notfällen machen, da es unerwünschte Nebenwirkungen hat. Im normalen Betrieb reicht es, Telegram einfach zu minimieren, also 1x den "Homebutton" zu drücken.
+
+{KEYS}
+emoji
+
+{VALUE}
+Die kleinen bunten Emoticons sind bei Apple-Geräten bereits vorinstalliert, müssen also nur noch von dir aktiviert werden.
+
+1. IOS EINSTELLUNGEN (nicht die Einstellungen von Telegram!)
+
+2. ALLGEMEIN > TASTATUR
+
+3. TASTATUREN > TASTATUR HINZUFÜGEN
+
+4. EMOJI-SYMBOLE
+
+Sobald die Emoji aktiviert ist, kann man auf die Emoji-Tastatur zugreifen, indem man auf das Globussymbol links neben der Leertaste tippt.
+
+{KEYS}
+erfinder
+
+{VALUE}
+Telegram ist ein weltweites, nicht-kommerzielles Gemeinschaftsprojekt. Die Idee für Telegram hatten verschiedene Personen, die diese dann bei der Entwicklung immer weiter verändert und verbessert haben. Es gibt hier also nicht wie bei Facebook "ein" Gesicht hinter dem Projekt. Das hat den Vorteil, dass alle ihre Ideen einbringen können und diese gemeinsam diskutieren und ausarbeiten.
+
+{KEYS}
+nummer
+
+{VALUE}
+Jede neue Rufnummer ist ein neues Telegram-Konto. Es ist nicht möglich, Chats zu übertragen. Wir können uns vorstellen, in der Zukunft eine Möglichkeit anzubieten, sich mit mehreren Nummern parallel anzumelden. Derzeit ist es aber leider nicht möglich.
+
+Schritt 1: Altes Konto bei Telegram löschen (telegram.org/deactivate besuchen, alte Rufnummer eingeben und den Code, welchen man im Chat erhält, auf der Seite eingeben).
+
+Schritt 2: Nach erfolgreicher Löschung bei Telegram abmelden (Einstellungen > Bearbeiten) danach nur noch mit der neuen Nummer anmelden.
+
+{KEYS}
+durov
+
+{VALUE}
+Telegram wird von Pavel und Nikolai Durov unterstützt. Pavel unterstützt Telegram finanziell und ideologisch, während Nikolai seine technischen Kenntnisse einbringt. Um Telegram möglich zu machen, hat Nikolai ein einzigartiges Datenprotokoll entwickelt, welches offen und sicher ist und zudem noch für die Nutzung auf mehreren Datenzentren optimiert wurde. Als Ergebnis bietet Telegram Sicherheit, Zuverlässigkeit und Geschwindigkeit in jedem Netzwerk. Auch wenn die Durov Brüder sowie einige der Hauptentwickler in Russland geboren sind, ist Telegram nicht mit Russland verbunden. Weder rechtlich noch geografisch. Wir sind ein internationaler Dienst.
+
+{KEYS}
+privacy
+
+{VALUE}
+Große Firmen im Internet wie beispielsweise Facebook oder Google haben in den letzten Jahren massiv die Privatsphäre der Nutzer eingeschränkt.
+
+Deren Marketingabteilungen versuchen bis heute Nutzer davon zu überzeugen, dass oberflächliche Einstellungen der Privatsphäre wie beispielsweise das “Verstecken des Onlinestatus” oder das“ Einschränken von öffentlichen Profildaten” ausreichend ist.
+
+Solche Funktionen dienen oft aber nur der Besänftigung. Im Hintergrund werden weiter eifrig Nutzerdaten mit Marketingunternehmen und anderen Firmen geteilt.
+
+
+Hier bei Telegram denken wir, dass echte Privatsphäre ein kostbares und vor allem schützenswertes Gut ist und die folgenden zwei Punkte stattdessen oberste Priorität haben sollten:
+
+- Schutz der privaten Konversationen vor Dritten, bspw. Behörden, Arbeitgebern, etc.
+
+- Schutz der privaten Daten vor Drittfirmen, bspw. Marketingagenturen, Werbeunternehmen, etc.
+
+Telegram ist ein nicht-kommerzielles Projekt mit dem Ziel, einen absolut kostenfreien Messenger für Jedermann anzubieten, ohne die sonst üblichen Einschränkungen.
+
+Wir konzentrieren uns auf echte Privatsphäreangelegenheiten und möchten Nutzer nicht mit unsinnigen Einstellungen irritieren, welche im Endeffekt keine Sicherheit bieten.
+
+
+{KEYS}
+gruppe
+
+{VALUE}
+iPhone: Im Hauptmenü oben rechts auf den Knopf tippen, dort befindet sich "neue Gruppe".
+
+Android: Im Hauptmenü oben rechts auf "…" tippen, danach "neue Gruppe".
+
+
+{KEYS}
+paranoid
+
+{VALUE}
+Wir bieten jedem eine Lösung. Telegram bietet besonders geheime Chats, welche auf einer Ende-zu-Ende-Verschlüsselung basieren und keinerlei Spuren auf unseren Servern hinterlassen. Die geheimen Chats unterstützen die Selbstzerstörung von Nachrichten und verbieten das Weiterleiten. Das Einzige was geheime Chats nicht bieten wäre cloud-basierter Speicher, denn geheime Chats können ausschließlich auf den Endgeräten genutzt werden von wo sie aus gestartet wurden.

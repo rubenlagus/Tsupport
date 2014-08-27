@@ -1,0 +1,453 @@
+{KEYS}
+telegram
+tg
+
+{VALUE}
+Telegram è come SMS ed email uniti - veloce, versatile e potente. Puoi inviare messaggi, foto, video e file di ogni tipo (doc, zip, mp3, etc.) a persone che sono nei tuoi Contatti del Telefono e hanno Telegram. Puoi inoltre creare gruppi fino a 200 membri.
+
+Con Telegram puoi fare tutto questo su tutti i tuoi dispositivi contemporaneamente.
+Qui c'è la lista delle applicazioni Telegram per dispositivi mobili e computer:
+https://telegram.org/apps
+
+Se vuoi sapere di più su Telegram, controlla le nostre FAQ:
+https://telegram.org/faq
+E qui puoi trovare una selezione di articoli su di noi:
+https://telegram.org/press
+
+{KEYS}
+invitefriends
+inv
+
+{VALUE}
+Per invitare i tuoi amici, mandagli direttamente questo link:
+https://telegram.org/dl
+
+Ricorda che il tuo amico deve avere il tuo numero di telefono per poterti inviare un messaggio.
+Qua la lista completa delle app Telegram:
+https://telegram.org/apps
+
+{KEYS}
+sendmsg
+sm
+
+{VALUE}
+Per inviare un messaggio, devi avere i tuoi amici nei Contatti del Telefono. E loro devono avere Telegram.
+
+iOS: Nella schermata "Chats", premi il tasto nell'angolo in alto a destra (il tasto "composizione"), quindi selezione il tuo amico dalla lista e mandagli un messaggio.
+
+Android: Nella schermata principale, premi il bottone per il nuovo messaggio, quindi selezione il tuo amico dalla lista e mandagli un messaggio.
+
+{KEYS}
+whatsapp
+wa
+
+{VALUE}
+Telegram è gratis, sicuro e potente. Con Telegram puoi creare gruppi fino a 200 membri e condividere un numero illimitato di foto, grandi video e file di ogni tipo (.doc, .ppt, .zip, etc.). Telegram è un progetto open-source non commerciale.
+
+Puoi usare Telegram su tutti i tuoi dispositivi subito (inclusi desktop e device senza Wi-Fi). Qua la lista completa delle app Telegram:
+https://telegram.org/apps
+
+Se vuoi scoprire di più su Telegram, controlla le nostre FAQ:
+https://telegram.org/faq
+Potresti inoltre trovare questi articoli su Telegram interessanti:
+https://telegram.org/press
+
+{KEYS}
+whatsapplist
+walist
+
+{VALUE}
+Beh, ti faccio qualche esempio di funzionalità migliori, a mio parere:
+- Telegram è gratis, e lo sarà sempre: nessuna "tassa" di abbonamento, nessuna pubblicità
+- Telegram è multipiattaforma: puoi usarlo sul tuo smartphone, sul tuo tablet o sul tuo desktop (PC/Mac/Linux)
+- Telegram è cloud based (non perdi i tuoi messaggi quando cambi telefono, e i tuoi messaggi sono sincronizzati su tutti i tuoi dispositivi!)
+- Tutti i messaggi inviati tramite Telegram sono cifrati, perché Telegram ha a cuore la sicurezza e la tua privacy
+- Se vuoi un livello di sicurezza aggiuntivo, in Telegram ci sono le Chat Segrete, che vengono memorizzate solo sui dispositivi di origine e danno la possibilità di autodistruggere i messaggi
+- In Telegram puoi creare gruppi fino a 200 persone, e sapere quanti membri del gruppo sono online!
+- Tramite Telegram puoi inviare file di qualunque tipo (non solo immagini, video e note audio), e file grandi fino a 1 gb!
+- Con Telegram puoi scegliere se inviare le tue foto compresse (invio più veloce, qualità leggermente inferiore) oppure nelle loro dimensioni originali
+- Telegram invia i messaggi più velocemente di qualunque altra applicazione di messaggistica!
+- Telegram è open source: tutti possono controllare e verificare il codice utilizzato dall'infrastruttura e dai dispositivi!
+- Telegram ha un'infrastruttura distribuita: i server sono sparsi in tutto il mondo, per garantire maggior sicurezza e velocità!
+
+Da ultimo, ma non certo per importanza, se hai un problema, una domanda o qualunque curiosità, puoi parlare con il supporto di Telegram, fatto da volontari (umani!) che parlano la tua lingua e sono a tua disposizione! :-D
+
+{KEYS}
+free
+fr
+
+{VALUE}
+Telegram è un progetto open-source non commerciale. È gratis al 100% e lo rimarrà per sempre - niente pubblicità, niente tasse, niente abbonamenti. Puoi scoprire di più su questo aspetto qui: https://telegram.org/faq#q-how-are-you-going-to-make-money-out-of-this
+
+Ricorda: Telegram ha bisogno di internet per funzionare. Quindi se non sei sotto rete Wi-Fi, il tuo operatore potrebbe addebitarti un costo per la rete mobile.
+
+{KEYS}
+base
+b
+
+{VALUE}
+Telegram è un progetto globale con infrastrutture in tutto il mondo. Abbiamo provato a tenerlo decentralizzato e diviso tra più giurisdizioni possibili. Se vuoi conoscere di più sulle persone dietro Telegram, controlla le nostre FAQ
+https://telegram.org/faq#general-questions
+
+Potresti inoltre trovare questi articoli interessanti:
+http://telegram.org/press
+
+{KEYS}
+security
+sec
+
+{VALUE}
+Abbiamo lavorato sodo per rendere Telegram l'applicazione di messaggistica di massa più sicura. E stiamo continuamente lavorando con la community per migliorare la sicurezza del nostro protocollo e dei nostri client.
+
+Puoi scoprire di più sulla sicurezza di Telegram qui:
+https://telegram.org/faq#security
+
+{KEYS}
+secretchats
+sc
+
+{VALUE}
+Le Chat Segrete sono il sistema di comunicazione più sicuro in Telegram. Tutti i messaggi e i media nelle Chat Segrete sono crittografati utilizzando la crittografia end-to-end, il che significa che solo tu e il tuo partner di chat avete accesso ad essi. Puoi inoltre impostare un Timer di autodistruzione nelle Chat Segrete - quando il tempo scade, i messaggi scompaiono da entrambi i dispositivi.
+
+Nell'ultima versione dell'app ufficiale di Telegram, quando un messaggio viene eliminato da una Chat Segreta (anche senza il timer) è comunque eliminato dal dispositivo del tuo partner.
+
+Puoi trovare più info sulle Chat Segrete e sul timer di autodistruzione nelle FAQ:
+https://telegram.org/faq#secret-chats
+
+{KEYS}
+secretstart
+scs
+
+{VALUE}
+Per iniziare una chat segreta:
+
+iPhone - crea un nuovo messaggio (pulsante nell'angolo in alto a destra), quindi selezione "Nuova chat segreta"
+Android - seleziona "Nuova chat segreta" nel menu "…" (angolo in alto a destra)
+
+Puoi trovare più info sulle Chat Segrete nelle FAQ:
+https://telegram.org/faq#secret-chats
+
+{KEYS}
+timer
+sd
+
+{VALUE}
+I Timer di autodistruzione sono disponibili nelle Chat Segrete.
+Puoi capire di più su di loro qui:
+https://telegram.org/faq#q-how-do-self-destructing-messages-work
+
+{KEYS}
+delete
+del
+
+{VALUE}
+Per eliminare il tuo account devi andare qui:
+https://telegram.org/deactivate
+
+Posso chiederti perché te ne stai andando?
+
+{KEYS}
+block
+
+{VALUE}
+Cosa succede se blocchi un utente? L'utente bloccato:
+- può inviarti messaggi ma questi non ti verranno mai recapitati, neanche se e quando rimuoverai l'utente dai contatti bloccati. L'utente bloccato vedrà i messaggi che invia nella sua conversazione con te;
+- non può invitarti in un gruppo o ad una Chat Segreta
+- continua a vedere la sua conversazione con te e i messaggi scambiati prima che lo bloccassi (a meno che non la cancelli di sua volontà).
+
+La persona bloccata può ancora accedere al tuo profilo, ma:
+- non può vedere la tua immagine di profilo
+- non può vedere il tuo stato (al posto di "online" o "ultimo accesso" vedrà offline o invisibile, a seconda delle app)*
+- può vedere il tuo nome o il tuo stato "sta scrivendo" Ricorda che se blocchi un utente, non scompari dalla sua lista di contatti, in quanto lui ha il tuo numero salvato in rubrica!
+* dopo aver bloccato una persona, ci vuole un po' di tempo prima che ciò si verifichi 
+nella nostra app per Android puoi inviare messaggi agli utenti bloccati, che li riceveranno normalmente.
+
+{KEYS}
+blocked
+offline
+invisibile
+
+{VALUE}
+Se vedi una persona come "offline" o "invisibile" (a seconda dell'app), è quasi certo che la persona ti abbia bloccato!
+Se vuoi una prova ulteriore, prova ad invitare quella persona in un gruppo (prova a farlo un paio di volte, a distanza di qualche ora).
+Se non riesci ad aggiungerlo al gruppo, allora avrai la certezza!
+
+{KEYS}
+nofeature
+no
+
+{VALUE}
+Ci dispiace, ma Telegram non supporta questa funzionalità al momento!
+Attualmente gli sviluppatori stanno lavorando per offrire un servizio veloce, sicuro, e stabile :-D
+
+Ti ringraziamo comunque per il suggerimento, che terremo in considerazione per il futuro! ;-)
+
+{KEYS}
+lastseen
+ls
+
+{VALUE}
+Per il momento, non abbiamo una modalità "invisibile" in Telegram, ma potremmo aggiungerla in futuro!
+
+PS: sapevi che le persone bloccate non possono vedere il tuo stato (apparirai loro come "offline" o "invisibile", a seconda dell'app) e la tua immagine profilo? :-D
+
+{KEYS}
+status
+
+{VALUE}
+Se ci pensi lo "stato" è solo un'eredità delle applicazioni di messaggistica desktop (il buon vecchio Messenger :-D ), implementato in alcune app di messaggistica mobile: non ha una vera e propria funzionalità pratica!
+Al momento preferiamo migliorare velocità, sicurezza e affidabilità delle nostre app, e aggiungere funzionalità più "utili". Ma in futuro chissà… :-)
+
+PS: che ne dici di quest'idea: se c'è un gruppo di amici che ti piacerebbe avvisare dei cambiamenti del tuo "stato", potrebbe essere divertente creare un gruppo con tutti questi amici e inviare i tuoi "stati" a questo gruppo! :-D
+
+{KEYS}
+iphonelanguage
+ipnl
+ita
+
+{VALUE}
+La lingua italiana su iOS è finalmente DISPONIBILE! :-D 
+Per averla scarica l'ultimo aggiornamento di Telegram HD da qui: https://telegram.org/dl/ios
+
+{KEYS}
+telegramhd
+tghd
+
+{VALUE}
+Telegram HD è la nuova applicazione ufficiale di Telegram per iOS.
+
+Telegram HD è in italiano e supporta sia iPhone sia iPad, oltre agli altri device iOS.
+In più la nuova applicazione porta:
+- liste broadcast
+- caricamento video 5 volte più veloce
+- supporto a gif animate (allegale come documento, non come immagine!)
+- supporto a foto larghe
+
+Scarica Telegram HD da qui telegram.org/dl/ios
+
+{KEYS}
+tghda
+
+{VALUE}
+PS: stai usando una versione di Telegram che non verrà più aggiornata, ti consiglio di scaricare Telegram HD che è in italiano, ha funzionalità migliori e meno problemi ;-)
+
+{KEYS}
+emoji
+
+{VALUE}
+Per mandare emoticons su iOS ti serve la tastiera con le emoji. Vai in Impostazioni (del dispositivo) > Generali > Tastiera > Tastiere > Aggiungi una tastiera. Quindi trova la voce "Emoji" nella lista.
+
+Dopo di ché, premendo il tasto a forma di mappamondo sulla tastiera (in ogni applicazione) vedrai tutte le emoticon che desideri!
+
+{KEYS}
+creategroup
+gr
+
+{VALUE}
+Per creare un gruppo:
+
+iPhone - crea un nuovo messaggio (pulsante nell'angolo in alto a destra), quindi seleziona "Nuovo gruppo"
+Android - seleziona "Nuovo gruppo" nel menu "…" (angolo in alto a destra)
+
+{KEYS}
+deliverystatus
+check
+2
+
+{VALUE}
+In Telegram:
+1 check = messaggio inviato
+2 checks = messaggio letto (aperto)
+
+{KEYS}
+sdfilecache
+sdpath
+
+{VALUE}
+I file scaricati vengono automaticamente archiviati in questa cartella:
+/sdcard/android/data/org.telegram.messenger/cache
+
+Puoi sempre premere nella conversazione affianco al file o all'immagine (non su file, ma vicino a lui, nella stessa linea) e scegliere "Salva nella cartella di download" (o "Salva nella galleria", a seconda del tipo di file).
+
+{KEYS}
+panic
+dp
+
+{VALUE}
+Telegram è un progetto open-source non commerciale. Chiunque può controllare il nostro codice e vedere cosa fa l'app:
+https://telegram.org/apps
+
+Qua ci sono alcuni articoli riguardanti Telegram fatti da media rispettabili come BBC, Reuters e altri:
+https://telegram.org/press
+
+{KEYS}
+contactiphone
+coni
+
+{VALUE}
+Posso chiederti di provare questi due trucchetti?
+
+1. Cambia temporaneamente il nome del contatto mancante nei Contatti del Telefono (non in Telegram) - aggiungi qualche simbolo, poi ripristinalo
+
+2. Se questo non dovesse aiutare, prova a rifare il login (in Telegram: vai in Impostazioni - Modifica - Log out, quindi rifai il login).
+
+{KEYS}
+contactandroid
+cona
+
+{VALUE}
+Posso chiederti di provare questi due trucchetti?
+
+1. Per favore chiudi l'app e rilanciala. Per farlo, vai alla lista delle app in esecuzione e rimuovi l'app da questa lista.
+2. Cambia temporaneamente il nome del contatto nei contatti del telefono (aggiungi qualche simbolo, poi ripristinalo)
+
+{KEYS}
+contactbug
+conb
+
+{VALUE}
+Sembra che qualcosa sia andato storto. Abbiamo bisogno di controllare la situazione. Puoi per favore dirmi:
+
+1. Il numero di telefono del tuo amico
+2. Come questo numero è salvato nella tua rubrica (formato internazionale o locale?)
+
+Grazie!
+
+{KEYS}
+notifyiphone
+noti
+
+{VALUE}
+1. Per favore controlla che le notifiche su Telegram E nelle impostazioni del telefono (Impostazioni - Centro Notifiche) siano ON.
+
+2. Sei sicuro che le notifiche non siano disattivate per una certa chat o un gruppo? (Vai alla pagina Info della Chat - modifica - controlla che le Notifiche siano impostate su Enabled).
+
+3. Se tutto è ON, prova questo: chiudi Telegram (vai alla home screen, tieni premuto il tasto home, chiudi Telegram (swipe verso l'altro)), poi vai nelle Impostazioni del Telefono, imposta le notifiche di Telegram su NO. Riapri Telegram, vai nelle Impostazioni del Telefono, reimposta il tono delle notifiche.
+
+Dovrebbe andare. Dimmi se non funziona.
+
+{KEYS}
+notifyandroid
+nota
+
+{VALUE}
+1. Sei sicuro che le notifiche non siano disattivate per una certa chat o un gruppo? (Vai alla pagina Info della Chat o del Gruppo - controlla che le notifiche siano su ON).
+
+2. Se hai Telegram non ufficiale, la versione "S”, controlla se le notifiche sono attivate in entrambe le applicazioni.
+
+3. Vai a questo link e controlla se hai installati i Google Play Services: https://play.google.com/store/apps/details?id=com.google.android.gms
+
+4. Hai un account Google connesso al tuo dispositivo?
+
+{KEYS}
+e
+lang
+
+{VALUE}
+Scusa, parliamo solamente inglese e italiano per il momento. Non ti capisco!
+
+{KEYS}
+dontunderstand
+du
+
+{VALUE}
+Scusa, non ti capisco.
+
+{KEYS}
+who
+
+{VALUE}
+Siamo il Team di Supporto Italiano di Telegram, composto da volontari sparsi in tutta l'Italia pronti e preparati per rispondere alle richieste degli utenti! :-)
+
+{KEYS}
+realpeople
+rpl
+
+{VALUE}
+Confermo, siamo persone in carne ed ossa! :-) 
+Siamo il supporto italiano per Telegram, dei volontari che si occupano di aiutare gli utenti come te a risolvere dubbi e/o problemi riscontrati.
+
+{KEYS}
+what
+
+{VALUE}
+Rispondo alle domande degli utenti su Telegram! :-D
+
+{KEYS}
+help
+
+{VALUE}
+Siamo contenti che tu voglia dare una mano!
+Qui trovi tutte le informazioni necessarie:
+https://core.telegram.org/tsi/
+
+
+{KEYS}
+ywelcome
+
+{VALUE}
+Ci mancherebbe! Se hai bisogno di altro siamo qui ;-)
+
+{KEYS}
+twitter
+
+{VALUE}
+Ah e comunque abbiamo anche un account Twitter in Italiano dove puoi trovare aggiornamenti e ricevere aiuto! https://twitter.com/telegram_it
+Che ne dici di menzionarci @telegram_it con l'hashtag #switchtotelegram? :-D
+
+{KEYS}
+hi
+whop
+
+{VALUE}
+Ciao! Sono NOME del Supporto Italiano di Telegram!
+Come posso aiutarti? :-)
+
+{KEYS}
+dl
+
+{VALUE}
+Scarica Telegram da qui:
+https://telegram.org/dl
+
+{KEYS}
+dlandroid
+
+{VALUE}
+Scarica Telegram per Android da qui:
+https://telegram.org/dl/android
+
+{KEYS}
+dlios
+
+{VALUE}
+Scarica Telegram per iOS da qui:
+https://telegram.org/dl/ios
+
+{KEYS}
+dlwp
+
+{VALUE}
+Scarica Telegram per Windows Phone da qui:
+https://telegram.org/dl/wp
+
+{KEYS}
+dlpc
+
+{VALUE}
+Scarica Telegram per Windows da qui:
+https://telegram.org/dl/tdesktop
+
+{KEYS}
+dlmac
+
+{VALUE}
+Scarica Telegram per Mac OS X da qui:
+https://telegram.org/dl/osx
+
+{KEYS}
+dlweb
+
+{VALUE}
+Accedi a Telegram da un qualunque browser:
+https://telegram.org/dl/webogram

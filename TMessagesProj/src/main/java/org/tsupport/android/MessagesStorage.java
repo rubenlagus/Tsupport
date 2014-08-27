@@ -898,7 +898,10 @@ public class MessagesStorage {
                     String[] args = {key,value};
                     database.executeInternal("INSERT OR REPLACE INTO template (key, value) VALUES(?,?)", args);
                     database.commitTransactionInternal();
-                    TemplateSupport.rebuildInstance();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing==0) {
+                        TemplateSupport.rebuildInstance();
+                    }
                 } catch (Exception e) {
                     FileLog.e("tmessages", "Error adding template value");
                     FileLog.e("tmessages", e);
@@ -913,7 +916,9 @@ public class MessagesStorage {
             public void run() {
                 try {
                     database.executeFastInternal("DELETE FROM template WHERE key = '" + key + "'").stepThis().dispose();
-                    TemplateSupport.rebuildInstance();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing == 0)
+                        TemplateSupport.rebuildInstance();
                 } catch (Exception e) {
                     FileLog.e("tsupport", e);
                 }

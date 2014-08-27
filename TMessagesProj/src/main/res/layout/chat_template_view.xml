@@ -11,20 +11,20 @@
         <TextView
             android:layout_width="0dp"
             android:layout_weight=".40"
-            android:layout_height="28dp"
+            android:layout_height="30dp"
             android:layout_gravity="left"
             android:textColor="#FFFFFF"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:ellipsize="none"
             android:lines="1"
             android:id="@+id/key_text_view"/>
         <TextView
             android:layout_width="0dp"
             android:layout_weight=".60"
-            android:layout_height="28dp"
+            android:layout_height="30dp"
             android:layout_gravity="left"
             android:textColor="#FFFFFF"
-            android:textSize="20dp"
+            android:textSize="25dp"
             android:ellipsize="end"
             android:lines="1"
             android:id="@+id/value_text_view"/>
