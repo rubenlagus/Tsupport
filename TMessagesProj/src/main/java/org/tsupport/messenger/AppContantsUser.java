@@ -42,6 +42,27 @@ public class AppContantsUser {
         return users.build();
     }
 
+    public static com.appspot.tsupport_in.users.Users getApiServiceHandleIN() {
+        com.appspot.tsupport_in.users.Users.Builder users = new com.appspot.tsupport_in.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return users.build();
+    }
+
+    public static com.appspot.tsupport_ar.users.Users getApiServiceHandleAR() {
+        com.appspot.tsupport_ar.users.Users.Builder users = new com.appspot.tsupport_ar.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return users.build();
+    }
+
+    public static com.appspot.tsupport_ru.users.Users getApiServiceHandleRU() {
+        com.appspot.tsupport_ru.users.Users.Builder users = new com.appspot.tsupport_ru.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return users.build();
+    }
+
     public static com.appspot.tsupport_nl.users.Users getApiServiceHandleNL() {
         com.appspot.tsupport_nl.users.Users.Builder users = new com.appspot.tsupport_nl.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
                 AppContantsOwnConversation.JSON_FACTORY, null);
