@@ -42,6 +42,27 @@ public class AppContantsOwnConversation {
 
         return ownedConversation.build();
     }
+    
+    public static com.appspot.tsupport_in.ownedConversation.OwnedConversation getApiServiceHandleIN() {
+        com.appspot.tsupport_in.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_in.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return ownedConversation.build();
+    }
+
+    public static com.appspot.tsupport_ar.ownedConversation.OwnedConversation getApiServiceHandleAR() {
+        com.appspot.tsupport_ar.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_ar.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return ownedConversation.build();
+    }
+
+    public static com.appspot.tsupport_ru.ownedConversation.OwnedConversation getApiServiceHandleRU() {
+        com.appspot.tsupport_ru.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_ru.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+                AppContantsOwnConversation.JSON_FACTORY, null);
+
+        return ownedConversation.build();
+    }
 
     public static com.appspot.tsupport_nl.ownedConversation.OwnedConversation getApiServiceHandleNL() {
         com.appspot.tsupport_nl.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_nl.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
