@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -123,17 +124,24 @@ public class TemplateSupport {
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             if (br.ready()) {
                 String line;
+                boolean started = false;
                 while ((line = br.readLine()) != null) {
                     if (line.contains("KEYS")) {
                         lines.add(templine);
                         templine = new ArrayList<String>();
+                        if (!started) {
+                            started = true;
+                        }
                     } else {
-                        templine.add(line);
+                        if (started) {
+                            templine.add(line);
+                        }
                     }
                 }
                 br.close();
                 int i = 0;
                 ArrayList<String> keys = new ArrayList<String>();
+                Pattern patternEmptyLine = Pattern.compile("^\\s*$");
                 for (ArrayList<String> line2 : lines) {
                     keys.clear();
                     String value = "";
@@ -150,10 +158,10 @@ public class TemplateSupport {
 
                     for (String key : keys) {
                         System.out.println(key);
-                        if (key.compareToIgnoreCase("\n") != 0) {
+                        if (!patternEmptyLine.matcher(key).find()){
                             modifing++;
                             MessagesStorage.getInstance().putTemplate(key, value);
-                            templates.put(key.replace("\n", ""), value.replaceAll("\\n{3,}","\\n\\n").replaceAll("^\\s+","").replaceAll("\\s+$",""));
+                            templates.put(key.replace("\n", ""), value.replaceAll("\\n{3,}","\\n\\n").replaceAll("^\\s*","").replaceAll("\\s*$",""));
                         }
                     }
                 }
