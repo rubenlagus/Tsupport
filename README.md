@@ -2,7 +2,7 @@
 
 [Telegram](http://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
 
-This repo contains *Telegram Support App for Android* source code.
+This repo contains [Telegram Support App for Android](https://play.google.com/store/apps/details?id=org.tsupport.messenger) source code.
 
 ### API, Protocol documentation
 

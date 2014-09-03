@@ -8,12 +8,15 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -25,23 +28,42 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
 import org.tsupport.messenger.BuildVars;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.RPCRequest;
+import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.SlideView;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+import static org.tsupport.messenger.BuildVars.*;
 
 public class LoginActivityPhoneView extends SlideView implements AdapterView.OnItemSelectedListener {
     private EditText codeField;
@@ -330,22 +352,18 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             delegate.needShowAlert(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
             return;
         } else if (countryState == 2) {
-            FileLog.d("tsupport","Number to check1: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("WrongCountry", R.string.WrongCountry));
             return;
         }
         if (codeField.length() == 0) {
-            FileLog.e("tsupport", "invalid phone number onNextPressed1");
-            FileLog.d("tsupport","Number to check2: " + codeField.getText() + "-" + phoneField.getText());
             delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
             return;
         }
         TLRPC.TL_auth_sendCode req = new TLRPC.TL_auth_sendCode();
         String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
         ConnectionsManager.getInstance().applyCountryPortNumber(phone);
-        FileLog.e("tsupport", "Phone for request:" + phone);
-        req.api_hash = BuildVars.APP_HASH;
-        req.api_id = BuildVars.APP_ID;
+        req.api_hash = APP_HASH;
+        req.api_id = APP_ID;
         req.sms_type = 0;
         req.phone_number = phone;
         req.lang_code = Locale.getDefault().getCountry();
@@ -353,12 +371,11 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             req.lang_code = "en";
         }
 
-        FileLog.e("tsupport", "Lang code: " + req.lang_code);
-        FileLog.e("tsupport", "api_hash: " + req.api_hash);
-        FileLog.e("tsupport", "api_id: " + req.api_id);
-        FileLog.e("tsupport", "sms_type: " + req.sms_type);
-        FileLog.e("tsupport", "phone_number: " + req.phone_number);
-
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+        String userId = "42"+phoneField.getText();
+        userNumberEditor.putString("userId", userId);
+        userNumberEditor.commit();
         final Bundle params = new Bundle();
         params.putString("phone", "+" + codeField.getText() + phoneField.getText());
         params.putString("phoneFormated", phone);
@@ -384,10 +401,6 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
                         } else {
                             if (delegate != null && error.text != null) {
                                 if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                                    FileLog.e("tsupport", "invalid phone number onNextPressed2");
-                                    FileLog.d("tsupport","Number to check3: " + codeField.getText() + phoneField.getText());
-                                    FileLog.d("tsupport","Code to check3: " + error.code);
-                                    FileLog.d("tsupport","tostring to check3: " + error.toString());
                                     delegate.needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
                                 } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                                     delegate.needShowAlert(LocaleController.getString("InvalidCode", R.string.InvalidCode));

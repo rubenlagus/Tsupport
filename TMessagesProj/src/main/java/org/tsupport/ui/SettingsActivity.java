@@ -88,7 +88,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int terminateSessionsRow;
     private int templatesRow;
 //    private int photoDownloadSection;
-//    private int photoDownloadChatRow;
+//    private int userPhotosRow;
 //    private int photoDownloadPrivateRow;
 //    private int audioDownloadSection;
 //    private int audioDownloadChatRow;
@@ -188,7 +188,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         //backgroundRow = rowCount++;
         terminateSessionsRow = rowCount++;
 //        photoDownloadSection = rowCount++;
-//        photoDownloadChatRow = rowCount++;
+
 //        photoDownloadPrivateRow = rowCount++;
 //        audioDownloadSection = rowCount++;
 //        audioDownloadChatRow = rowCount++;
@@ -423,39 +423,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
                     }
-                    /*else if (i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow) {
-                        if (getParentActivity() == null) {
-                            return;
-                        }
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
-                        builder.setItems(new CharSequence[] {
-                                LocaleController.getString("Enabled", R.string.Enabled),
-                                LocaleController.getString("Disabled", R.string.Disabled),
-                                LocaleController.getString("WiFiOnly", R.string.WiFiOnly)
-                        }, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                if (i == photoDownloadChatRow) {
-                                    editor.putInt("photo_download_chat2", which);
-                                } else if (i == photoDownloadPrivateRow) {
-                                    editor.putInt("photo_download_user2", which);
-                                } else if (i == audioDownloadChatRow) {
-                                    editor.putInt("audio_download_chat2", which);
-                                } else if (i == audioDownloadPrivateRow) {
-                                    editor.putInt("audio_download_user2", which);
-                                }
-                                editor.commit();
-                                if (listView != null) {
-                                    listView.invalidateViews();
-                                }
-                            }
-                        });
-                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
-                    }*/
                 }
             });
         } else {
@@ -679,7 +646,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         public boolean isEnabled(int i) {
             return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow /*|| i == backgroundRow*/ ||
                    /* i == askQuestionRow ||*/ i == sendLogsRow || i == sendByEnterRow || i == terminateSessionsRow ||/* i == photoDownloadPrivateRow ||*/
-                    /*i == photoDownloadChatRow ||*/ i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow ||
+                    /* i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow ||
                     i == switchBackendButtonRow /*|| i == telegramFaqRow*/ || i == contactsSortRow || i == contactsReimportRow || i == templatesRow;
         }
 
@@ -711,105 +678,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = li.inflate(R.layout.settings_name_layout, viewGroup, false);
 
-                    ImageButton button = (ImageButton)view.findViewById(R.id.settings_edit_name);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            presentFragment(new SettingsChangeNameActivity());
-                        }
-                    });
-
                     final ImageButton button2 = (ImageButton)view.findViewById(R.id.settings_change_avatar_button);
-                    button2.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (getParentActivity() == null) {
-                                return;
-                            }
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-
-                            CharSequence[] items;
-
-                            TLRPC.User user = MessagesController.getInstance().users.get(UserConfig.getClientUserId());
-                            if (user == null) {
-                                user = UserConfig.getCurrentUser();
-                            }
-                            if (user == null) {
-                                return;
-                            }
-                            boolean fullMenu = false;
-                            if (user.photo != null && user.photo.photo_big != null && !(user.photo instanceof TLRPC.TL_userProfilePhotoEmpty)) {
-                                items = new CharSequence[] {LocaleController.getString("OpenPhoto", R.string.OpenPhoto), LocaleController.getString("FromCamera", R.string.FromCamera), LocaleController.getString("FromGalley", R.string.FromGalley), LocaleController.getString("DeletePhoto", R.string.DeletePhoto)};
-                                fullMenu = true;
-                            } else {
-                                items = new CharSequence[] {LocaleController.getString("FromCamera", R.string.FromCamera), LocaleController.getString("FromGalley", R.string.FromGalley)};
-                            }
-
-                            final boolean full = fullMenu;
-                            builder.setItems(items, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    if (i == 0 && full) {
-                                        TLRPC.User user = MessagesController.getInstance().users.get(UserConfig.getClientUserId());
-                                        if (user != null && user.photo != null && user.photo.photo_big != null) {
-                                            PhotoViewer.getInstance().setParentActivity(getParentActivity());
-                                            PhotoViewer.getInstance().openPhoto(user.photo.photo_big, SettingsActivity.this);
-                                        }
-                                    } else if (i == 0 && !full || i == 1 && full) {
-                                        avatarUpdater.openCamera();
-                                    } else if (i == 1 && !full || i == 2 && full) {
-                                        avatarUpdater.openGallery();
-                                    } else if (i == 3) {
-                                        TLRPC.TL_photos_updateProfilePhoto req = new TLRPC.TL_photos_updateProfilePhoto();
-                                        req.id = new TLRPC.TL_inputPhotoEmpty();
-                                        req.crop = new TLRPC.TL_inputPhotoCropAuto();
-                                        UserConfig.getCurrentUser().photo = new TLRPC.TL_userProfilePhotoEmpty();
-                                        TLRPC.User user = MessagesController.getInstance().users.get(UserConfig.getClientUserId());
-                                        if (user == null) {
-                                            user = UserConfig.getCurrentUser();
-                                        }
-                                        if (user == null) {
-                                            return;
-                                        }
-                                        if (user != null) {
-                                            user.photo = UserConfig.getCurrentUser().photo;
-                                        }
-                                        NotificationCenter.getInstance().postNotificationName(MessagesController.updateInterfaces, MessagesController.UPDATE_MASK_ALL);
-                                        ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
-                                            @Override
-                                            public void run(TLObject response, TLRPC.TL_error error) {
-                                                if (error == null) {
-                                                    TLRPC.User user = MessagesController.getInstance().users.get(UserConfig.getClientUserId());
-                                                    if (user == null) {
-                                                        user = UserConfig.getCurrentUser();
-                                                        MessagesController.getInstance().users.put(user.id, user);
-                                                    } else {
-                                                        UserConfig.setCurrentUser(user);
-                                                    }
-                                                    if (user == null) {
-                                                        return;
-                                                    }
-                                                    MessagesStorage.getInstance().clearUserPhotos(user.id);
-                                                    ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
-                                                    users.add(user);
-                                                    MessagesStorage.getInstance().putUsersAndChats(users, null, false, true);
-                                                    user.photo = (TLRPC.UserProfilePhoto)response;
-                                                    Utilities.RunOnUIThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            NotificationCenter.getInstance().postNotificationName(MessagesController.updateInterfaces, MessagesController.UPDATE_MASK_ALL);
-                                                            UserConfig.saveConfig(true);
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                            showAlertDialog(builder);
-                        }
-                    });
                 }
                 TextView textView = (TextView)view.findViewById(R.id.settings_online);
                 textView.setText(LocaleController.getString("Online", R.string.Online));
@@ -963,6 +832,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
+                                    SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                                    SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+                                    userNumberEditor.clear().commit();
                                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.clear().commit();
@@ -1010,19 +882,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     } else if (sort == 2) {
                         detailTextView.setText(LocaleController.getString("LastName", R.string.SortLastName));
                     }
-                } /*else if (i == photoDownloadChatRow) {
-                    textView.setText(LocaleController.getString("AutomaticPhotoDownloadGroups", R.string.AutomaticPhotoDownloadGroups));
-                    divider.setVisibility(View.VISIBLE);
-                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                    int value = preferences.getInt("photo_download_chat2", 0);
-                    if (value == 0) {
-                        detailTextView.setText(LocaleController.getString("Enabled", R.string.Enabled));
-                    } else if (value == 1) {
-                        detailTextView.setText(LocaleController.getString("Disabled", R.string.Disabled));
-                    } else if (value == 2) {
-                        detailTextView.setText(LocaleController.getString("WiFiOnly", R.string.WiFiOnly));
-                    }
-                } else if (i == photoDownloadPrivateRow) {
+                }  /*else if (i == photoDownloadPrivateRow) {
                     textView.setText(LocaleController.getString("AutomaticPhotoDownloadPrivateChats", R.string.AutomaticPhotoDownloadPrivateChats));
                     divider.setVisibility(View.INVISIBLE);
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -1081,7 +941,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return 0;
             } else if (i == numberSectionRow || i == settingsSectionRow /*|| i == supportSectionRow*/ || i == messagesSectionRow /*|| i == photoDownloadSection || i == audioDownloadSection*/ || i == contactsSectionRow) {
                 return 1;
-            } else if (i == textSizeRow || i == languageRow || i == contactsSortRow  /*|| i == photoDownloadChatRow || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow*/) {
+            } else if (i == textSizeRow || i == languageRow || i == contactsSortRow  /*|| i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow*/) {
                 return 5;
             } else if (i == enableAnimationsRow || i == sendByEnterRow) {
                 return 3;

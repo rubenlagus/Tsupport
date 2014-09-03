@@ -8,6 +8,7 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,13 +17,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.util.Base64;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
+import org.tsupport.android.ContactsController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
@@ -30,6 +34,7 @@ import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
+import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.ActionBarActivity;
@@ -39,8 +44,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class LaunchActivity extends ActionBarActivity implements NotificationCenter.NotificationCenterDelegate, MessagesActivity.MessagesActivityDelegate {
     private boolean finished = false;
@@ -55,6 +71,25 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ApplicationLoader.postInitApplication();
+
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        String userId = "";
+        try {
+            userId = userNumberPreferences.getString("userId", "");
+        } catch (ClassCastException e) { // Compatibility with older versions of the app
+            userId = "";
+        }
+        if (userId.compareToIgnoreCase("") !=  0) {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                TsupportApi.getInstance().addUser(userId);
+            }
+        }
+        else {
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear().commit();
+            UserConfig.clearConfig();
+        }
 
         if (!UserConfig.isClientActivated()) {
             Intent intent = getIntent();
@@ -75,7 +110,6 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                 }
             }
         }
-
         super.onCreate(savedInstanceState);
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -498,24 +532,33 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
 
     @Override
     protected void onDestroy() {
+        PhotoViewer.getInstance().destroyPhotoViewer();
         File dir = AndroidUtilities.getCacheDir();
+        MessagesStorage.getInstance().closeDBandDeleteCache();
         if (dir != null && dir.isDirectory())
             ConnectionsManager.getInstance().deleteDir(dir);
-        MessagesStorage.getInstance().closeDBandDeleteCache();
-        PhotoViewer.getInstance().destroyPhotoViewer();
         super.onDestroy();
-        onFinish();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         // Disabled
-        //Utilities.checkForCrashes(this);
-        Utilities.checkForUpdates(this);
+//        Utilities.checkForCrashes(this);
+//        Utilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);
+        MessagesController.getInstance().getDifference();
         actionBar.setBackOverlayVisible(currentConnectionState != 0);
+    }
+
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override

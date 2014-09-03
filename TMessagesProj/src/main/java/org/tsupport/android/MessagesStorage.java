@@ -22,6 +22,7 @@ import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.DispatchQueue;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.NotificationCenter;
+import org.tsupport.messenger.RPCRequest;
 import org.tsupport.messenger.TLClassStore;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
 
 public class MessagesStorage {
@@ -80,7 +82,7 @@ public class MessagesStorage {
     public void openDatabase() {
         //cacheFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "cache4.db");
         databaseFileInternal = new File(ApplicationLoader.applicationContext.getFilesDir(), "tsupportInternal.db");
-        databaseFileCache = new File(ApplicationLoader.applicationContext.getFilesDir(), "tsupportCache.db");
+        databaseFileCache = new File(ApplicationLoader.applicationContext.getCacheDir(), "tsupportCache.db");
         //boolean createTable = false;
         boolean createTableInternal = false;
         boolean createTableCache = false;
@@ -221,14 +223,37 @@ public class MessagesStorage {
     }
 
     public void closeDBandDeleteCache() {
-        if (database != null) {
-            database.close();
-            database = null;
-        }
-        if (databaseFileCache != null) {
-            databaseFileCache.delete();
-            databaseFileCache = null;
-        }
+        storageQueue.cleanupQueue();
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                lastDateValue = 0;
+                lastSeqValue = 0;
+                lastPtsValue = 0;
+                lastQtsValue = 0;
+                lastSecretVersion = 0;
+
+                lastSavedSeq = 0;
+                lastSavedPts = 0;
+                lastSavedDate = 0;
+                lastSavedQts = 0;
+
+                secretPBytes = null;
+                secretG = 0;
+                if (database != null) {
+                    database.close();
+                    database = null;
+                }
+
+                if (databaseFileCache != null) {
+                    databaseFileCache.delete();
+                    databaseFileCache = null;
+                }
+
+                storageQueue.cleanupQueue();
+                openDatabase();
+            }
+        });
     }
 
     public void cleanUp() {
@@ -264,6 +289,43 @@ public class MessagesStorage {
                 if (databaseFileInternal != null) {
                     databaseFileInternal.delete();
                     databaseFileInternal = null;
+                }
+
+                storageQueue.cleanupQueue();
+                openDatabase();
+            }
+        });
+    }
+
+    public void cleanUpForLoadTSupportUserID() {
+        storageQueue.cleanupQueue();
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                lastDateValue = 0;
+                lastSeqValue = 0;
+                lastPtsValue = 0;
+                lastQtsValue = 0;
+                lastSecretVersion = 0;
+
+                lastSavedSeq = 0;
+                lastSavedPts = 0;
+                lastSavedDate = 0;
+                lastSavedQts = 0;
+
+                secretPBytes = null;
+                secretG = 0;
+                if (database != null) {
+                    database.close();
+                    database = null;
+                }
+//                if (cacheFile != null) {
+//                    cacheFile.delete();
+//                    cacheFile = null;
+//                }
+                if (databaseFileCache != null) {
+                    databaseFileCache.delete();
+                    databaseFileCache = null;
                 }
 
                 storageQueue.cleanupQueue();
@@ -836,7 +898,10 @@ public class MessagesStorage {
                     String[] args = {key,value};
                     database.executeInternal("INSERT OR REPLACE INTO template (key, value) VALUES(?,?)", args);
                     database.commitTransactionInternal();
-                    TemplateSupport.rebuildInstance();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing==0) {
+                        TemplateSupport.rebuildInstance();
+                    }
                 } catch (Exception e) {
                     FileLog.e("tmessages", "Error adding template value");
                     FileLog.e("tmessages", e);
@@ -851,7 +916,9 @@ public class MessagesStorage {
             public void run() {
                 try {
                     database.executeFastInternal("DELETE FROM template WHERE key = '" + key + "'").stepThis().dispose();
-                    TemplateSupport.rebuildInstance();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing == 0)
+                        TemplateSupport.rebuildInstance();
                 } catch (Exception e) {
                     FileLog.e("tsupport", e);
                 }
@@ -874,10 +941,17 @@ public class MessagesStorage {
         return templates;
     }
 
-    public void searchDialogs(final Integer token, final String query, final boolean needEncrypted) {
-        storageQueue.postRunnable(new Runnable() {
+
+
+
+    public void searchDialogs(final Integer token, final String query, final int classGuid) {
+        return;
+        /*storageQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
+
+
+
                 try {
                     ArrayList<TLRPC.User> encUsers = new ArrayList<TLRPC.User>();
                     String q = query.trim().toLowerCase();
@@ -885,7 +959,7 @@ public class MessagesStorage {
                         NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchResults, token, new ArrayList<TLObject>(), new ArrayList<CharSequence>(), new ArrayList<CharSequence>());
                         return;
                     }
-                    ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
+
                     ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
 
                     SQLiteCursor cursor = database.queryFinalizedCache("SELECT u.data, u.status, u.name FROM users as u INNER JOIN contacts as c ON u.uid = c.uid");
@@ -968,7 +1042,7 @@ public class MessagesStorage {
                     FileLog.e("tsupport", e);
                 }
             }
-        });
+        });*/
     }
 
     public void putContacts(final ArrayList<TLRPC.TL_contact> contacts, final boolean deleteAll) {
@@ -1023,24 +1097,8 @@ public class MessagesStorage {
     }
 
     public void applyPhoneBookUpdates(final String adds, final String deletes) {
-        if (adds.length() == 0 && deletes.length() == 0) {
-            return;
-        }
-        storageQueue.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (adds.length() != 0) {
-                        database.executeFastCache(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 0 WHERE sphone IN(%s)", adds)).stepThis().dispose();
-                    }
-                    if (deletes.length() != 0) {
-                        database.executeFastCache(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 1 WHERE sphone IN(%s)", deletes)).stepThis().dispose();
-                    }
-                } catch (Exception e) {
-                    FileLog.e("tsupport", e);
-                }
-            }
-        });
+        // Removed phoneBook updates
+        return;
     }
 
     public void putCachedPhoneBook(final HashMap<Integer, ContactsController.Contact> contactHashMap) {
@@ -2593,9 +2651,9 @@ public class MessagesStorage {
                         SQLitePreparedStatement state = database.executeFastCache("REPLACE INTO messages VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
                         SQLitePreparedStatement state2 = database.executeFastCache("REPLACE INTO media VALUES(?, ?, ?, ?)");
                         for (TLRPC.Message message : messages.messages) {
-                            if (message.message.contains("#tsf")) {
+                            /*if (message.message.contains("#tsf")) {
                                 message.unread = false;
-                            }
+                            }*/
                             state.requery();
                             ByteBufferDesc data = buffersStorage.getFreeBuffer(message.getObjectSize());
                             message.serializeToStream(data);

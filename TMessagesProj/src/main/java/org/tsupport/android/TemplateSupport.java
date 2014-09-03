@@ -1,15 +1,25 @@
 package org.tsupport.android;
 
+import android.widget.Toast;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.NotificationCenter;
+import org.tsupport.messenger.R;
 import org.tsupport.ui.ApplicationLoader;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -31,7 +41,7 @@ public class TemplateSupport {
     private static volatile TemplateSupport Instance = null;
 
 
-    private static Boolean modifing = false;
+    public static int modifing = 0;
     /**
      * Get the instance of the class, creating one if it doesn't exists.
      * @return TemplateSupport  instance.
@@ -64,7 +74,6 @@ public class TemplateSupport {
      * Private constructor of the class.
      */
     private TemplateSupport(Boolean rebuild) {
-        FileLog.e("TemplateSupport", "Creating TemplateSupport instance");
         if (rebuild)
             rebuildInstance();
     }
@@ -75,13 +84,7 @@ public class TemplateSupport {
      * @return Template content or empty string if the key isn't inside the templates Map.
      */
     public String getTemplate(String key) {
-        if(!key.startsWith("%")) {
-            return "";
-        }
-        if(!key.endsWith("%")) {
-            return "";
-        }
-        String cleanKey = key.replace("%","");
+        String cleanKey = key.replace("..","").replace("(","");
         if (templates.containsKey(cleanKey)) {
             return templates.get(cleanKey);
         }
@@ -89,81 +92,94 @@ public class TemplateSupport {
     }
 
     public static void rebuildInstance() {
-        if (!modifing) {
-            modifing = true;
+        if (modifing == 0) {
+            modifing++;
             if (templates != null) {
                 templates.clear();
                 templates.putAll(MessagesStorage.getInstance().getTemplates());
                 NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
             }
-            modifing = false;
+            modifing--;
         }
     }
 
     public static void loadDefaults() {
-        FileLog.e("TemplateSupport", "Loading default templates");
-        String json = null;
-        FileLog.e("TemplateSupport", "Loading templates for template_" + LocaleController.getCurrentLanguageCode() + ".json");
         InputStream is = null;
+        String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".txt";
+        loadFile(fileName, true);
+    }
+
+    public static void loadFile(String fileName, boolean loadDefault) {
+        ArrayList<ArrayList<String>> lines = new ArrayList<ArrayList<String>>();
+        ArrayList<String> templine = new ArrayList<String>();
         try {
-            FileLog.e("TemplateSupport", "Reading json");
-            String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".json";
-
-            is = ApplicationLoader.applicationContext.getAssets().open(fileName);
-
-            int size = is.available();
-
-            byte[] buffer = new byte[size];
-
-            is.read(buffer);
-
-            is.close();
-            FileLog.e("TemplateSupport", "Creating string");
-            json = new String(buffer, "UTF-8");
-            //InputStream is = ApplicationLoader.applicationContext.getAssets().open("template_es.json");
-        } catch (IOException ex) {
-            try {
-                is = ApplicationLoader.applicationContext.getAssets().open("template_en.json");
-                int size = is.available();
-
-                byte[] buffer = new byte[size];
-
-                is.read(buffer);
-
-                is.close();
-                FileLog.e("TemplateSupport", "Creating string");
-                json = new String(buffer, "UTF-8");
-            } catch (IOException ex2) {
-                json = "";
+            InputStream is;
+            if (loadDefault)
+                is = ApplicationLoader.applicationContext.getAssets().open(fileName);
+            else {
+                File f = new File(fileName);
+                is = new FileInputStream(f);
             }
-        }
 
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            if (br.ready()) {
+                String line;
+                boolean started = false;
+                while ((line = br.readLine()) != null) {
+                    if (line.contains("KEYS")) {
+                        lines.add(templine);
+                        templine = new ArrayList<String>();
+                        if (!started) {
+                            started = true;
+                        }
+                    } else {
+                        if (started) {
+                            templine.add(line);
+                        }
+                    }
+                }
+                br.close();
+                int i = 0;
+                ArrayList<String> keys = new ArrayList<String>();
+                Pattern patternEmptyLine = Pattern.compile("^\\s*$");
+                for (ArrayList<String> line2 : lines) {
+                    keys.clear();
+                    String value = "";
+                    boolean inkeys = true;
+                    for (String inline : line2) {
+                        if (inline.contains("{VALUE}"))
+                            inkeys = false;
+                        else if (inkeys) {
+                            keys.add(inline);
+                        } else if (!inkeys) {
+                            value = value + inline + "\n";
+                        }
+                    }
 
-
-        modifing = true;
-        try {
-            FileLog.e("TemplateSupport", "Creating JSONObject");
-            JSONObject obj = new JSONObject(json);
-            FileLog.e("TemplateSupport", "Iterating throw keys");
-            Iterator<String> iterator = obj.keys();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
-                MessagesStorage.getInstance().putTemplate(key,obj.getString(key));
-                templates.put(key, obj.getString(key));
+                    for (String key : keys) {
+                        System.out.println(key);
+                        if (!patternEmptyLine.matcher(key).find()){
+                            modifing++;
+                            MessagesStorage.getInstance().putTemplate(key, value);
+                            templates.put(key.replace("\n", ""), value.replaceAll("\\n{3,}","\\n\\n").replaceAll("^\\s*","").replaceAll("\\s*$",""));
+                        }
+                    }
+                }
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            FileLog.e("TemplateSupport", "File not found");
+        } catch (IOException e) {
+            FileLog.e("TemplateSupport", "File IO Exception");
         }
-        modifing = false;
-        rebuildInstance();
-        FileLog.e("TemplateSupport", "Instance created");
     }
 
     public void putTemplate(String key, String value) {
+        modifing++;
         MessagesStorage.getInstance().putTemplate(key, value);
     }
 
     public void removeTemplate(String key) {
+        modifing++;
         MessagesStorage.getInstance().deleteTemplate(key);
     }
 
@@ -173,6 +189,7 @@ public class TemplateSupport {
 
     public static void removeAll() {
         for (String key: templates.keySet()) {
+            modifing++;
             MessagesStorage.getInstance().deleteTemplate(key);
         }
     }

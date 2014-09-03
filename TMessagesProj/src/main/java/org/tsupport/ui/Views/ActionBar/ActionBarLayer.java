@@ -37,10 +37,10 @@ public class ActionBarLayer extends FrameLayout {
         }
     }
 
-    private FrameLayout backButtonFrameLayout;
-    private ImageView logoImageView;
-    private ImageView backButtonImageView;
-    private TextView titleTextView;
+    public FrameLayout backButtonFrameLayout;
+    public ImageView logoImageView;
+    public ImageView backButtonImageView;
+    public TextView titleTextView;
     private TextView subTitleTextView;
     private ActionBarMenu menu;
     private ActionBarMenu actionMode;
@@ -218,11 +218,13 @@ public class ActionBarLayer extends FrameLayout {
             logoImageView = new ImageView(getContext());
             logoImageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             backButtonFrameLayout.addView(logoImageView);
-        }
-        if (logoImageView != null) {
-            logoImageView.setVisibility(value ? VISIBLE : GONE);
-            logoImageView.setImageResource(resource);
-            positionLogoImage(getMeasuredHeight());
+            if (logoImageView != null) {
+                logoImageView.setVisibility(value ? VISIBLE : GONE);
+                logoImageView.setImageResource(resource);
+                positionLogoImage(getMeasuredHeight());
+            }
+        } else if (!value) {
+            titleTextView.setVisibility(View.GONE);
         }
     }
 
@@ -395,7 +397,7 @@ public class ActionBarLayer extends FrameLayout {
         return actionMode != null && actionMode.getVisibility() == VISIBLE;
     }
 
-    protected void onSearchFieldVisibilityChanged(boolean visible) {
+    public void onSearchFieldVisibilityChanged(boolean visible) {
         isSearchFieldVisible = visible;
         if (titleTextView != null) {
             titleTextView.setVisibility(visible ? GONE : VISIBLE);

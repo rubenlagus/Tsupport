@@ -445,4 +445,12 @@
     <string name="templateKey">Clave</string>
     <string name="templateValue">Valor</string>
     <string name="templatesRemoved">Todas las plantillas han sido eliminadas</string>
+    <string name="loadtemplatesfromfile">El archivo que desea cargar debe tener formato KEYS-VALUE, en caso contrario, las plantillas se cargarán mal</string>
+    <string name="ConversationOwnedByOther">Otro miembro de TSF está respondiendo esta pregunta, ten cuidado.</string>
+    <string name="ConversationOwnedByMe">Esta conversación la tienes asignada.</string>
+    <string name="ConversationOwnedNotSupported">Tu dispositivo no soporta la asignación de conversaciones, ten cuidado.</string>
+    <string name="loadUserPhotos">Fotos de usuario</string>
+    <string name="searching">Buscando...</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="search">Busqueda</string>
 </resources>

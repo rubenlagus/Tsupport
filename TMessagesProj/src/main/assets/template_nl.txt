@@ -1,0 +1,355 @@
+{KEYS}
+nl_update
+nl_upd
+{VALUE}
+Er is een nieuwere versie van Telegram beschikbaar dan de versie die
+je nu gebruikt, deze is hier te vinden:
+
+  https://itunes.apple.com/nl/app/telegram-hd/id898228810?mt=8
+
+De versie die je nu gebruikt krijgt geen updates meer.
+Nadat je die hebt geïnstalleerd kun je deze (de oude) verwijderen als je wilt.
+
+{KEYS}
+nl_update_TLDR
+nl_upd_TLDR
+{VALUE}
+Goed Nieuws,
+Er is een nieuwe versie van Telegram beschikbaar, de versie die je nu
+gebruikt krijgt geen updates meer, dus het is verstandig om over te
+stappen.
+
+Korte handleiding:
+
+1. In de Appstore zoeken naar "Telegram HD" en deze installeren.
+2. Telegram HD starten en aanmelden met het nummer dat je nu ook gebruikt voor de oude versie.
+3. De code om in te loggen komt binnen op je oude Telegram app.
+4. Code invoeren in de nieuwe HD app en klaar ben je.
+
+Je contacten, normale chats en groepschats zijn direct weer
+beschikbaar in de nieuwe Telegram HD app.  Hou er wel rekening mee dat
+privégesprekken niet over gaan naar de nieuwe versie.
+
+Verwijder, nadat je zeker weet dat alles weer naar behoren werkt, de
+oude versie.
+
+{KEYS}
+nl_telegram
+nl_tg
+{VALUE}
+Telegram is het beste van SMS en email gecombineerd, snel, veelzijdig
+en krachtig. Je kunt berichten versturen, video's en willekeurige
+andere bestanden (.doc,.zip,.mp3,enz.) naar mensen in je adresboek die
+Telegram geïnstalleerd hebben. Ook kun je groepen aanmaken met een
+maximale grootte van 200 mensen.
+
+Telegram maakt het mogelijk om dit tegelijkertijd te doen op al je apparaten.
+Hier is een lijst met Telegram apps voor mobiele apparaten en desktops.
+  https://telegram.org/apps
+
+Als je meer te weten wilt komen over Telegram, hier is onze FAQ:
+  https://telegram.org/faq
+En een aantal informatieve artikelen over ons:
+  https://telegram.org/press
+
+{KEYS}
+nl_invitefriends
+nl_inv
+{VALUE}
+Vrienden uitnodigen doe je door ze deze link te sturen:
+  https://telegram.org/dl
+
+Denk eraan dat je vrienden je telefoonnummer moeten weten om je een
+bericht te kunnen sturen.
+Een volledige lijst van alle Telegram apps is hier te vinden:
+  https://telegram.org/apps
+
+
+{KEYS}
+nl_sendmsg
+nl_sm
+{VALUE}
+Om een bericht te versturen moet je contactpersonen hebben die ook
+Telegram geïnstalleerd hebben op hun apparaat.
+
+IOS: In het Chat scherm, selecteer de knop rechtsboven in het scherm
+(nieuw bericht), selecteer vervolgens de gewenste persoon uit de lijst
+en verstuur het bericht.
+
+Android: In het hoofdscherm, druk op de nieuw bericht knop (tekstwolk
+met plus), selecteer vervolgens de gewenste persoon uit de lijst en
+verstuur het bericht.
+
+{KEYS}
+nl_whatsapp
+nl_wa
+{VALUE}
+Telegram is gratis, veilig en krachtig. Met Telegram kun je groepen
+maken met maximaal 200 leden en een ongelimiteerd aantal foto's, grote
+video's en willekeurige andere bestanden (.doc, .ppt, .zip, enz.)
+delen. Telegram is een non-commercieel, open source project.
+
+Je kunt Telegram op al je apparaten tegelijkertijd gebruiken
+(inclusief desktop computers en apparaten zonder 3G-data).
+Hier is een lijst met Telegram apps voor mobiele apparaten en desktops.
+  https://telegram.org/apps
+
+Als meer te weten wilt komen over Telegram, hier is onze FAQ:
+  https://telegram.org/faq
+En een aantal informatieve artikelen over ons:
+  https://telegram.org/press
+
+
+{KEYS}
+nl_free
+nl_fr
+{VALUE}
+Telegram is een non-commercieel open-source project. Telegram is 100%
+gratis en zal dat ook altijd blijven, geen advertenties, geen kosten,
+geen abonnement. Meer hierover is te vinden op:
+
+  https://telegram.org/faq#q-how-are-you-going-to-make-money-out-of-this
+
+Belangrijk: Telegram heeft internet nodig om te functioneren, als je
+geen WiFi verbinding hebt maakt Telegram gebruik van je mobiele data
+verbinding. Je provider kan hier geld voor rekenen.  (Hiervoor heb je
+dus een data-bundel nodig)
+
+
+{KEYS}
+nl_base
+nl_b
+{VALUE}
+Telegram is een wereldwijd project met infrastructuur overal ter
+wereld. We proberen om onze infrastructuur zo gedecentraliseerd en
+verspreid mogelijk te houden over verschillende rechtsgebieden.
+Als je meer te weten wilt komen over de mensen achter Telegram, bekijk
+dan onze FAQ:
+  https://telegram.org/faq#general-questions
+
+En een aantal informatieve artikelen over ons:
+  https://telegram.org/press
+
+
+{KEYS}
+nl_security
+nl_sec
+{VALUE}
+We hebben ons best gedaan om van Telegram de veiligste, grootschalige,
+messenger app te maken. We zijn constant bezig met onze community om
+de beveiliging van ons protocol en de diverse clients te verbeteren.
+
+Hier kun je meer te weten komen over de beveiliging van Telegram:
+  https://telegram.org/faq#security
+
+
+{KEYS}
+nl_secretchats
+nl_sc
+{VALUE}
+Privégesprekken(Secret Chat) zijn de meest veilige vorm van
+communicatie binnen Telegram. Alle berichten en iedere vorm van media
+binnen een privégesprek maken gebruik van end-to-end encryptie, alleen
+jij en de persoon waarmee je communiceert kunnen deze berichten lezen.
+
+In privégesprekken kun je gebruik maken van een verlooptijd, zodra de
+verlooptijd verstrijkt worden de berichten automatisch verwijderd van
+beide apparaten.
+
+In de meest recente officiële apps is het ook zo dat wanneer je een
+bericht verwijderd uit een privégesprek (zonder dat er een verlooptijd
+is ingesteld) het bericht ook verdwijnt bij de persoon waar je het
+privégesprek mee voert.
+
+Meer informatie over de privégesprek functie en verlooptijd is hier in
+de FAQ te vinden:
+  https://telegram.org/faq#secret-chats
+
+{KEYS}
+nl_secretstart
+nl_scs
+{VALUE}
+Om een privégesprek te starten:
+
+iPhone — in Chats, start een nieuwe chat (knop rechtsboven), kies daarna ‘Nieuw privégesprek’
+Android — kies ‘Nieuw privégesprek’ in het ‘⋮’ menu (rechtsboven)
+
+Er is meer informatie over privégesprekken te vinden in de FAQ:
+
+  https://telegram.org/faq#secret-chats
+
+
+{KEYS}
+nl_timer
+nl_sd
+{VALUE}
+In privégesprekken is een verlooptijd mogelijk.
+
+Deze link bevat meer informatie hierover:
+
+  https://telegram.org/faq#q-how-do-self-destructing-messages-work
+
+
+{KEYS}
+nl_delete
+nl_del
+{VALUE}
+Je kunt je account hier verwijderen (gebruik een pc hiervoor, niet je mobiel):
+  https://telegram.org/deactivate
+
+Ik ben ook benieuwd waarom je het account wil verwijderen?
+
+{KEYS}
+nl_lastseen
+nl_ls
+{VALUE}
+Op dit moment is er geen 'onzichtbaar' status in Telegram. Dit zou in
+de toekomst kunnen veranderen.
+Als je voor specifieke contactpersonen 'offline' wil zijn kun je die
+persoon (tijdelijk) blokkeren.
+
+{KEYS}
+nl_sdfilecache
+nl_sdpath
+{VALUE}
+Bestanden worden automatisch opgeslagen in deze folder:
+
+  /sdcard/Android/data/org.telegram.messenger/cache
+
+Je kunt altijd *naast* een bestand tikken in Telegrm (niet op het
+bestand, maar ernaast op dezelfde regel) en dan kiezen voor
+'save to download folder'
+
+
+{KEYS}
+nl_panic
+nl_dp
+{VALUE}
+Telegram is a niet-commercieel open-source project. Iedereen kan de
+code bekijken en precies controleren wat onze apps doen:
+
+  https://telegram.org/apps
+
+Hier is een link naar wat artikelen over Telegram in de media zoals de
+BBC, Reuters en anderen:
+
+  https://telegram.org/press
+
+{KEYS}
+nl_contactiphone
+nl_coni
+{VALUE}
+Kun je het volgende even proberen?
+
+Verander de naam  van de contactpersoon in het adresboek (voeg een
+letter toe, en haal hem dan weer weg). Als dat niet helpt, log dan
+even opnieuw in. (in Telegram: Instellingen — Wijzig — Log uit. Daarna
+weer inloggen.
+
+{KEYS}
+nl_contactandroid
+nl_cona
+{VALUE}
+Kun je het volgende even proberen?
+
+Sluit de app geforceerd af en start deze opnieuw. Om dit te doen, ga
+naar de lijst van draaiende apps en veeg de app van de lijst.
+Verander de naam van de contactpersoon in het adresboek tijdelijk
+(bijv. door even een letter toe te voegen en weer weg te halen)
+
+{KEYS}
+nl_contactbug
+nl_conb
+{VALUE}
+Het lijkt alsof er inderdaard wat mis is. We moeten hier even
+induiken.
+Heb je de volgende informatie voor mij:
+
+  - het tel.nr. van de ander
+  - hoe precies dit nummer in het adresboek is opgeslagen
+    (in internationaal formaat, of startend met een 0 bijv.)
+
+Bedankt!
+
+{KEYS}
+nl_notifyiphone
+nl_noti
+{VALUE}
+Controleer even of berichtgeving in Telegram EN in de algemene
+instellingen aan staan (Instellingen — Berichtencentrum).
+
+Controleer ook of de meldingen voor de specifieke groep of chat aan
+staan. (Ga naar Chat of Groeps Info — Wijzig — controleer of the
+meldingen aan staan).
+
+Als alles op AAN staat, kun je dit proberen: sluit Telegram volledig
+af (ga naar het Home scherm, hou de home knop vast, sluit Telegram af
+(naar boven vegen), ga daarna naar Instellingen, Berichtencentrum, Telegram en zet de
+Meldingsstijl voor Telegram op GEEN.
+Herstart Telegram, ga weer naar de instelling en zet de stijl op
+Stroken
+
+Als het niet werkt, laat het dan even weten.
+
+{KEYS}
+nl_notifyandroid
+nl_nota
+{VALUE}
+Controleer of de meldingen aan staan voor de specifieke groep of
+chat. (Ga naar de Chat of Groeps Info — Meldingen en Geluiden en
+controleer of deze aan staan.)
+
+
+Controleer ook of Google Play services is geïnstalleerd door deze link
+te volgen:
+
+  https://play.google.com/store/apps/details?id=com.google.android.gms
+
+Is er een google account verbonden met de telefoon?
+
+
+{KEYS}
+nl_name
+{VALUE}
+Onze naam is 'Telegram Support Force (TSF)'
+
+{KEYS}
+nl_hallo
+{VALUE}
+Hoi, mijn naam is ... Samen met een aantal anderen geef ik
+support voor Telegram in Nederland. Kan ik je ergens mee helpen?
+
+{KEYS}
+nl_blocked
+{VALUE}
+Wanneer gebruikers zijn geblokkeerd kunnen zij:
+- je profiel-afbeelding niet meer zien
+- niet meer zien wanneer je voor het laatst online was*
+- zien jouw account als 'offline'*
+- kunnen nog WEL zien wanneer je 'aan het typen' bent.
+
+* — Het kan even duren voordat deze zaken actief worden nadat je een
+  persoon blokkeer; het gebeurt niet direct.
+
+{KEYS}
+nl_offline
+{VALUE}
+Wanneer de status van een persoon op 'offline' staat, kan dit de
+volgende dingen betekenen:
+
+  1. De gebruiker is daadwerkelijk offline, er is geen verbinding
+  mogelijk met het apparaat waarop Telegram is geïnstalleerd;
+  2. De gebruiker heeft zichzelf afgemeld, maar het account bestaat
+  nog wel.
+  3. Telegram is verwijderd van het apparaat;
+  4. De persoon heeft je geblokkeerd.
+
+{KEYS}
+nl_broadcastdelA
+{VALUE}
+In de lijst van deelnemers in verzendlijst, contact lang aantappen, dan verschijnt 'remove' menuitem.
+
+{KEYS}
+nl_quest
+{VALUE}
+wilde je een vraag over Telegram aan ons stellen?

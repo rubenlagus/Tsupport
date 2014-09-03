@@ -31,6 +31,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MessageObject {
     public TLRPC.Message messageOwner;
@@ -44,6 +46,7 @@ public class MessageObject {
     public boolean deleted = false;
     public float audioProgress;
     public int audioProgressSec;
+    public ArrayList<String> hashtags = new ArrayList<String>();
 
     private static TextPaint textPaint;
     public int lastLineWidth;
@@ -327,6 +330,13 @@ public class MessageObject {
         int dateMonth = rightNow.get(Calendar.MONTH);
         dateKey = String.format("%d_%02d_%02d", dateYear, dateMonth, dateDay);
 
+        if (messageText != null && messageText.length() > 0) {
+            Pattern hashtagPattern = Pattern.compile("(#[^\\s)]+)");
+            Matcher hashtagMatcher = hashtagPattern.matcher(messageText);
+            while (hashtagMatcher.find()) {
+                hashtags.add(hashtagMatcher.group(1));
+            }
+        }
         generateLayout();
     }
 
@@ -386,11 +396,10 @@ public class MessageObject {
         }
 
         textLayoutBlocks = new ArrayList<TextLayoutBlock>();
-
         if (messageText instanceof Spannable) {
             if (messageOwner.message != null && messageOwner.message.contains(".") && (messageOwner.message.contains(".com") || messageOwner.message.contains("http") || messageOwner.message.contains(".ru") || messageOwner.message.contains(".org") || messageOwner.message.contains(".net"))) {
                 Linkify.addLinks((Spannable)messageText, Linkify.WEB_URLS);
-            } else if (messageText.length() < 100) {
+            } else if (messageText.length() < 1000) {
                 Linkify.addLinks((Spannable)messageText, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES | Linkify.PHONE_NUMBERS);
             }
         }

@@ -449,4 +449,12 @@
     <string name="templateValue">Value</string>
     <string name="template">Template</string>
     <string name="templatesRemoved">All templates have been removed</string>
+    <string name="loadtemplatesfromfile">The file you will load must have KEYS-VALUE format, otherwise templates will load incorrectly.</string>
+    <string name="ConversationOwnedByOther">Other TSF member is answering this conversation, take care about it.</string>
+    <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
+    <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation", please take care when answering.</string>
+    <string name="loadUserPhotos">User photos</string>
+    <string name="searching">Searching...</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="search">Search</string>
 </resources>
