@@ -261,10 +261,10 @@ public class LoginActivitySmsView extends SlideView implements NotificationCente
                             TLRPC.TL_auth_authorization res = (TLRPC.TL_auth_authorization)response;
                             destroyTimer();
                             UserConfig.clearConfig();
-                            MessagesStorage.getInstance().cleanUp();
                             MessagesController.getInstance().cleanUp();
                             UserConfig.setCurrentUser(res.user);
                             UserConfig.saveConfig(true);
+                            MessagesStorage.getInstance().cleanUp(true);
                             ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
                             users.add(res.user);
                             if (android.os.Build.VERSION.SDK_INT >= 11) {

@@ -335,14 +335,7 @@ When users are blocked they:
 {KEYS}
 offline
 {VALUE}
-When a user shows as offline this can mean a number of things:
-
- 1. The user is actually offline, there is no network connection to
- the device that is used for Telegram;
- 2. The user has actively logged out the from Telegram, but the
- account still exists.
- 3. The Telegram app has been uninstalled by the user;
- 4. The user has blocked you.
+When a user shows as offline this means that the user has blocked you.
 
 {KEYS}
 broadcastdelA

@@ -1027,7 +1027,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
             if (updatesStartWaitTime != 0 && updatesStartWaitTime + 1500 < currentTime) {
                 FileLog.e("tsupport", "UPDATES WAIT TIMEOUT - CHECK QUEUE");
-                processUpdatesQueue(false);
+                processUpdatesQueue(0);
             }
         }
         if (!printingUsers.isEmpty() || lastPrintingStringCount != printingUsers.size()) {
@@ -3241,7 +3241,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesStorage.lastPtsValue = res.pts;
                     MessagesStorage.lastSeqValue = res.seq;
                     MessagesStorage.lastQtsValue = res.qts;
-                    processUpdatesQueue(false);
+                    processUpdatesQueue(2);
                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                 } else {
                     if (error.code != 401) {
@@ -3260,7 +3260,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         }
     }
 
-    private void processUpdatesQueue(boolean getDifference) {
+    private void processUpdatesQueue(int state) {
         if (!updatesQueue.isEmpty()) {
             Collections.sort(updatesQueue, new Comparator<TLRPC.Updates>() {
                 @Override
@@ -3276,6 +3276,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
             });
             boolean anyProceed = false;
+            if (state == 2) {
+                TLRPC.Updates updates = updatesQueue.get(0);
+                MessagesStorage.lastSeqValue = getUpdateSeq(updates);
+            }
             for (int a = 0; a < updatesQueue.size(); a++) {
                 TLRPC.Updates updates = updatesQueue.get(a);
                 int seq = getUpdateSeq(updates);
@@ -3306,7 +3310,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             updatesQueue.clear();
             FileLog.e("tsupport", "UPDATES QUEUE PROCEED - OK");
             updatesStartWaitTime = 0;
-            if (getDifference) {
+            if (state == 1) {
                 final int stateCopy = ConnectionsManager.getInstance().getConnectionState();
                 Utilities.RunOnUIThread(new Runnable() {
                     @Override
@@ -3316,7 +3320,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 });
             }
         } else {
-            if (getDifference) {
+            if (state == 1) {
                 final int stateCopy = ConnectionsManager.getInstance().getConnectionState();
                 Utilities.RunOnUIThread(new Runnable() {
                     @Override
@@ -3514,7 +3518,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         MessagesStorage.lastPtsValue = res.state.pts;
                                         MessagesStorage.lastQtsValue = res.state.qts;
                                         ConnectionsManager.getInstance().setConnectionState(0);
-                                        processUpdatesQueue(true);
+                                        processUpdatesQueue(1);
                                     } else if (res instanceof TLRPC.TL_updates_differenceSlice) {
                                         MessagesStorage.lastDateValue = res.intermediate_state.date;
                                         MessagesStorage.lastPtsValue = res.intermediate_state.pts;
@@ -3525,7 +3529,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         MessagesStorage.lastSeqValue = res.seq;
                                         MessagesStorage.lastDateValue = res.date;
                                         ConnectionsManager.getInstance().setConnectionState(0);
-                                        processUpdatesQueue(true);
+                                        processUpdatesQueue(1);
                                     }
                                     MessagesStorage.getInstance().saveDiffParams(MessagesStorage.lastSeqValue, MessagesStorage.lastPtsValue, MessagesStorage.lastDateValue, MessagesStorage.lastQtsValue);
                                     FileLog.e("tsupport", "received difference with date = " + MessagesStorage.lastDateValue + " pts = " + MessagesStorage.lastPtsValue + " seq = " + MessagesStorage.lastSeqValue);
@@ -3737,7 +3741,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         if (needGetDiff && !fromQueue) {
             getDifference();
         } else if (!fromQueue && !updatesQueue.isEmpty()) {
-            processUpdatesQueue(false);
+            processUpdatesQueue(0);
         }
         if (needReceivedQueue) {
             TLRPC.TL_messages_receivedQueue req = new TLRPC.TL_messages_receivedQueue();
