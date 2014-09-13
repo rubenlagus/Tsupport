@@ -490,6 +490,12 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                     args.putInt("chat_id", -lower_part);
                 }
             } else {
+                int high_id = (int)(dialog_id >> 32);
+                if (high_id > 0) {
+                    args.putInt("enc_id", high_id);
+                } else {
+                    args.putInt("chat_id", high_id);
+                }
                 args.putInt("enc_id", (int)(dialog_id >> 32));
             }
             ChatActivity fragment = new ChatActivity(args);

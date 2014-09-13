@@ -399,7 +399,7 @@ public class NotificationsController {
             }
 
             if (photoPath != null) {
-                Bitmap img = FileLoader.getInstance().getImageFromMemory(photoPath, null, null, "50_50", false);
+                Bitmap img = FileLoader.getInstance().getImageFromMemory(photoPath, null, null, "50_50");
                 if (img != null) {
                     mBuilder.setLargeIcon(img);
                 }
@@ -535,7 +535,7 @@ public class NotificationsController {
 
             Boolean value = settingsCache.get(dialog_id);
             boolean isChat = (int)dialog_id < 0;
-            popup = preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
+            popup = (int)dialog_id == 0 ? 0 : preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
             if (value == null) {
                 int notify_override = preferences.getInt("notify2_" + dialog_id, 0);
                 value = !(notify_override == 2 || (!preferences.getBoolean("EnableAll", false) || isChat && !preferences.getBoolean("EnableGroup", false)) && notify_override == 0);

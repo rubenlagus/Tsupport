@@ -57,6 +57,14 @@
     <string name="HiddenName">Nome nascosto</string>
     <string name="SelectChat">Seleziona chat</string>
 
+    <!--broadcasts-->
+    <string name="BroadcastList">Broadcast List</string>
+    <string name="NewBroadcastList">New Broadcast List</string>
+    <string name="EnterListName">Enter list name</string>
+    <string name="YouCreatedBroadcastList">You created a broadcast list</string>
+    <string name="AddRecipient">Add Recipient</string>
+    <string name="KickFromBroadcast">Remove from broadcast list</string>
+
     <!--documents view-->
     <string name="SelectFile">Seleziona file</string>
     <string name="FreeOfTotal">Liberi %1$s di %2$s</string>
@@ -444,13 +452,13 @@
     <string name="templateKey">Chiave</string>
     <string name="templateValue">Valore</string>
     <string name="template">Modello</string>
-    <string name="templatesRemoved">All templates have been removed</string>
-    <string name="loadtemplatesfromfile">The file you will load must have KEYS-VALUE format, otherwise templates will load incorrectly.</string>
-    <string name="ConversationOwnedByOther">Other TSF member is answering this conversation, take care about it.</string>
-    <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
-    <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation", please take care when answering.</string>
-    <string name="loadUserPhotos">User photos</string>
-    <string name="searching">Searching...</string>
-    <string name="hashtags">Hashtags</string>
-    <string name="search">Search</string>
+    <string name="templatesRemoved">Tutti i modelli sono stati rimossi</string>
+    <string name="loadtemplatesfromfile">Il file che caricherai deve avere il formato KEYS-VALUE, altrimenti i modelli non verranno caricati correttamente.</string>
+    <string name="ConversationOwnedByOther">Un altro membro della TSF sta rispondendo alla conversazione, fai attenzione</string>
+    <string name="ConversationOwnedByMe">Questa conversazione é assegnata a te</string>
+    <string name="ConversationOwnedNotSupported">Il tuo dispositivo non supporta la \"Gestione Conversazioni\" , per favore, fai attenzione quando rispondi</string>
+    <string name="loadUserPhotos">Foto dell\'utente</string>
+    <string name="searching">Sto cercando...</string>
+    <string name="hashtags">Hashtag</string>
+    <string name="search">Cerca</string>
 </resources>

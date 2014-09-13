@@ -218,7 +218,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
             MessagesController.getInstance().loadChatInfo(currentChat.id);
-            dialog_id = -chatId;
+            if (chatId > 0) {
+                dialog_id = -chatId;
+            } else {
+                dialog_id = ((long)chatId) << 32;
+            }
         } else if (userId != 0) {
             currentUser = MessagesController.getInstance().users.get(userId);
             if (currentUser == null) {
@@ -561,6 +565,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             if (currentEncryptedChat != null) {
                 actionBarLayer.setTitleIcon(R.drawable.ic_lock_white, AndroidUtilities.dp(4));
+            } else if (currentChat != null && currentChat.id < 0) {
+                actionBarLayer.setTitleIcon(R.drawable.broadcast2, AndroidUtilities.dp(4));
             }
 
 
@@ -1086,7 +1092,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private int getMessageType(MessageObject messageObject) {
         if (currentEncryptedChat == null) {
-            if (messageObject.messageOwner.id <= 0 && messageObject.isOut()) {
+            boolean isBroadcastError = (int)dialog_id == 0 && messageObject.messageOwner.id <= 0 && messageObject.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SEND_ERROR;
+
+            if ((int)dialog_id != 0 && messageObject.messageOwner.id <= 0 && messageObject.isOut() || isBroadcastError) {
                 if (messageObject.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SEND_ERROR) {
                     if (!(messageObject.messageOwner.media instanceof TLRPC.TL_messageMediaEmpty)) {
                         return 0;
@@ -1816,7 +1824,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (messArr.size() != count) {
                         if (isCache) {
                             cacheEndReaced = true;
-                            if (currentEncryptedChat != null) {
+                            if ((int)dialog_id == 0) {
                                 endReached = true;
                             }
                         } else {
@@ -2997,24 +3005,24 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private void forwardSelectedMessages(long did, boolean fromMyName) {
         if (forwaringMessage != null) {
-            if (forwaringMessage.messageOwner.id > 0) {
-                if (!fromMyName) {
+            if (!fromMyName) {
+                if (forwaringMessage.messageOwner.id > 0) {
                     MessagesController.getInstance().sendMessage(forwaringMessage, did);
-                } else {
-                    processForwardFromMe(forwaringMessage, did);
                 }
+            } else {
+                processForwardFromMe(forwaringMessage, did);
             }
             forwaringMessage = null;
         } else {
             ArrayList<Integer> ids = new ArrayList<Integer>(selectedMessagesIds.keySet());
             Collections.sort(ids);
             for (Integer id : ids) {
-                if (id > 0) {
-                    if (!fromMyName) {
+                if (!fromMyName) {
+                    if (id > 0) {
                         MessagesController.getInstance().sendMessage(selectedMessagesIds.get(id), did);
-                    } else {
-                        processForwardFromMe(selectedMessagesIds.get(id), did);
                     }
+                } else {
+                    processForwardFromMe(selectedMessagesIds.get(id), did);
                 }
             }
             selectedMessagesCanCopyIds.clear();
@@ -3025,6 +3033,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     @Override
     public void didSelectDialog(MessagesActivity activity, long did, boolean param) {
         if (dialog_id != 0 && (forwaringMessage != null || !selectedMessagesIds.isEmpty())) {
+            if ((int)dialog_id == 0 && currentEncryptedChat == null) {
+                param = true;
+            }
             if (did != dialog_id) {
                 int lower_part = (int)did;
                 if (lower_part != 0) {

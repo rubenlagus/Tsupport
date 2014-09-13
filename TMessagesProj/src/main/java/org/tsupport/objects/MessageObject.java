@@ -66,6 +66,10 @@ public class MessageObject {
     public ArrayList<TextLayoutBlock> textLayoutBlocks;
 
     public MessageObject(TLRPC.Message message, AbstractMap<Integer, TLRPC.User> users) {
+        this(message, users, 1);
+    }
+
+    public MessageObject(TLRPC.Message message, AbstractMap<Integer, TLRPC.User> users, int preview) {
         if (textPaint == null) {
             textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setColor(0xff000000);
@@ -139,7 +143,7 @@ public class MessageObject {
                 } else if (message.action instanceof TLRPC.TL_messageActionChatEditPhoto) {
                     photoThumbs = new ArrayList<PhotoObject>();
                     for (TLRPC.PhotoSize size : message.action.photo.sizes) {
-                        photoThumbs.add(new PhotoObject(size));
+                        photoThumbs.add(new PhotoObject(size, preview));
                     }
                     if (isFromMe()) {
                         messageText = LocaleController.getString("ActionYouChangedPhoto", R.string.ActionYouChangedPhoto);
@@ -234,13 +238,15 @@ public class MessageObject {
                             }
                         }
                     }
+                } else public MessageObject(TLRPC.Message message, AbstractMap<Integer, TLRPC.User> users, int preview) {
+                    messageText = LocaleController.formatString("YouCreatedBroadcastList", R.string.YouCreatedBroadcastList);
                 }
             }
         } else if (message.media != null && !(message.media instanceof TLRPC.TL_messageMediaEmpty)) {
             if (message.media instanceof TLRPC.TL_messageMediaPhoto) {
                 photoThumbs = new ArrayList<PhotoObject>();
                 for (TLRPC.PhotoSize size : message.media.photo.sizes) {
-                    PhotoObject obj = new PhotoObject(size);
+                    PhotoObject obj = new PhotoObject(size, preview);
                     photoThumbs.add(obj);
                     if (imagePreview == null && obj.image != null) {
                         imagePreview = obj.image;
@@ -249,7 +255,7 @@ public class MessageObject {
                 messageText = LocaleController.getString("AttachPhoto", R.string.AttachPhoto);
             } else if (message.media instanceof TLRPC.TL_messageMediaVideo) {
                 photoThumbs = new ArrayList<PhotoObject>();
-                PhotoObject obj = new PhotoObject(message.media.video.thumb);
+                PhotoObject obj = new PhotoObject(message.media.video.thumb, preview);
                 photoThumbs.add(obj);
                 if (imagePreview == null && obj.image != null) {
                     imagePreview = obj.image;
@@ -264,7 +270,7 @@ public class MessageObject {
             } else if (message.media instanceof TLRPC.TL_messageMediaDocument) {
                 if (!(message.media.document.thumb instanceof TLRPC.TL_photoSizeEmpty)) {
                     photoThumbs = new ArrayList<PhotoObject>();
-                    PhotoObject obj = new PhotoObject(message.media.document.thumb);
+                    PhotoObject obj = new PhotoObject(message.media.document.thumb, preview);
                     photoThumbs.add(obj);
                 }
                 messageText = LocaleController.getString("AttachDocument", R.string.AttachDocument);
