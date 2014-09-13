@@ -865,6 +865,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         TLRPC.TL_dialog dialog = dialogs_dict.get(did);
         if (dialog != null) {
             int lower_part = (int)did;
+            int high_id = (int)(did >> 32);
 
             if (offset == 0) {
                 if (!onlyHistory) {
@@ -883,6 +884,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 MessagesStorage.getInstance().deleteDialog(did, onlyHistory);
                 NotificationCenter.getInstance().postNotificationName(removeAllMessagesFromDialog, did);
                 NotificationCenter.getInstance().postNotificationName(dialogsNeedReload);
+            }
+
+            if (high_id == 1) {
+                return;
             }
 
             if (lower_part != 0) {
@@ -931,14 +936,11 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     }
                 });
             } else {
-                int high_id = (int)(did >> 32);
-                if (high_id > 0) {
-                    if (onlyHistory) {
-                        TLRPC.EncryptedChat encryptedChat = encryptedChats.get(high_id);
-                        sendClearHistoryMessage(encryptedChat);
-                    } else {
-                        declineSecretChat(high_id);
-                    }
+                if (onlyHistory) {
+                    TLRPC.EncryptedChat encryptedChat = encryptedChats.get(high_id);
+                    sendClearHistoryMessage(encryptedChat);
+                } else {
+                    declineSecretChat(high_id);
                 }
             }
         }
@@ -1146,7 +1148,11 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             return;
         }
         int lower_part = (int)dialog_id;
+        int high_id = (int)(dialog_id >> 32);
         if (lower_part != 0) {
+            if (high_id == 1) {
+                return;
+            }
             TLRPC.TL_messages_setTyping req = new TLRPC.TL_messages_setTyping();
             if (lower_part < 0) {
                 req.peer = new TLRPC.TL_inputPeerChat();
@@ -1675,8 +1681,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
     public void markDialogAsRead(final long dialog_id, final int max_id, final int max_positive_id, final int offset, final int max_date, final boolean was) {
         int lower_part = (int)dialog_id;
+        int high_id = (int)(dialog_id >> 32);
+
         if (lower_part != 0) {
-            if (max_id == 0 && offset == 0) {
+            if (max_id == 0 && offset == 0 || high_id == 1) {
                 return;
             }
             TLRPC.TL_messages_readHistory req = new TLRPC.TL_messages_readHistory();
@@ -1908,7 +1916,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         objArr.add(newMsgObj);
         ArrayList<TLRPC.Message> arr = new ArrayList<TLRPC.Message>();
         arr.add(newMsg);
-        MessagesStorage.getInstance().putMessages(arr, false, true);
+        MessagesStorage.getInstance().putMessages(arr, false, true, false);
         updateInterfaceWithMessages(peer, objArr);
         NotificationCenter.getInstance().postNotificationName(dialogsNeedReload);
 
@@ -2012,45 +2020,13 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         newMsg.from_id = UserConfig.getClientUserId();
         newMsg.unread = true;
         newMsg.dialog_id = peer;
+        int high_id = (int)(peer >> 32);
         int lower_id = (int)peer;
         TLRPC.EncryptedChat encryptedChat = null;
         TLRPC.InputPeer sendToPeer = null;
         ArrayList<TLRPC.InputUser> sendToPeers = null;
         if (lower_id != 0) {
-            if (lower_id < 0) {
-                newMsg.to_id = new TLRPC.TL_peerChat();
-                newMsg.to_id.chat_id = -lower_id;
-                sendToPeer = new TLRPC.TL_inputPeerChat();
-                sendToPeer.chat_id = -lower_id;
-            } else {
-                newMsg.to_id = new TLRPC.TL_peerUser();
-                newMsg.to_id.user_id = lower_id;
-
-                TLRPC.User sendToUser = users.get(lower_id);
-                if (sendToUser == null) {
-                    return;
-                }
-                if (sendToUser instanceof TLRPC.TL_userForeign || sendToUser instanceof TLRPC.TL_userRequest) {
-                    sendToPeer = new TLRPC.TL_inputPeerForeign();
-                    sendToPeer.user_id = sendToUser.id;
-                    sendToPeer.access_hash = sendToUser.access_hash;
-                } else {
-                    sendToPeer = new TLRPC.TL_inputPeerContact();
-                    sendToPeer.user_id = sendToUser.id;
-                }
-            }
-        } else {
-            int high_id = (int)(peer >> 32);
-            if (high_id > 0) {
-                encryptedChat = encryptedChats.get(high_id);
-                newMsg.to_id = new TLRPC.TL_peerUser();
-                if (encryptedChat.participant_id == UserConfig.getClientUserId()) {
-                    newMsg.to_id.user_id = encryptedChat.admin_id;
-                } else {
-                    newMsg.to_id.user_id = encryptedChat.participant_id;
-                }
-                newMsg.ttl = encryptedChat.ttl;
-            } else {
+            if (high_id == 1) {
                 if (currentChatInfo == null) {
                     return;
                 }
@@ -2064,7 +2040,39 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
                 newMsg.to_id = new TLRPC.TL_peerChat();
                 newMsg.to_id.chat_id = high_id;
+            } else {
+                if (lower_id < 0) {
+                    newMsg.to_id = new TLRPC.TL_peerChat();
+                    newMsg.to_id.chat_id = -lower_id;
+                    sendToPeer = new TLRPC.TL_inputPeerChat();
+                    sendToPeer.chat_id = -lower_id;
+                } else {
+                    newMsg.to_id = new TLRPC.TL_peerUser();
+                    newMsg.to_id.user_id = lower_id;
+
+                    TLRPC.User sendToUser = users.get(lower_id);
+                    if (sendToUser == null) {
+                        return;
+                    }
+                    if (sendToUser instanceof TLRPC.TL_userForeign || sendToUser instanceof TLRPC.TL_userRequest) {
+                        sendToPeer = new TLRPC.TL_inputPeerForeign();
+                        sendToPeer.user_id = sendToUser.id;
+                        sendToPeer.access_hash = sendToUser.access_hash;
+                    } else {
+                        sendToPeer = new TLRPC.TL_inputPeerContact();
+                        sendToPeer.user_id = sendToUser.id;
+                    }
+                }
             }
+        } else {
+            encryptedChat = encryptedChats.get(high_id);
+            newMsg.to_id = new TLRPC.TL_peerUser();
+            if (encryptedChat.participant_id == UserConfig.getClientUserId()) {
+                newMsg.to_id.user_id = encryptedChat.admin_id;
+            } else {
+                newMsg.to_id.user_id = encryptedChat.participant_id;
+            }
+            newMsg.ttl = encryptedChat.ttl;
         }
         newMsg.out = true;
         newMsg.date = ConnectionsManager.getInstance().getCurrentTime();
@@ -2925,7 +2933,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             newMsg.local_id = newMsg.id = UserConfig.getNewMessageId();
             newMsg.from_id = UserConfig.getClientUserId();
             newMsg.unread = false;
-            newMsg.dialog_id = ((long) chat.id) << 32;
+            newMsg.dialog_id = AndroidUtilities.makeBroadcastId(chat.id);
             newMsg.to_id = new TLRPC.TL_peerChat();
             newMsg.to_id.chat_id = chat.id;
             newMsg.out = false;

@@ -425,6 +425,17 @@ public class MessagesStorage {
                     if (!messagesOnly) {
                         database.executeFastCache("DELETE FROM dialogs WHERE did = " + did).stepThis().dispose();
                         database.executeFastCache("DELETE FROM chat_settings WHERE uid = " + did).stepThis().dispose();
+                        int lower_id = (int)did;
+                        int high_id = (int)(did >> 32);
+                        if (lower_id != 0) {
+                            if (high_id == 1) {
+                                database.executeFastCache("DELETE FROM chats WHERE uid = " + lower_id).stepThis().dispose();
+                            } else if (lower_id < 0) {
+                                database.executeFastCache("DELETE FROM chats WHERE uid = " + (-lower_id)).stepThis().dispose();
+                            }
+                        } else {
+                            database.executeFastCache("DELETE FROM enc_chats WHERE uid = " + high_id).stepThis().dispose();
+                        }
                     }
                     database.executeFastCache("UPDATE dialogs SET unread_count = 0 WHERE did = " + did).stepThis().dispose();
                     database.executeFastCache("DELETE FROM media_counts WHERE uid = " + did).stepThis().dispose();
@@ -2260,7 +2271,7 @@ public class MessagesStorage {
                 }
                 state.dispose();
                 if (withTransaction) {
-                    database.commitTransactionCachfe();
+                    database.commitTransactionCache();
                 }
             } else {
                 String ids = "";
@@ -2532,26 +2543,26 @@ public class MessagesStorage {
                 buffersStorage.reuseFreeBuffer(data);
 
                 int lower_id = (int)dialog.id;
+                int high_id = (int)(dialog.id >> 32);
                 if (lower_id != 0) {
-                    if (lower_id > 0) {
-                        if (!usersToLoad.contains(lower_id)) {
-                            usersToLoad.add(lower_id);
+                    if (high_id == 1) {
+                        if (!chatsToLoad.contains(lower_id)) {
+                            chatsToLoad.add(lower_id);
                         }
                     } else {
-                        if (!chatsToLoad.contains(-lower_id)) {
-                            chatsToLoad.add(-lower_id);
+                        if (lower_id > 0) {
+                            if (!usersToLoad.contains(lower_id)) {
+                                usersToLoad.add(lower_id);
+                            }
+                        } else {
+                            if (!chatsToLoad.contains(-lower_id)) {
+                                chatsToLoad.add(-lower_id);
+                            }
                         }
                     }
                 } else {
-                    int high_id = (int)(dialog.id >> 32);
-                    if (high_id > 0) {
-                        if (!encryptedToLoad.contains(high_id)) {
-                            encryptedToLoad.add(high_id);
-                        }
-                    } else {
-                        if (!chatsToLoad.contains(high_id)) {
-                            chatsToLoad.add(high_id);
-                        }
+                    if (!encryptedToLoad.contains(high_id)) {
+                        encryptedToLoad.add(high_id);
                     }
                 }
             }
@@ -2808,26 +2819,26 @@ public class MessagesStorage {
                         buffersStorage.reuseFreeBuffer(data);
 
                         int lower_id = (int)dialog.id;
+                        int high_id = (int)(dialog.id >> 32);
                         if (lower_id != 0) {
-                            if (lower_id > 0) {
-                                if (!usersToLoad.contains(lower_id)) {
-                                    usersToLoad.add(lower_id);
+                            if (high_id == 1) {
+                                if (!chatsToLoad.contains(lower_id)) {
+                                    chatsToLoad.add(lower_id);
                                 }
                             } else {
-                                if (!chatsToLoad.contains(-lower_id)) {
-                                    chatsToLoad.add(-lower_id);
+                                if (lower_id > 0) {
+                                    if (!usersToLoad.contains(lower_id)) {
+                                        usersToLoad.add(lower_id);
+                                    }
+                                } else {
+                                    if (!chatsToLoad.contains(-lower_id)) {
+                                        chatsToLoad.add(-lower_id);
+                                    }
                                 }
                             }
                         } else {
-                            int high_id = (int)(dialog.id >> 32);
-                            if (high_id > 0) {
-                                if (!encryptedToLoad.contains(high_id)) {
-                                    encryptedToLoad.add(high_id);
-                                }
-                            } else {
-                                if (!chatsToLoad.contains(high_id)) {
-                                    chatsToLoad.add(high_id);
-                                }
+                            if (!encryptedToLoad.contains(high_id)) {
+                                encryptedToLoad.add(high_id);
                             }
                         }
                     }
