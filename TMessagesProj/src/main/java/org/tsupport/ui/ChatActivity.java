@@ -8,6 +8,7 @@
 
 package org.tsupport.ui;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -153,7 +154,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private int unread_to_load = 0;
     private int first_unread_id = 0;
     private int last_unread_id = 0;
-    private boolean unread_end_reached = true;
+    private boolean unread_end_reached = false;
     private boolean loadingForward = false;
     private MessageObject unreadMessageObject = null;
 
@@ -651,6 +652,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             View bottomOverlayChat = fragmentView.findViewById(R.id.bottom_overlay_chat);
             progressView = fragmentView.findViewById(R.id.progressLayout);
             pagedownButton = fragmentView.findViewById(R.id.pagedown_button);
+            pagedownButton.setVisibility(View.GONE);
 
             if (android.os.Build.VERSION.SDK_INT < 11) {
                 topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
@@ -796,8 +798,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         if (firstVisibleItem + visibleItemCount == totalItemCount && unread_end_reached) {
                             showPagedownButton(false, true);
                         }
-                    } else {
-                        showPagedownButton(false, false);
                     }
                     for (int a = 0; a < visibleItemCount; a++) {
                         View view = absListView.getChildAt(a);
@@ -926,7 +926,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
         if (show) {
             if (pagedownButton.getVisibility() == View.GONE) {
-                if (android.os.Build.VERSION.SDK_INT >= 16 && animated) {
+                if (android.os.Build.VERSION.SDK_INT >= 12 && animated) {
                     pagedownButton.setVisibility(View.VISIBLE);
                     pagedownButton.setAlpha(0);
                     pagedownButton.animate().alpha(1).setDuration(200).start();
@@ -936,13 +936,28 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         } else {
             if (pagedownButton.getVisibility() == View.VISIBLE) {
-                if (android.os.Build.VERSION.SDK_INT >= 16 && animated) {
-                    pagedownButton.animate().alpha(0).withEndAction(new Runnable() {
+                if (android.os.Build.VERSION.SDK_INT >= 12 && animated) {
+                    pagedownButton.animate().alpha(0).setDuration(200).setListener(new Animator.AnimatorListener() {
                         @Override
-                        public void run() {
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
                             pagedownButton.setVisibility(View.GONE);
                         }
-                    }).setDuration(200).start();
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+                        }
+                    }).start();
                 } else {
                     pagedownButton.setVisibility(View.GONE);
                 }
