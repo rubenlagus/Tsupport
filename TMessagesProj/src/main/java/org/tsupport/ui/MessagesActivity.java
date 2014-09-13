@@ -393,7 +393,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                     builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
 
-                    if ((int)selectedDialog < 0) {
+                    int lower_id = (int)selectedDialog;
+                    int high_id = (int)(selectedDialog >> 32);
+                    if (lower_id < 0 && high_id != 1) {
                         builder.setItems(new CharSequence[]{LocaleController.getString("ClearHistory", R.string.ClearHistory), LocaleController.getString("DeleteChat", R.string.DeleteChat)}, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {

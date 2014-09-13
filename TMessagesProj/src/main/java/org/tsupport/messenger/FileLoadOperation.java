@@ -10,6 +10,7 @@ package org.tsupport.messenger;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 
 import org.tsupport.android.AndroidUtilities;
@@ -57,9 +58,8 @@ public class FileLoadOperation {
 
     private String ext;
     private String httpUrl;
-    private URLConnection httpConnection;
+    private DownloadImageTask httpTask = null;
     public boolean needBitmapCreate = true;
-    private InputStream httpConnectionStream;
     private RandomAccessFile fileOutputStream;
     private RandomAccessFile fiv;
 
@@ -67,6 +67,109 @@ public class FileLoadOperation {
         public abstract void didFinishLoadingFile(FileLoadOperation operation);
         public abstract void didFailedLoadingFile(FileLoadOperation operation);
         public abstract void didChangedLoadProgress(FileLoadOperation operation, float progress);
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Boolean> {
+        protected Boolean doInBackground(String... urls) {
+            String url = urls[0];
+
+            InputStream httpConnectionStream = null;
+
+            try {
+                URL downloadUrl = new URL(url);
+                URLConnection httpConnection = downloadUrl.openConnection();
+                httpConnection.setConnectTimeout(5000);
+                httpConnection.setReadTimeout(5000);
+                httpConnection.connect();
+                httpConnectionStream = httpConnection.getInputStream();
+                /*String ALLOWED_URI_CHARS = "@#&=*+-_.,:!?()/~'%";
+                String str = Uri.encode(url, ALLOWED_URI_CHARS);
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpGet request = new HttpGet(str);
+
+                httpConnectionStream = httpclient.execute(request).getEntity().getContent();*/
+            } catch (Exception e) {
+                FileLog.e("tsupport", e);
+                cleanup();
+                Utilities.stageQueue.postRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        delegate.didFailedLoadingFile(FileLoadOperation.this);
+                    }
+                });
+                return false;
+            }
+
+            byte[] data = new byte[1024 * 2];
+            while (true) {
+                if (isCancelled()) {
+                    break;
+                }
+                try {
+                    int readed = httpConnectionStream.read(data);
+                    if (readed > 0) {
+                        fileOutputStream.write(data, 0, readed);
+                    } else if (readed == -1) {
+                        FileLoader.fileLoaderQueue.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                cleanup();
+                                Utilities.stageQueue.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            onFinishLoadingFile();
+                                        } catch (Exception e) {
+                                            delegate.didFailedLoadingFile(FileLoadOperation.this);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        break;
+                    } else {
+                        FileLoader.fileLoaderQueue.postRunnable(new Runnable() {
+                            @Override
+                            public void run() {
+                                cleanup();
+                                Utilities.stageQueue.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        delegate.didFailedLoadingFile(FileLoadOperation.this);
+                                    }
+                                });
+                            }
+                        });
+                        break;
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupport", e);
+                    FileLoader.fileLoaderQueue.postRunnable(new Runnable() {
+                        @Override
+                        public void run() {
+                            cleanup();
+                            Utilities.stageQueue.postRunnable(new Runnable() {
+                                @Override
+                                public void run() {
+                                    delegate.didFailedLoadingFile(FileLoadOperation.this);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            try {
+                if (httpConnectionStream != null) {
+                    httpConnectionStream.close();
+                }
+                httpConnectionStream = null;
+            } catch (Exception e) {
+                FileLog.e("tsupport", e);
+            }
+
+            return true;
+        }
     }
 
     public FileLoadOperation(TLRPC.FileLocation fileLocation) {
@@ -434,14 +537,8 @@ public class FileLoadOperation {
 
     private void cleanup() {
         if (httpUrl != null) {
-            try {
-                if (httpConnectionStream != null) {
-                    httpConnectionStream.close();
-                }
-                httpConnection = null;
-                httpConnectionStream = null;
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
+            if (httpTask != null) {
+                httpTask.cancel(true);
             }
         } else {
             try {
@@ -576,69 +673,8 @@ public class FileLoadOperation {
         if (state != 1) {
             return;
         }
-        if (httpConnection == null) {
-            try {
-                URL downloadUrl = new URL(httpUrl);
-                httpConnection = downloadUrl.openConnection();
-                httpConnection.setConnectTimeout(5000);
-                httpConnection.setReadTimeout(5000);
-                httpConnection.connect();
-                httpConnectionStream = httpConnection.getInputStream();
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
-                cleanup();
-                Utilities.stageQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        delegate.didFailedLoadingFile(FileLoadOperation.this);
-                    }
-                });
-                return;
-            }
-        }
-
-        try {
-            byte[] data = new byte[1024 * 2];
-            int readed = httpConnectionStream.read(data);
-            if (readed > 0) {
-                fileOutputStream.write(data, 0, readed);
-                FileLoader.fileLoaderQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        startDownloadHTTPRequest();
-                    }
-                });
-            } else if (readed == -1) {
-                cleanup();
-                Utilities.stageQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            onFinishLoadingFile();
-                        } catch (Exception e) {
-                            delegate.didFailedLoadingFile(FileLoadOperation.this);
-                        }
-                    }
-                });
-            } else {
-                cleanup();
-                Utilities.stageQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        delegate.didFailedLoadingFile(FileLoadOperation.this);
-                    }
-                });
-            }
-        } catch (Exception e) {
-            cleanup();
-            FileLog.e("tsupport", e);
-            Utilities.stageQueue.postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    delegate.didFailedLoadingFile(FileLoadOperation.this);
-                }
-            });
-        }
+        httpTask = new DownloadImageTask();
+        httpTask.doInBackground(httpUrl);
     }
 
     private void processRequestResult(RequestInfo requestInfo, TLRPC.TL_error error) {
