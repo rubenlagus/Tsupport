@@ -674,7 +674,11 @@ public class FileLoadOperation {
             return;
         }
         httpTask = new DownloadImageTask();
-        httpTask.doInBackground(httpUrl);
+        if (android.os.Build.VERSION.SDK_INT >= 11) {
+            httpTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
+        } else {
+            httpTask.execute(null, null, null);
+        }
     }
 
     private void processRequestResult(RequestInfo requestInfo, TLRPC.TL_error error) {
