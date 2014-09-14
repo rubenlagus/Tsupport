@@ -220,12 +220,23 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     return false;
                 }
             }
-            MessagesController.getInstance().loadChatInfo(currentChat.id);
             if (chatId > 0) {
                 dialog_id = -chatId;
             } else {
                 isBraodcast = true;
                 dialog_id = AndroidUtilities.makeBroadcastId(chatId);
+            }
+            Semaphore semaphore = null;
+            if (isBraodcast) {
+                semaphore = new Semaphore(0);
+            }
+            MessagesController.getInstance().loadChatInfo(currentChat.id, semaphore);
+            if (isBraodcast) {
+                try {
+                    semaphore.acquire();
+                } catch (Exception e) {
+                    FileLog.e("tmessages", e);
+                }
             }
         } else if (userId != 0) {
             currentUser = MessagesController.getInstance().users.get(userId);
@@ -934,7 +945,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
         if (show) {
             if (pagedownButton.getVisibility() == View.GONE) {
-                if (android.os.Build.VERSION.SDK_INT >= 12 && animated) {
+                if (android.os.Build.VERSION.SDK_INT >= 13 && animated) {
                     pagedownButton.setVisibility(View.VISIBLE);
                     pagedownButton.setAlpha(0);
                     pagedownButton.animate().alpha(1).setDuration(200).start();
@@ -944,7 +955,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         } else {
             if (pagedownButton.getVisibility() == View.VISIBLE) {
-                if (android.os.Build.VERSION.SDK_INT >= 12 && animated) {
+                if (android.os.Build.VERSION.SDK_INT >= 13 && animated) {
                     pagedownButton.animate().alpha(0).setDuration(200).setListener(new Animator.AnimatorListener() {
                         @Override
                         public void onAnimationStart(Animator animation) {
@@ -1962,8 +1973,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         } else if (id == MessagesController.readChatNotification) {
             if (messages.size() > 0) {
-                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true);
-                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true);
+                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
+                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true, false);
             }
 
         } else if (id == 999) {
@@ -2044,7 +2055,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithMid = currentMinMsgId;
                         } else {
                             if (messages.size() > 0) {
-                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true);
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true, false);
                             }
                         }
                     }
@@ -2151,7 +2162,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithDate = maxDate;
                             readWithMid = minMessageId;
                         } else {
-                            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true);
+                            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
                         }
                     }
                 }

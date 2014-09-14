@@ -394,7 +394,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
                     photoHeight = h;
                     backgroundWidth = w + AndroidUtilities.dp(12);
                     currentPhotoFilter = String.format(Locale.US, "%d_%d", (int) (w / AndroidUtilities.density), (int) (h / AndroidUtilities.density));
-                    if (messageObject.photoThumbs.size() > 1) {
+                    if (messageObject.photoThumbs.size() > 1 || messageObject.type == 3 || messageObject.type == 8) {
                         currentPhotoFilter += "_b";
                     }
                     if (currentPhotoObject.image != null) {
@@ -560,20 +560,14 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
             drawTime = photoImage.getVisible();
         }
 
-        if (progressVisible) {
-            setDrawableBounds(mediaBackgroundDrawable, photoImage.imageX + AndroidUtilities.dp(4), layoutHeight - AndroidUtilities.dpf(27.5f), progressView.width + AndroidUtilities.dp(12), AndroidUtilities.dpf(16.5f));
-            mediaBackgroundDrawable.draw(canvas);
-
-            canvas.save();
-            canvas.translate(photoImage.imageX + AndroidUtilities.dp(10), layoutHeight - AndroidUtilities.dpf(21.0f));
-            progressView.draw(canvas);
-            canvas.restore();
-        }
-
         if (buttonState >= 0 && buttonState < 4) {
-            Drawable currentButtonDrawable = buttonStatesDrawables[buttonState][buttonPressed];
+            Drawable currentButtonDrawable = buttonStatesDrawables[buttonState];
             setDrawableBounds(currentButtonDrawable, buttonX, buttonY);
             currentButtonDrawable.draw(canvas);
+        }
+
+        if (progressVisible) {
+            progressView.draw(canvas);
         }
 
         if (infoLayout != null && (buttonState == 1 || buttonState == 0 || buttonState == 3)) {

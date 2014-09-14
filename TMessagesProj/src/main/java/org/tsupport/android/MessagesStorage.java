@@ -814,7 +814,7 @@ public class MessagesStorage {
         });
     }
 
-    public void loadChatInfo(final int chat_id) {
+    public void loadChatInfo(final int chat_id, final Semaphore semaphore) {
         storageQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -868,9 +868,16 @@ public class MessagesStorage {
                             updateChatInfo(chat_id, info, false);
                         }
                     }
+                    if (semaphore != null) {
+                        semaphore.release();
+                    }
                     MessagesController.getInstance().processChatInfo(chat_id, info, loadedUsers, true);
                 } catch (Exception e) {
                     FileLog.e("tsupport", e);
+                } finally {
+                    if (semaphore != null) {
+                        semaphore.release();
+                    }
                 }
             }
         });
