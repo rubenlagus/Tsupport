@@ -41,10 +41,7 @@ public class ContactsController {
     private final Integer observerLock = 1;
     public boolean contactsLoaded = false;
     private boolean contactsBookLoaded = false;
-    private int lastContactsPhonesCount = -1;
-    private int lastContactsPhonesMaxId = -1;
-    private int lastContactsNamesCount = -1;
-    private int lastContactsNamesMaxId = -1;
+    private String lastContactsVersions = "";
     private ArrayList<Integer> delayedContactsUpdate = new ArrayList<Integer>();
 
     public static class Contact {
@@ -113,10 +110,7 @@ public class ContactsController {
         contactsSyncInProgress = false;
         contactsLoaded = false;
         contactsBookLoaded = false;
-        lastContactsPhonesCount = -1;
-        lastContactsPhonesMaxId = -1;
-        lastContactsNamesCount = -1;
-        lastContactsNamesMaxId = -1;
+        lastContactsVersions = "";
     }
 
     public void checkAppAccount() {
