@@ -94,7 +94,9 @@ import java.util.concurrent.Semaphore;
 
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, MessagesActivity.MessagesActivityDelegate,
         DocumentSelectActivity.DocumentSelectActivityDelegate, PhotoViewer.PhotoViewerProvider, PhotoPickerActivity.PhotoPickerActivityDelegate,
-        VideoEditorActivity.VideoEditorActivityDelegate {
+        VideoEditorActivity.VideoEditorActivityDelegate, MessagesActivity.MessagesActivitySearchDelegate {
+
+    private MessagesActivity delegate;
 
     private ChatActivityEnterView chatActivityEnterView;
     private View timeItem;
@@ -915,6 +917,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }
         return fragmentView;
+    }
+
+    public void setDelegate(MessagesActivity messagesActivity) {
+        delegate = messagesActivity;
     }
 
     private void scrollToLastMessage() {
@@ -2941,17 +2947,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             MessagesController.getInstance().deleteMessages(ids, random_ids, currentEncryptedChat);
         } else if (option == 2) {
-            forwaringMessage = selectedObject;
-            Bundle args = new Bundle();
             if (fromSearchQuery.compareToIgnoreCase("") != 0) {
-                args.putString("query",fromSearchQuery);
+                setSearchQuery(fromSearchQuery);
+                finishFragment();
             }
-            args.putBoolean("onlySelect", true);
-            args.putBoolean("serverOnly", true);
-            args.putString("selectAlertString", LocaleController.getString("ForwardMessagesTo", R.string.ForwardMessagesTo));
-            MessagesActivity fragment = new MessagesActivity(args);
-            fragment.setDelegate(this);
-            presentFragment(fragment);
         } else if (option == 3) {
             if(android.os.Build.VERSION.SDK_INT < 11) {
                 android.text.ClipboardManager clipboard = (android.text.ClipboardManager)ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -3031,6 +3030,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (which > items.length) {
                         return;
                     }
+
                     String selectedHashtag = items[which].toString();
                     Bundle arguments = new Bundle();
                     arguments.putString("query", selectedHashtag);
@@ -3384,7 +3384,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     @Override
     public int getSelectedCount() { return 0; }
 
-    private class ChatAdapter extends BaseFragmentAdapter {
+    @Override
+    public void setSearchQuery(String query) {
+        delegate.setSearchQuery(query);
+    }
+
+        private class ChatAdapter extends BaseFragmentAdapter {
 
         private Context mContext;
 

@@ -34,7 +34,6 @@ public class TsupportApi {
     private TsupportApi() {
         apiServiceOwnConversation = AppContantsOwnConversation.getApiServiceHandle();
         apiServiceUsers = AppContantsUser.getApiServiceHandle();
-
     }
 
     public static TsupportApi getInstance() {

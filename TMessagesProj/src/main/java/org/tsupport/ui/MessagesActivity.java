@@ -63,8 +63,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private boolean onlySelect = false;
     private int activityToken = (int)(Utilities.random.nextDouble() * Integer.MAX_VALUE);
     private long selectedDialog;
-    public static boolean requestSearch = false;
-    public static String searchQuery = "";
+    private static boolean requestSearch = false;
+    private static String searchQuery = "";
 
     private Timer searchTimer;
     public TLRPC.messages_Messages searchResult;
@@ -82,6 +82,10 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
     public static interface MessagesActivityDelegate {
         public abstract void didSelectDialog(MessagesActivity fragment, long dialog_id, boolean param);
+    }
+
+    public static interface MessagesActivitySearchDelegate {
+        public abstract void setSearchQuery(String query);
     }
 
     public MessagesActivity(Bundle args) {
@@ -322,6 +326,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         Bundle args = new Bundle();
                         args.putInt("user_id", MessagesController.getInstance().dialogsFromSearchOrdered.get(i).peer.user_id);
                         args.putString("query", searchQuery);
+                        ChatActivity chatActivity = new ChatActivity(args);
+                        chatActivity.setDelegate(MessagesActivity.this);
                         presentFragment(new ChatActivity(args));
                     } else {
                         long dialog_id = 0;
@@ -659,6 +665,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 finishFragment();
             }
         }
+    }
+
+    public void setSearchQuery(String query) {
+        searchQuery = query;
+        requestSearch = true;
     }
 
     public void updateSearchResults(final ArrayList<TLObject> result, final ArrayList<CharSequence> names, final ArrayList<TLRPC.User> encUsers) {
