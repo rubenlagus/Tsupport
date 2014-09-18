@@ -15,6 +15,5 @@ public class BuildVars {
     public static String HOCKEY_APP_HASH = "your-hockeyapp-api-key-here";
     public static String GCM_SENDER_ID = "760348033672";
     public static String SEND_LOGS_EMAIL = "rubenlagus92@gmail.com";
-    public static String APPENGINE_CLIENT_ID = "YOUR ANDROID APP CLIENT HERE";
-
+    public static String APPENGINE_CLIENT_ID = "APPENGINE_CLIENT_ID";
 }

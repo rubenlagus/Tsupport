@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 
+import com.appspot.tsupport_android.ownedConversation.OwnedConversation;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -35,86 +36,8 @@ public class AppContantsOwnConversation {
      */
     public static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
 
-
-    public static com.appspot.tsupport_us.ownedConversation.OwnedConversation getApiServiceHandleUS() {
-        com.appspot.tsupport_us.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_us.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-    
-    public static com.appspot.tsupport_in.ownedConversation.OwnedConversation getApiServiceHandleIN() {
-        com.appspot.tsupport_in.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_in.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_ar.ownedConversation.OwnedConversation getApiServiceHandleAR() {
-        com.appspot.tsupport_ar.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_ar.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_ru.ownedConversation.OwnedConversation getApiServiceHandleRU() {
-        com.appspot.tsupport_ru.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_ru.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_nl.ownedConversation.OwnedConversation getApiServiceHandleNL() {
-        com.appspot.tsupport_nl.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_nl.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_es.ownedConversation.OwnedConversation getApiServiceHandleES() {
-        com.appspot.tsupport_es.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_es.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_it.ownedConversation.OwnedConversation getApiServiceHandleIT() {
-        com.appspot.tsupport_it.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_it.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_de.ownedConversation.OwnedConversation getApiServiceHandleDE() {
-        com.appspot.tsupport_de.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_de.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_la.ownedConversation.OwnedConversation getApiServiceHandleLA() {
-        com.appspot.tsupport_la.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_la.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_mx.ownedConversation.OwnedConversation getApiServiceHandleMX() {
-        com.appspot.tsupport_mx.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_mx.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_sg.ownedConversation.OwnedConversation getApiServiceHandleSG() {
-        com.appspot.tsupport_sg.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_sg.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return ownedConversation.build();
-    }
-
-    public static com.appspot.tsupport_android.ownedConversation.OwnedConversation getApiServiceHandleOT() {
-        com.appspot.tsupport_android.ownedConversation.OwnedConversation.Builder ownedConversation = new com.appspot.tsupport_android.ownedConversation.OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+    public static OwnedConversation getApiServiceHandle() {
+        OwnedConversation.Builder ownedConversation = new OwnedConversation.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
                 AppContantsOwnConversation.JSON_FACTORY, null);
 
         return ownedConversation.build();

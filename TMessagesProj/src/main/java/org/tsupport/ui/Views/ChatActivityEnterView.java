@@ -364,7 +364,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
 
     private void sendMessage() {
         if (processSendingText(messsageEditText.getText().toString())) {
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification);
+            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
             messsageEditText.setText("");
             lastTypingTimeSend = 0;
             if (delegate != null) {
@@ -399,7 +399,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             return true;
         }
         else { // Mark as read but send nothing
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification);
+            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
             return false;
         }
 

@@ -2079,8 +2079,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         newMsg.from_id = UserConfig.getClientUserId();
         newMsg.unread = true;
         newMsg.dialog_id = peer;
-        int high_id = (int)(peer >> 32);
         int lower_id = (int)peer;
+        int high_id = (int)(peer >> 32);
         TLRPC.EncryptedChat encryptedChat = null;
         TLRPC.InputPeer sendToPeer = null;
         ArrayList<TLRPC.InputUser> sendToPeers = null;
@@ -2152,7 +2152,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
         if (type == 0) {
             if (encryptedChat == null) {
-                if (sendToPeer != null) {
+                if (sendToPeers != null) {
                     TLRPC.TL_messages_sendBroadcast reqSend = new TLRPC.TL_messages_sendBroadcast();
                     reqSend.message = message;
                     reqSend.contacts = sendToPeers;

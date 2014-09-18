@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 
+import com.appspot.tsupport_android.users.Users;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -23,7 +24,6 @@ public class AppContantsUser {
     public static final String AUDIENCE = "server:client_id:" + WEB_CLIENT_ID;
 
     public static final String EMAIL_ID = "YOUR EMAIL HERE";
-
     /**
      * Class instance of the JSON factory.
      */
@@ -35,85 +35,8 @@ public class AppContantsUser {
     public static final HttpTransport HTTP_TRANSPORT = AndroidHttp.newCompatibleTransport();
 
 
-    public static com.appspot.tsupport_us.users.Users getApiServiceHandleUS() {
-        com.appspot.tsupport_us.users.Users.Builder users = new com.appspot.tsupport_us.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_in.users.Users getApiServiceHandleIN() {
-        com.appspot.tsupport_in.users.Users.Builder users = new com.appspot.tsupport_in.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_ar.users.Users getApiServiceHandleAR() {
-        com.appspot.tsupport_ar.users.Users.Builder users = new com.appspot.tsupport_ar.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_ru.users.Users getApiServiceHandleRU() {
-        com.appspot.tsupport_ru.users.Users.Builder users = new com.appspot.tsupport_ru.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_nl.users.Users getApiServiceHandleNL() {
-        com.appspot.tsupport_nl.users.Users.Builder users = new com.appspot.tsupport_nl.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_es.users.Users getApiServiceHandleES() {
-        com.appspot.tsupport_es.users.Users.Builder users = new com.appspot.tsupport_es.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_it.users.Users getApiServiceHandleIT() {
-        com.appspot.tsupport_it.users.Users.Builder users = new com.appspot.tsupport_it.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_de.users.Users getApiServiceHandleDE() {
-        com.appspot.tsupport_de.users.Users.Builder users = new com.appspot.tsupport_de.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_la.users.Users getApiServiceHandleLA() {
-        com.appspot.tsupport_la.users.Users.Builder users = new com.appspot.tsupport_la.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_mx.users.Users getApiServiceHandleMX() {
-        com.appspot.tsupport_mx.users.Users.Builder users = new com.appspot.tsupport_mx.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_sg.users.Users getApiServiceHandleSG() {
-        com.appspot.tsupport_sg.users.Users.Builder users = new com.appspot.tsupport_sg.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
-                AppContantsOwnConversation.JSON_FACTORY, null);
-
-        return users.build();
-    }
-
-    public static com.appspot.tsupport_android.users.Users getApiServiceHandleOT() {
-        com.appspot.tsupport_android.users.Users.Builder users = new com.appspot.tsupport_android.users.Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
+    public static Users getApiServiceHandle() {
+        Users.Builder users = new Users.Builder(AppContantsOwnConversation.HTTP_TRANSPORT,
                 AppContantsOwnConversation.JSON_FACTORY, null);
 
         return users.build();

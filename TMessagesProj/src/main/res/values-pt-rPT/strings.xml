@@ -461,6 +461,7 @@
     <string name="ConversationOwnedByOther">Other TSF member is answering this conversation, take care about it.</string>
     <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
     <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation", please take care when answering.</string>
+    <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
     <string name="loadUserPhotos">User photos</string>
     <string name="searching">Searching...</string>
     <string name="hashtags">Hashtags</string>

@@ -230,7 +230,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (isBraodcast) {
                 semaphore = new Semaphore(0);
             }
-            MessagesController.getInstance().loadChatInfo(currentChat.id, semaphore);
+            MessagesController.getInstance().loadChatInfo(chatId, semaphore);
             if (isBraodcast) {
                 try {
                     semaphore.acquire();
@@ -313,6 +313,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
         if (android.os.Build.VERSION.SDK_INT >= 11) {
             TsupportApi.getInstance().ownConversation(new Long(dialog_id));
+        } else {
+            NotificationCenter.getInstance().postNotificationName(TsupportApi.ConversationOwnedNotSupported, dialog_id);
         }
 
         chatActivityEnterView = new ChatActivityEnterView();
@@ -360,6 +362,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         NotificationCenter.getInstance().addObserver(this, TsupportApi.ConversationOwned);
         NotificationCenter.getInstance().addObserver(this, TsupportApi.ConversationNotOwned);
         NotificationCenter.getInstance().addObserver(this, TsupportApi.ConversationOwnedNotSupported);
+        NotificationCenter.getInstance().addObserver(this, TsupportApi.ConversationOwnedDeleted);
         super.onFragmentCreate();
 
         loading = true;
@@ -410,7 +413,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         NotificationCenter.getInstance().removeObserver(this, TsupportApi.ConversationOwned);
         NotificationCenter.getInstance().removeObserver(this, TsupportApi.ConversationNotOwned);
         NotificationCenter.getInstance().removeObserver(this, TsupportApi.ConversationOwnedNotSupported);
-
+        NotificationCenter.getInstance().removeObserver(this, TsupportApi.ConversationOwnedDeleted);
         if (currentEncryptedChat != null) {
             MediaController.getInstance().stopMediaObserver();
         }
@@ -1972,11 +1975,15 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
         } else if (id == MessagesController.readChatNotification) {
-            if (messages.size() > 0) {
-                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
-                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true, false);
+            if (args.length > 0) {
+                long did = (Long)args[0];
+                if (did == dialog_id) {
+                    if (messages.size() > 0) {
+                        MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
+                        MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true, false);
+                    }
+                }
             }
-
         } else if (id == 999) {
             if (chatListView != null) {
                 chatListView.invalidateViews();
@@ -2055,7 +2062,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithMid = currentMinMsgId;
                         } else {
                             if (messages.size() > 0) {
-                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true, false);
+                                //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, currentMinMsgId, 0, currentMaxDate, true, false);
                             }
                         }
                     }
@@ -2162,7 +2169,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithDate = maxDate;
                             readWithMid = minMessageId;
                         } else {
-                            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
+                            //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
                         }
                     }
                 }
@@ -2394,54 +2401,80 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         } else if (id == MediaController.screenshotTook) {
             updateInformationForScreenshotDetector();
         } else if (id == TsupportApi.ConversationOwned) {
-            topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
-            if (isCustomTheme) {
-                topPanel.setBackgroundResource(R.drawable.top_pane_custom);
-            } else {
-                topPanel.setBackgroundResource(R.drawable.top_pane);
-            }
-            topPanelText.setText(LocaleController.getString("ConversationOwnedByMe", R.string.ConversationOwnedByMe));
-            topPanel.setVisibility(View.VISIBLE);
-            topPanel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    topPanel.setVisibility(View.GONE);
+            if (args.length > 0) {
+                long did = (Long)args[0];
+                if (did == dialog_id) {
+                    topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
+                    topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
+                    topPanel.setBackgroundResource(R.drawable.top_pane_custom);
+                    topPanelText.setText(LocaleController.getString("ConversationOwnedByMe", R.string.ConversationOwnedByMe));
+                    topPanel.setVisibility(View.VISIBLE);
+                    topPlaneClose.setVisibility(View.VISIBLE);
+                    topPlaneClose.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TsupportApi.getInstance().deleteOwnedConversation(dialog_id);
+                            topPanel.setVisibility(View.GONE);
+                        }
+                    });
                 }
-            });
+            }
         } else if (id == TsupportApi.ConversationNotOwned) {
-            topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
-            if (isCustomTheme) {
-                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
-                topPanel.setBackgroundResource(R.drawable.top_pane_custom);
-            } else {
-                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
-                topPanel.setBackgroundResource(R.drawable.top_pane);
-            }
-            topPanelText.setText(LocaleController.getString("ConversationOwnedByOther", R.string.ConversationOwnedByOther));
-            topPanel.setVisibility(View.VISIBLE);
-            topPanel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // do nothing
+            if (args.length > 0) {
+                long did = (Long)args[0];
+                if (did == dialog_id) {
+                    topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
+                    topPlaneClose.setImageResource(R.drawable.ic_refresh);
+                    topPanel.setBackgroundResource(R.drawable.top_pane_custom);
+                    topPanelText.setText(LocaleController.getString("ConversationOwnedByOther", R.string.ConversationOwnedByOther));
+                    topPanel.setVisibility(View.VISIBLE);
+                    topPlaneClose.setVisibility(View.VISIBLE);
+                    topPlaneClose.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TsupportApi.getInstance().ownConversation(dialog_id);
+                            topPanel.setVisibility(View.GONE);
+                        }
+                    });
                 }
-            });
+            }
         } else if (id == TsupportApi.ConversationOwnedNotSupported) {
-            topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
-            if (isCustomTheme) {
-                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
-                topPanel.setBackgroundResource(R.drawable.top_pane_custom);
-            } else {
-                topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
-                topPanel.setBackgroundResource(R.drawable.top_pane);
-            }
-            topPanelText.setText(LocaleController.getString("ConversationOwnedNotSupported", R.string.ConversationOwnedNotSupported));
-            topPanel.setVisibility(View.VISIBLE);
-            topPlaneClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    topPanel.setVisibility(View.GONE);
+            if (args.length > 0) {
+                long did = (Long)args[0];
+                if (did == dialog_id) {
+                    topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
+                    topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
+                    topPanel.setBackgroundResource(R.drawable.top_pane_custom);
+                    topPanelText.setText(LocaleController.getString("ConversationOwnedNotSupported", R.string.ConversationOwnedNotSupported));
+                    topPanel.setVisibility(View.VISIBLE);
+                    topPlaneClose.setVisibility(View.VISIBLE);
+                    topPlaneClose.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            topPanel.setVisibility(View.GONE);
+                        }
+                    });
                 }
-            });
+            }
+        } else if (id == TsupportApi.ConversationOwnedDeleted) {
+            if (args.length > 0) {
+                long did = (Long)args[0];
+                if (did == dialog_id) {
+                    topPanelText.setShadowLayer(1, 0, AndroidUtilities.dp(1), 0xff8797a3);
+                    topPlaneClose.setImageResource(R.drawable.ic_refresh);
+                    topPanel.setBackgroundResource(R.drawable.top_pane_custom);
+                    topPanelText.setText(LocaleController.getString("ConversationOwnedDelete", R.string.ConversationOwnedDelete));
+                    topPanel.setVisibility(View.VISIBLE);
+                    topPlaneClose.setVisibility(View.VISIBLE);
+                    topPlaneClose.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TsupportApi.getInstance().ownConversation(dialog_id);
+                            topPanel.setVisibility(View.GONE);
+                        }
+                    });
+                }
+            }
         }
     }
 

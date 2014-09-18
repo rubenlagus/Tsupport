@@ -12,10 +12,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -25,22 +23,17 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
+import org.tsupport.messenger.FileLog;
+import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
-import org.tsupport.android.NotificationsService;
 import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.android.ContactsController;
-import org.tsupport.messenger.FileLog;
-import org.tsupport.android.MessagesController;
-import org.tsupport.android.MessagesStorage;
-import org.tsupport.messenger.NotificationCenter;
-import org.tsupport.messenger.TsupportApi;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
@@ -54,7 +47,7 @@ import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-// TODO Disable Broadcast lists
+
 public class MessagesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private ListView messagesListView;
     private MessagesAdapter messagesListViewAdapter;
@@ -85,7 +78,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private final static int messages_list_menu_new_secret_chat = 3;
     private final static int messages_list_menu_contacts = 4;*/
     private final static int messages_list_menu_settings = 5;
-    private final static int messages_list_menu_new_broadcast = 6;
+    //private final static int messages_list_menu_new_broadcast = 6;
 
     public static interface MessagesActivityDelegate {
         public abstract void didSelectDialog(MessagesActivity fragment, long dialog_id, boolean param);
@@ -212,7 +205,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_other);
                 //item.addSubItem(messages_list_menu_new_chat, LocaleController.getString("NewGroup", R.string.NewGroup), 0);
                 //item.addSubItem(messages_list_menu_new_secret_chat, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), 0);
-                item.addSubItem(messages_list_menu_new_broadcast, LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), 0);
+                //item.addSubItem(messages_list_menu_new_broadcast, LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), 0);
                 //item.addSubItem(messages_list_menu_contacts, LocaleController.getString("Contacts", R.string.Contacts), 0);
                 item.addSubItem(messages_list_menu_settings, LocaleController.getString("Settings", R.string.Settings), 0);
             }
@@ -251,11 +244,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         if (onlySelect) {
                             finishFragment();
                         }
-                    } else if (id == messages_list_menu_new_broadcast) {
+                    } /*else if (id == messages_list_menu_new_broadcast) {
                         Bundle args = new Bundle();
                         args.putBoolean("broadcast", true);
                         presentFragment(new GroupCreateActivity(args));
-                    }
+                    }*/
                 }
             });
 

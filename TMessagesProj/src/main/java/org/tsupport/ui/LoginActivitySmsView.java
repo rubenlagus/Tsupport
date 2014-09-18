@@ -8,8 +8,10 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -309,6 +311,10 @@ public class LoginActivitySmsView extends SlideView implements NotificationCente
                             MessagesController.getInstance().cleanUp();
                             UserConfig.setCurrentUser(res.user);
                             UserConfig.saveConfig(true);
+                            SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                            SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+                            userNumberEditor.putString("userId", requestPhone.replace("+",""));
+                            userNumberEditor.commit();
                             MessagesStorage.getInstance().cleanUp(true);
                             ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
                             users.add(res.user);

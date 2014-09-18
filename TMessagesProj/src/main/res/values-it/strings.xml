@@ -457,6 +457,7 @@
     <string name="ConversationOwnedByOther">Un altro membro della TSF sta rispondendo alla conversazione, fai attenzione</string>
     <string name="ConversationOwnedByMe">Questa conversazione é assegnata a te</string>
     <string name="ConversationOwnedNotSupported">Il tuo dispositivo non supporta la \"Gestione Conversazioni\" , per favore, fai attenzione quando rispondi</string>
+    <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
     <string name="loadUserPhotos">Foto dell\'utente</string>
     <string name="searching">Sto cercando...</string>
     <string name="hashtags">Hashtag</string>

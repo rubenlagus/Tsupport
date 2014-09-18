@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
+import com.appspot.tsupport_android.ownedConversation.OwnedConversation;
+import com.appspot.tsupport_android.ownedConversation.model.BooleanType;
+import com.appspot.tsupport_android.users.Users;
+import com.appspot.tsupport_android.users.model.User;
+
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.IOException;
@@ -17,61 +22,18 @@ public class TsupportApi {
     public static final Integer ConversationOwned = 452;
     public static final Integer ConversationNotOwned = 453;
     public static final Integer ConversationOwnedNotSupported = 454;
-    private static com.appspot.tsupport_us.ownedConversation.OwnedConversation apiServiceOwnConversationUS = null;
-    private static com.appspot.tsupport_nl.ownedConversation.OwnedConversation apiServiceOwnConversationNL = null;
-    private static com.appspot.tsupport_es.ownedConversation.OwnedConversation apiServiceOwnConversationES = null;
-    private static com.appspot.tsupport_it.ownedConversation.OwnedConversation apiServiceOwnConversationIT = null;
-    private static com.appspot.tsupport_de.ownedConversation.OwnedConversation apiServiceOwnConversationDE = null;
-    private static com.appspot.tsupport_la.ownedConversation.OwnedConversation apiServiceOwnConversationLA = null;
-    private static com.appspot.tsupport_mx.ownedConversation.OwnedConversation apiServiceOwnConversationMX = null;
-    private static com.appspot.tsupport_sg.ownedConversation.OwnedConversation apiServiceOwnConversationSG= null;
-    private static com.appspot.tsupport_ru.ownedConversation.OwnedConversation apiServiceOwnConversationRU = null;
-    private static com.appspot.tsupport_in.ownedConversation.OwnedConversation apiServiceOwnConversationIN = null;
-    private static com.appspot.tsupport_ar.ownedConversation.OwnedConversation apiServiceOwnConversationAR = null;
-    private static com.appspot.tsupport_android.ownedConversation.OwnedConversation apiServiceOwnConversationOT = null;
+    public static final Integer ConversationOwnedDeleted = 455;
 
-    private static com.appspot.tsupport_us.users.Users apiServiceUsersUS = null;
-    private static com.appspot.tsupport_nl.users.Users apiServiceUsersNL = null;
-    private static com.appspot.tsupport_es.users.Users apiServiceUsersES = null;
-    private static com.appspot.tsupport_it.users.Users apiServiceUsersIT = null;
-    private static com.appspot.tsupport_de.users.Users apiServiceUsersDE = null;
-    private static com.appspot.tsupport_la.users.Users apiServiceUsersLA = null;
-    private static com.appspot.tsupport_mx.users.Users apiServiceUsersMX = null;
-    private static com.appspot.tsupport_sg.users.Users apiServiceUsersSG = null;
-    private static com.appspot.tsupport_ru.users.Users apiServiceUsersRU = null;
-    private static com.appspot.tsupport_in.users.Users apiServiceUsersIN = null;
-    private static com.appspot.tsupport_ar.users.Users apiServiceUsersAR = null;
-    private static com.appspot.tsupport_android.users.Users apiServiceUsersOT = null;
+    private static OwnedConversation apiServiceOwnConversation = null;
+    private static Users apiServiceUsers = null;
     private static String userId = "";
     private static String country = null;
+    private static String RSA = "";
 
 
     private TsupportApi() {
-        apiServiceOwnConversationUS = AppContantsOwnConversation.getApiServiceHandleUS();
-        apiServiceOwnConversationNL = AppContantsOwnConversation.getApiServiceHandleNL();
-        apiServiceOwnConversationES = AppContantsOwnConversation.getApiServiceHandleES();
-        apiServiceOwnConversationIT = AppContantsOwnConversation.getApiServiceHandleIT();
-        apiServiceOwnConversationDE = AppContantsOwnConversation.getApiServiceHandleDE();
-        apiServiceOwnConversationLA = AppContantsOwnConversation.getApiServiceHandleLA();
-        apiServiceOwnConversationMX = AppContantsOwnConversation.getApiServiceHandleMX();
-        apiServiceOwnConversationSG = AppContantsOwnConversation.getApiServiceHandleSG();
-        apiServiceOwnConversationOT = AppContantsOwnConversation.getApiServiceHandleOT();
-        apiServiceOwnConversationRU = AppContantsOwnConversation.getApiServiceHandleRU();
-        apiServiceOwnConversationIN = AppContantsOwnConversation.getApiServiceHandleIN();
-        apiServiceOwnConversationAR = AppContantsOwnConversation.getApiServiceHandleAR();
-
-        apiServiceUsersUS = AppContantsUser.getApiServiceHandleUS();
-        apiServiceUsersNL = AppContantsUser.getApiServiceHandleNL();
-        apiServiceUsersES = AppContantsUser.getApiServiceHandleES();
-        apiServiceUsersIT = AppContantsUser.getApiServiceHandleIT();
-        apiServiceUsersDE = AppContantsUser.getApiServiceHandleDE();
-        apiServiceUsersLA = AppContantsUser.getApiServiceHandleLA();
-        apiServiceUsersMX = AppContantsUser.getApiServiceHandleMX();
-        apiServiceUsersSG = AppContantsUser.getApiServiceHandleSG();
-        apiServiceUsersOT = AppContantsUser.getApiServiceHandleOT();
-        apiServiceUsersRU = AppContantsUser.getApiServiceHandleRU();
-        apiServiceUsersIN = AppContantsUser.getApiServiceHandleIN();
-        apiServiceUsersAR = AppContantsUser.getApiServiceHandleAR();
+        apiServiceOwnConversation = AppContantsOwnConversation.getApiServiceHandle();
+        apiServiceUsers = AppContantsUser.getApiServiceHandle();
 
     }
 
@@ -104,6 +66,10 @@ public class TsupportApi {
             else
                 country = "OT"; // Other
         }
+        if (RSA.compareToIgnoreCase("") == 0) {
+            SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+            RSA = userNumberPreferences.getString("RSA", "");
+        }
         if (instance == null)
             instance = new TsupportApi();
         return instance;
@@ -111,39 +77,28 @@ public class TsupportApi {
     }
 
     public void addUser(final String userId) {
-        AsyncTask<Void, Void, Void> addUser =
-                new AsyncTask<Void, Void, Void>() {
+        AsyncTask<Void, Void, String> addUser =
+                new AsyncTask<Void, Void, String>() {
                     @Override
-                    protected Void doInBackground(Void... params) {
+                    protected String doInBackground(Void... params) {
                         try {
-                            if (country.compareToIgnoreCase("US") == 0)
-                                apiServiceUsersUS.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("NL") == 0)
-                                apiServiceUsersNL.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("ES") == 0)
-                                apiServiceUsersES.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("IT") == 0)
-                                apiServiceUsersIT.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("DE") == 0)
-                                apiServiceUsersDE.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("LA") == 0)
-                                apiServiceUsersLA.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("MX") == 0)
-                                apiServiceUsersMX.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("SG") == 0)
-                                apiServiceUsersSG.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("RU") == 0)
-                                apiServiceUsersRU.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("IN") == 0)
-                                apiServiceUsersIN.addUser(userId.replace(" ", ""));
-                            else if (country.compareToIgnoreCase("AR") == 0)
-                                apiServiceUsersAR.addUser(userId.replace(" ", ""));
-                            else
-                                apiServiceUsersOT.addUser(userId.replace(" ", ""));
+                            User user = apiServiceUsers.addUser(userId.replace(" ", "")).execute();
+                            return user.getRsa();
                         } catch (IOException e) {
                             return null;
                         }
-                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(String result) {
+                        if (result != null && result.compareToIgnoreCase("") != 0){
+                            SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userNumberPreferences.edit();
+                            editor.putString("RSA", result);
+                            editor.commit();
+                            RSA = result;
+                        }
+
                     }
                 };
         addUser.execute();
@@ -155,34 +110,9 @@ public class TsupportApi {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
-
                         try {
                             Boolean value = null;
-                            if (country.compareToIgnoreCase("US") == 0)
-                                value = apiServiceOwnConversationUS.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("NL") == 0)
-                                value = apiServiceOwnConversationNL.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("ES") == 0)
-                                value = apiServiceOwnConversationES.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("IT") == 0)
-                                value = apiServiceOwnConversationIT.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("DE") == 0)
-                                value = apiServiceOwnConversationDE.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("LA") == 0)
-                                value = apiServiceOwnConversationLA.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("MX") == 0)
-                                value = apiServiceOwnConversationMX.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("SG") == 0)
-                                value = apiServiceOwnConversationSG.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("RU") == 0)
-                                value = apiServiceOwnConversationRU.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("IN") == 0)
-                                value = apiServiceOwnConversationIN.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else if (country.compareToIgnoreCase("AR") == 0)
-                                value = apiServiceOwnConversationAR.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-                            else
-                                value = apiServiceOwnConversationOT.addOwnedConversation(dialogId + "", userId.replace(" ", "")).execute().getBool();
-
+                            value = apiServiceOwnConversation.addOwnedConversation(RSA, dialogId + "").execute().getBool();
                             return value;
                         } catch (IOException e) {
                             return false;
@@ -192,9 +122,34 @@ public class TsupportApi {
                     @Override
                     protected void onPostExecute(Boolean result) {
                         if (result)
-                            NotificationCenter.getInstance().postNotificationName(ConversationOwned);
+                            NotificationCenter.getInstance().postNotificationName(ConversationOwned, dialogId);
                         else
-                            NotificationCenter.getInstance().postNotificationName(ConversationNotOwned);
+                            NotificationCenter.getInstance().postNotificationName(ConversationNotOwned, dialogId);
+                    }
+
+                };
+        ownConversation.execute();
+    }
+
+    public void deleteOwnedConversation(final Long dialogId) {
+        AsyncTask<Void, Void, Boolean> ownConversation =
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        try {
+                            BooleanType value = apiServiceOwnConversation.deleteOwnedConversation(RSA, dialogId + "").execute();
+                            return value.getBool();
+                        } catch (IOException e) {
+                            return false;
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        if (result)
+                            NotificationCenter.getInstance().postNotificationName(ConversationOwnedDeleted, dialogId);
+                        else
+                            NotificationCenter.getInstance().postNotificationName(ConversationOwned, dialogId);
                     }
 
                 };

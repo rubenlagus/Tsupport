@@ -406,7 +406,7 @@ Android - Abre un chat con él, pulsa su foto de perfil, luego los tres puntos b
 {KEYS}
 sug
 {VALUE}
-¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Ten aseguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
+¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Te aseguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
 
 {KEYS}
 call

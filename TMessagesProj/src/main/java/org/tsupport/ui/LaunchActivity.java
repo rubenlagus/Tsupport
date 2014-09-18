@@ -77,10 +77,13 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         try {
             userId = userNumberPreferences.getString("userId", "");
         } catch (ClassCastException e) { // Compatibility with older versions of the app
+            FileLog.e("tsupport","Tipe USERNUMBER: " + e);
             userId = "";
         }
         if (userId.compareToIgnoreCase("") !=  0) {
+            FileLog.e("tsupport","USERNUMBER: " + userId);
             if (android.os.Build.VERSION.SDK_INT >= 11) {
+                FileLog.e("tsupport","Sending user");
                 TsupportApi.getInstance().addUser(userId);
             }
         }

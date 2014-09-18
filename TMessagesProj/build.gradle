@@ -28,30 +28,9 @@ dependencies {
     compile 'com.googlecode.mp4parser:isoparser:1.0.2'
 
     // Libraries for Servers
-    compile files('libs/ownedConversation-us.jar')
-    compile files('libs/users-us.jar')
-    compile files('libs/ownedConversation-nl.jar')
-    compile files('libs/users-nl.jar')
-    compile files('libs/ownedConversation-es.jar')
-    compile files('libs/users-es.jar')
-    compile files('libs/ownedConversation-it.jar')
-    compile files('libs/users-it.jar')
-    compile files('libs/ownedConversation-la.jar')
-    compile files('libs/users-la.jar')
-    compile files('libs/ownedConversation-de.jar')
-    compile files('libs/users-de.jar')
-    compile files('libs/ownedConversation-mx.jar')
-    compile files('libs/users-mx.jar')
-    compile files('libs/ownedConversation-sg.jar')
-    compile files('libs/users-sg.jar')
-    compile files('libs/ownedConversation-ot.jar')
-    compile files('libs/users-ot.jar')
-    compile files('libs/ownedConversation-ru.jar')
-    compile files('libs/users-ru.jar')
-    compile files('libs/ownedConversation-in.jar')
-    compile files('libs/users-in.jar')
-    compile files('libs/ownedConversation-ar.jar')
-    compile files('libs/users-ar.jar')
+    compile files('libs/ownedConversation.jar')
+    compile files('libs/users.jar')
+    compile files('libs/markConversation.jar')
 
     // Add the Google API client library.
     compile(group: 'com.google.api-client', name: 'google-api-client', version: '1.17.0-rc') {
@@ -130,8 +109,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 19
-        versionCode 27
-        versionName '1.0.17''
+        versionCode 35
+        versionName '1.19.1b'
     }
     lintOptions {
         checkReleaseBuilds false
