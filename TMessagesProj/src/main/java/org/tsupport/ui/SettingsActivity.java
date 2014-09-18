@@ -185,6 +185,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         notificationRow = rowCount++;
         templatesRow = rowCount++;
         blockedRow = rowCount++;
+//        userPhotosRow = rowCount++;
         //backgroundRow = rowCount++;
         terminateSessionsRow = rowCount++;
 //        photoDownloadSection = rowCount++;
@@ -767,7 +768,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     divider.setVisibility(View.INVISIBLE);
                 }*/ else if (i == terminateSessionsRow) {
                     textView.setText(LocaleController.getString("TerminateAllSessions", R.string.TerminateAllSessions));
-                    divider.setVisibility(View.INVISIBLE);
+                    divider.setVisibility(View.VISIBLE);
                 } else if (i == switchBackendButtonRow) {
                     textView.setText("Switch Backend");
                     divider.setVisibility(View.VISIBLE);
@@ -798,7 +799,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     }
                 } else if (i == sendByEnterRow) {
                     textView.setText(LocaleController.getString("SendByEnter", R.string.SendByEnter));
-                    divider.setVisibility(View.INVISIBLE);
+                    divider.setVisibility(View.VISIBLE);
                     boolean enabled = preferences.getBoolean("send_by_enter", false);
                     if (enabled) {
                         checkButton.setImageResource(R.drawable.btn_check_on);
