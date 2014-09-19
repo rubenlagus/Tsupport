@@ -20,12 +20,6 @@ import com.google.api.client.json.JsonFactory;
  */
 public class AppContantsOwnConversation {
 
-    public static final String WEB_CLIENT_ID = "YOUR WEB CLIENT HERE";
-
-    public static final String AUDIENCE = "server:client_id:" + WEB_CLIENT_ID;
-
-    public static final String EMAIL_ID = "YOUR EMAIL HERE";
-
      /**
      * Class instance of the JSON factory.
      */
@@ -42,37 +36,4 @@ public class AppContantsOwnConversation {
 
         return ownedConversation.build();
     }
-
-    public static int countGoogleAccounts(Context context) {
-        AccountManager am = AccountManager.get(context);
-        Account[] accounts = am.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-        if (accounts == null || accounts.length < 1) {
-            return 0;
-        } else {
-            return accounts.length;
-        }
-    }
-
-    public static boolean checkGooglePlayServicesAvailable(Activity activity) {
-        final int connectionStatusCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(activity);
-        if (GooglePlayServicesUtil.isUserRecoverableError(connectionStatusCode)) {
-            showGooglePlayServicesAvailabilityErrorDialog(activity, connectionStatusCode);
-            return false;
-        }
-        return true;
-    }
-
-    public static void showGooglePlayServicesAvailabilityErrorDialog(final Activity activity,
-                                                                     final int connectionStatusCode) {
-        final int REQUEST_GOOGLE_PLAY_SERVICES = 0;
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Dialog dialog = GooglePlayServicesUtil.getErrorDialog(
-                        connectionStatusCode, activity, REQUEST_GOOGLE_PLAY_SERVICES);
-                dialog.show();
-            }
-        });
-    }
-
 }
