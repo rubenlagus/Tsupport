@@ -29,6 +29,7 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
+import org.tsupport.android.MessagesStorage;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
@@ -56,6 +57,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private View empryView;
     private String selectAlertString;
     private boolean serverOnly = false;
+    private ActionBarMenuItem searchUserItem;
+    private ActionBarMenuItem searchMessagesItem;
+    private ActionBarMenuItem refreshItem;
 
     private static boolean dialogsLoaded = false;
     private boolean searching = false;
@@ -65,6 +69,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private long selectedDialog;
     private static boolean requestSearch = false;
     private static String searchQuery = "";
+    private static int searchType = 0; // 0=nothing 1=messages 2=users
 
     private Timer searchTimer;
     public TLRPC.messages_Messages searchResult;
@@ -73,6 +78,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
     // Remove unneeded options
     private final static int messages_list_menu_refresh = 1;
+    private final static int search_list_users = 2;
+    private final static int search_list_messages = 3;
     /*private final static int messages_list_menu_new_chat = 2;
     private final static int messages_list_menu_other = 6;
     private final static int messages_list_menu_new_secret_chat = 3;
@@ -102,6 +109,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().addObserver(this, MessagesController.encryptedChatUpdated);
         NotificationCenter.getInstance().addObserver(this, MessagesController.contactsDidLoaded);
         NotificationCenter.getInstance().addObserver(this, MessagesController.reloadSearchChatResults);
+        NotificationCenter.getInstance().addObserver(this, MessagesController.reloadSearchUserResults);
         NotificationCenter.getInstance().addObserver(this, 1234);
         if (getArguments() != null) {
             if (arguments.containsKey("query")) {
@@ -135,6 +143,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().removeObserver(this, MessagesController.encryptedChatUpdated);
         NotificationCenter.getInstance().removeObserver(this, MessagesController.contactsDidLoaded);
         NotificationCenter.getInstance().removeObserver(this, MessagesController.reloadSearchChatResults);
+        NotificationCenter.getInstance().removeObserver(this, MessagesController.reloadSearchUserResults);
         NotificationCenter.getInstance().removeObserver(this, 1234);
         delegate = null;
     }
@@ -158,9 +167,12 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
                 @Override
                 public void onSearchCollapse() {
-                    searchDialogs(null);
+                    searchDialogs(null, 0);
                     searching = false;
                     searchWas = false;
+                    refreshItem.setVisibility(View.VISIBLE);
+                    searchUserItem.setVisibility(View.GONE);
+                    searchMessagesItem.setVisibility(View.GONE);
                     if (messagesListView != null) {
                         messagesListView.setEmptyView(empryView);
                         searchEmptyView.setVisibility(View.GONE);
@@ -181,8 +193,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if ( EditorInfo.IME_NULL == actionId || ( event != null && event.getAction() == KeyEvent.ACTION_UP && event.getKeyCode() == KeyEvent.KEYCODE_SEARCH)) {
                         searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
+                        refreshItem.setVisibility(View.GONE);
                         searchQuery = v.getText().toString();
-                        searchDialogs(searchQuery);
+                        searchDialogs(searchQuery, 1);
                         if (searchQuery.length() != 0) {
                             searchWas = true;
                             requestSearch = true;
@@ -205,7 +218,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             } else {
                 actionBarLayer.setDisplayUseLogoEnabled(true, R.drawable.ic_ab_logo);
                 actionBarLayer.setTitle(LocaleController.getString("AppName", R.string.AppName));
-                menu.addItem(messages_list_menu_refresh, R.drawable.ic_refresh);
+                refreshItem = menu.addItem(messages_list_menu_refresh, R.drawable.ic_refresh);
+                searchUserItem = menu.addItem(search_list_users, R.drawable.grouplist);
+                searchMessagesItem = menu.addItem(search_list_messages, R.drawable.ic_profile_send_message);
+                searchUserItem.setVisibility(View.GONE);
+                searchMessagesItem.setVisibility(View.GONE);
                 ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_other);
                 //item.addSubItem(messages_list_menu_new_chat, LocaleController.getString("NewGroup", R.string.NewGroup), 0);
                 //item.addSubItem(messages_list_menu_new_secret_chat, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), 0);
@@ -229,13 +246,46 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         if (messagesListViewAdapter != null) {
                             messagesListViewAdapter.notifyDataSetChanged();
                         }
-                    } /*else if (id == messages_list_menu_new_messages) {
+                    } else if(id == search_list_users) {
+                        searchMessagesItem.setVisibility(View.VISIBLE);
+                        searchUserItem.setVisibility(View.GONE);
+                        searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
+                        searchDialogs(searchQuery, 2);
+                        if (searchQuery.length() != 0) {
+                            searchWas = true;
+                            requestSearch = true;
+                            if (messagesListViewAdapter != null) {
+                                messagesListViewAdapter.notifyDataSetChanged();
+                            }
+                            if (searchEmptyView != null) {
+                                messagesListView.setEmptyView(searchEmptyView);
+                                empryView.setVisibility(View.GONE);
+                            }
+                        }
+                    } else if(id == search_list_messages) {
+                        searchUserItem.setVisibility(View.VISIBLE);
+                        searchMessagesItem.setVisibility(View.GONE);
+                        searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
+                        searchDialogs(searchQuery, 1);
+                        if (searchQuery.length() != 0) {
+                            searchWas = true;
+                            requestSearch = true;
+                            if (messagesListViewAdapter != null) {
+                                messagesListViewAdapter.notifyDataSetChanged();
+                            }
+                            if (searchEmptyView != null) {
+                                messagesListView.setEmptyView(searchEmptyView);
+                                empryView.setVisibility(View.GONE);
+                            }
+                        }
+                    }
+                    /*else if (id == messages_list_menu_new_messages) {
                         Bundle args = new Bundle();
                         args.putBoolean("onlyUsers", true);
                         args.putBoolean("destroyAfterSelect", true);
                         args.putBoolean("usersAsSections", true);
                         presentFragment(new ContactsActivity(args));
-                    } *//*else if (id == messages_list_menu_new_secret_chat) {
+                    } else if (id == messages_list_menu_new_secret_chat) {
                         Bundle args = new Bundle();
                         args.putBoolean("onlyUsers", true);
                         args.putBoolean("destroyAfterSelect", true);
@@ -267,6 +317,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         requestSearch = false;
                         searchQuery = "";
                         actionBarLayer.onSearchFieldVisibilityChanged(menu.getItem(0).toggleSearch());
+                        searchUserItem.setVisibility(View.GONE);
+                        searchMessagesItem.setVisibility(View.GONE);
+                        refreshItem.setVisibility(View.GONE);
                         if (visible) {
                             actionBarLayer.titleTextView.setVisibility(View.VISIBLE);
                             actionBarLayer.backButtonImageView.setVisibility(View.GONE);
@@ -317,18 +370,36 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     if (searching && searchWas) {
-                        if (i >= searchResult.count) {
+                        if (searchType == 1) {
+                            if (i >= searchResult.count) {
+                                return;
+                            }
+                            if (i >= MessagesController.getInstance().dialogsFromSearch.size()) {
+                                return;
+                            }
+                            Bundle args = new Bundle();
+                            args.putInt("user_id", MessagesController.getInstance().dialogsFromSearchOrdered.get(i).peer.user_id);
+                            args.putString("query", searchQuery);
+                            ChatActivity chatActivity = new ChatActivity(args);
+                            chatActivity.setDelegate(MessagesActivity.this);
+                            presentFragment(new ChatActivity(args));
+                        } else if (searchType == 2) {
+                            Bundle args = new Bundle();
+                            TLObject obj = MessagesController.getInstance().objectsUsersFromSearch.get(i);
+                            if (obj instanceof TLRPC.User) {
+                                args.putInt("user_id", ((TLRPC.User) obj).id);
+                            } else if (obj instanceof  TLRPC.Chat) {
+                                args.putInt("chat_id", ((TLRPC.Chat) obj).id);
+                            } else {
+                                return;
+                            }
+                            args.putString("query", searchQuery);
+                            ChatActivity chatActivity = new ChatActivity(args);
+                            chatActivity.setDelegate(MessagesActivity.this);
+                            presentFragment(new ChatActivity(args));
+                        } else {
                             return;
                         }
-                        if (i >= MessagesController.getInstance().dialogsFromSearch.size()) {
-                            return;
-                        }
-                        Bundle args = new Bundle();
-                        args.putInt("user_id", MessagesController.getInstance().dialogsFromSearchOrdered.get(i).peer.user_id);
-                        args.putString("query", searchQuery);
-                        ChatActivity chatActivity = new ChatActivity(args);
-                        chatActivity.setDelegate(MessagesActivity.this);
-                        presentFragment(new ChatActivity(args));
                     } else {
                         long dialog_id = 0;
                         if (serverOnly) {
@@ -363,7 +434,9 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                             } else {
                                 args.putInt("enc_id", high_id);
                             }
-                            presentFragment(new ChatActivity(args));
+                            ChatActivity chatActivity = new ChatActivity(args);
+                            chatActivity.setDelegate(MessagesActivity.this);
+                            presentFragment(chatActivity);
                         }
                     }
                 }
@@ -464,38 +537,43 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     }
                 }
             });
-            if (requestSearch && searchQuery.compareToIgnoreCase("") != 0) {
-                menu.getItem(0).searchField.setVisibility(View.VISIBLE);
-                menu.getItem(0).setVisibility(View.GONE);
-                menu.getItem(0).searchField.requestFocus();
-                if (searchQuery.compareToIgnoreCase("") != 0) {
-                    AndroidUtilities.showKeyboard(menu.getItem(0).searchField);
-                }
-                actionBarLayer.setDisplayUseLogoEnabled(false, R.drawable.ic_ab_logo);
-                actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
-                actionBarLayer.onSearchFieldVisibilityChanged(true);
-
-                if (menu.getItem(0).listener != null)
-                    menu.getItem(0).listener.onSearchExpand();
-                searching = true;
-                menu.getItem(0).searchField.setText(searchQuery);
-                searchDialogs(searchQuery);
-                if (searchQuery.length() != 0) {
-                    searchWas = true;
-                    if (messagesListViewAdapter != null) {
-                        messagesListViewAdapter.notifyDataSetChanged();
-                    }
-                    if (searchEmptyView != null) {
-                        messagesListView.setEmptyView(searchEmptyView);
-                        empryView.setVisibility(View.GONE);
-                    }
-                }
-            }
-
         } else {
             ViewGroup parent = (ViewGroup)fragmentView.getParent();
             if (parent != null) {
                 parent.removeView(fragmentView);
+            }
+        }
+        if (requestSearch && searchQuery.compareToIgnoreCase("") != 0) {
+            final ActionBarMenu menu = actionBarLayer.createMenu();
+            menu.getItem(0).searchField.setVisibility(View.VISIBLE);
+            menu.getItem(0).setVisibility(View.GONE);
+            menu.getItem(0).searchField.requestFocus();
+            if (searchQuery.compareToIgnoreCase("") != 0) {
+                AndroidUtilities.showKeyboard(menu.getItem(0).searchField);
+            }
+            actionBarLayer.setDisplayUseLogoEnabled(false, R.drawable.ic_ab_logo);
+            actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
+            actionBarLayer.onSearchFieldVisibilityChanged(true);
+
+            if (menu.getItem(0).listener != null)
+                menu.getItem(0).listener.onSearchExpand();
+            searching = true;
+            menu.getItem(0).searchField.setText(searchQuery);
+            if (searchQuery.contains("#")) {
+                searchUserItem.setVisibility(View.GONE);
+                searchMessagesItem.setVisibility(View.GONE);
+                refreshItem.setVisibility(View.GONE);
+            }
+            searchDialogs(searchQuery, 1);
+            if (searchQuery.length() != 0) {
+                searchWas = true;
+                if (messagesListViewAdapter != null) {
+                    messagesListViewAdapter.notifyDataSetChanged();
+                }
+                if (searchEmptyView != null) {
+                    messagesListView.setEmptyView(searchEmptyView);
+                    empryView.setVisibility(View.GONE);
+                }
             }
         }
         return fragmentView;
@@ -558,17 +636,55 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         } else if (id == MessagesController.reloadSearchChatResults) {
             int token = (Integer)args[0];
             if (token == activityToken) {
+                searchType = 1;
                 final TLRPC.messages_Messages result = (TLRPC.messages_Messages) args[1];
                 Utilities.RunOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         searchResult = result;
-                        if (result.count <= 0) {
+                        if ((result.messages.size()+result.chats.size()+result.users.size()) <= 0) {
+                            FileLog.d("tsupportSearch", "No results");
                             searchEmptyView.setText(LocaleController.getString("NoResult", R.string.NoResult));
                         } else {
+                            FileLog.d("tsupportSearch", "Yes Results: " + result.count);
                             searchWas = true;
                             searching = true;
                         }
+                        searchUserItem.setVisibility(View.VISIBLE);
+                        searchMessagesItem.setVisibility(View.GONE);
+                        messagesListViewAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+        } else if (id == MessagesController.reloadSearchUserResults) {
+            int token = (Integer)args[0];
+            if (token == activityToken) {
+                searchType = 2;
+                final ArrayList<TLObject> result = (ArrayList<TLObject>)args[1];
+                final ArrayList<CharSequence> names = (ArrayList<CharSequence>) args[2];
+
+                Utilities.RunOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (TLObject obj : result) {
+                            if (obj instanceof TLRPC.User) {
+                                TLRPC.User user = (TLRPC.User) obj;
+                                MessagesController.getInstance().users.putIfAbsent(user.id, user);
+                            } else if (obj instanceof TLRPC.Chat) {
+                                TLRPC.Chat chat = (TLRPC.Chat) obj;
+                                MessagesController.getInstance().chats.putIfAbsent(chat.id, chat);
+                            }
+                        }
+                        if (result.size() <= 0) {
+                            FileLog.d("tsupportSearch", "No results");
+                            searchEmptyView.setText(LocaleController.getString("NoResult", R.string.NoResult));
+                        } else {
+                            FileLog.d("tsupportSearch", "Yes Results: " + result.size());
+                            searchWas = true;
+                            searching = true;
+                        }
+                        searchMessagesItem.setVisibility(View.VISIBLE);
+                        searchUserItem.setVisibility(View.GONE);
                         messagesListViewAdapter.notifyDataSetChanged();
                     }
                 });
@@ -700,41 +816,105 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 //        });
     }
 
-    public void searchDialogs(final String query) {
-        if (searchQuery == null || query == null) {
+    public void searchDialogs(final String query, int type) {
+        if (type == 1) {
+            if (searchQuery == null || query == null) {
+                if (!requestSearch)
+                    searchResult = null;
+                if (MessagesController.getInstance().dialogsFromSearch != null)
+                    MessagesController.getInstance().dialogsFromSearch.clear();
+                if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
+                    MessagesController.getInstance().dialogsFromSearchOrdered.clear();
+                if (MessagesController.getInstance().dialogsFromSearch != null)
+                    MessagesController.getInstance().dialogsFromSearch.clear();
+                if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
+                    MessagesController.getInstance().dialogsFromSearchOrdered.clear();
+                if (MessagesController.getInstance().namesUsersFromSearch != null)
+                    MessagesController.getInstance().namesUsersFromSearch.clear();
+                if (MessagesController.getInstance().objectsUsersFromSearch != null)
+                    MessagesController.getInstance().objectsUsersFromSearch.clear();
+                messagesListViewAdapter.notifyDataSetChanged();
+            } else {
+                if (MessagesController.getInstance().namesUsersFromSearch != null)
+                    MessagesController.getInstance().namesUsersFromSearch.clear();
+                if (MessagesController.getInstance().objectsUsersFromSearch != null)
+                    MessagesController.getInstance().objectsUsersFromSearch.clear();
+                messagesListViewAdapter.notifyDataSetChanged();
+                try {
+                    if (searchTimer != null) {
+                        searchTimer.cancel();
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupport", e);
+                }
+                searchTimer = new Timer();
+                searchTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            searchTimer.cancel();
+                            searchTimer = null;
+                        } catch (Exception e) {
+                            FileLog.e("tsupport", e);
+                        }
+                        FileLog.e("tsupportSearch", "Calling search: " + query);
+                        MessagesController.getInstance().searchDialogs(activityToken, query, classGuid);
+                    }
+                }, 1000, 1000);
+            }
+        } else if (type == 2) {
+            if (searchQuery == null || query == null) {
+                if (!requestSearch)
+                    searchResult = null;
+                if (MessagesController.getInstance().namesUsersFromSearch != null)
+                    MessagesController.getInstance().namesUsersFromSearch.clear();
+                if (MessagesController.getInstance().objectsUsersFromSearch != null)
+                    MessagesController.getInstance().objectsUsersFromSearch.clear();
+                if (MessagesController.getInstance().dialogsFromSearch != null)
+                    MessagesController.getInstance().dialogsFromSearch.clear();
+                if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
+                    MessagesController.getInstance().dialogsFromSearchOrdered.clear();
+                messagesListViewAdapter.notifyDataSetChanged();
+            } else {
+                if (MessagesController.getInstance().dialogsFromSearch != null)
+                    MessagesController.getInstance().dialogsFromSearch.clear();
+                if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
+                    MessagesController.getInstance().dialogsFromSearchOrdered.clear();
+                messagesListViewAdapter.notifyDataSetChanged();
+                try {
+                    if (searchTimer != null) {
+                        searchTimer.cancel();
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupport", e);
+                }
+                searchTimer = new Timer();
+                searchTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            searchTimer.cancel();
+                            searchTimer = null;
+                        } catch (Exception e) {
+                            FileLog.e("tsupport", e);
+                        }
+                        FileLog.e("tsupportSearch", "Calling users search: " + query);
+                        MessagesStorage.getInstance().searchDialogs(activityToken, query, classGuid);
+                    }
+                }, 1000, 1000);
+
+            }
+        } else {
+            if (MessagesController.getInstance().dialogsFromSearch != null)
+                MessagesController.getInstance().dialogsFromSearch.clear();
+            if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
+                MessagesController.getInstance().dialogsFromSearchOrdered.clear();
+            if (MessagesController.getInstance().namesUsersFromSearch != null)
+                MessagesController.getInstance().namesUsersFromSearch.clear();
+            if (MessagesController.getInstance().objectsUsersFromSearch != null)
+                MessagesController.getInstance().objectsUsersFromSearch.clear();
             if (!requestSearch)
                 searchResult = null;
-            if (MessagesController.getInstance().dialogsFromSearch != null)
-                MessagesController.getInstance().dialogsFromSearch.clear();
-            if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
-                MessagesController.getInstance().dialogsFromSearchOrdered.clear();
-        } else if (query.compareToIgnoreCase("") == 0) {
-            if (MessagesController.getInstance().dialogsFromSearch != null)
-                MessagesController.getInstance().dialogsFromSearch.clear();
-            if (MessagesController.getInstance().dialogsFromSearchOrdered != null)
-                MessagesController.getInstance().dialogsFromSearchOrdered.clear();
-        } else {
-            try {
-                if (searchTimer != null) {
-                    searchTimer.cancel();
-                }
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
-            }
-            searchTimer = new Timer();
-            searchTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        searchTimer.cancel();
-                        searchTimer = null;
-                    } catch (Exception e) {
-                        FileLog.e("tsupport", e);
-                    }
-                    MessagesController.getInstance().searchDialogs(activityToken, query, classGuid);
-                }
-            }, 1000, 1000);
-            FileLog.e("tsupport", "Calling search");
         }
     }
 
@@ -758,10 +938,20 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public int getCount() {
             if (searching && searchWas) {
-                if (searchResult == null) {
+                if (searchType == 1) {
+                    if (searchResult == null) {
+                        return 0;
+                    }
+                    return searchResult.count;
+                } else if (searchType == 2) {
+                    if (MessagesController.getInstance().objectsUsersFromSearch != null) {
+                        return MessagesController.getInstance().objectsUsersFromSearch.size();
+                    } else {
+                        return 0;
+                    }
+                } else {
                     return 0;
                 }
-                return searchResult.count;
             }
             int count;
             if (serverOnly) {
@@ -796,16 +986,36 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             if (searching && searchWas) {
-                if (view == null) {
-                    view = new DialogCell(mContext);
-                }
-                if (i>=MessagesController.getInstance().dialogsFromSearchOrdered.size()) {
+                if (searchType == 1) { // Searching messages
+                    if (view == null) {
+                        view = new DialogCell(mContext);
+                    }
+                    if (i >= MessagesController.getInstance().dialogsFromSearchOrdered.size()) {
+                        return view;
+                    }
+                    TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogsFromSearchOrdered.get(i);
+                    ((DialogCell) view).setDialog(dialog);
+                    return view;
+                } else if (searchType == 2) { // Searching users
+                    if (view == null) {
+                        view = new ChatOrUserCell(mContext);
+                    }
+                    TLRPC.User user = null;
+                    TLRPC.Chat chat = null;
+                    TLObject obj = MessagesController.getInstance().objectsUsersFromSearch.get(i);
+                    if (obj instanceof TLRPC.User) {
+                        user = MessagesController.getInstance().users.get(((TLRPC.User)obj).id);
+                    } else if (obj instanceof TLRPC.Chat) {
+                        chat = MessagesController.getInstance().chats.get(((TLRPC.Chat) obj).id);
+                    }
+                    ((ChatOrUserCell)view).setData(user, chat, null, MessagesController.getInstance().namesUsersFromSearch.get(i), null);
+                    return view;
+                } else { // Other
+                    if (view == null) {
+                        view = new DialogCell(mContext);
+                    }
                     return view;
                 }
-                TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogsFromSearchOrdered.get(i);
-                ((DialogCell) view).setDialog(dialog);
-
-                return view;
             }
             int type = getItemViewType(i);
             if (type == 1) {
@@ -831,7 +1041,16 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public int getItemViewType(int i) {
             if (searching && searchWas) {
-                return 0;
+                if (searchType == 1) {
+                    return 0;
+                } else {
+                    TLObject obj = MessagesController.getInstance().objectsUsersFromSearch.get(i);
+                    if (obj instanceof TLRPC.User) {
+                        return 2;
+                    } else {
+                        return 3;
+                    }
+                }
             }
             if (serverOnly && i == MessagesController.getInstance().dialogsServerOnly.size() || !serverOnly && i == MessagesController.getInstance().dialogs.size()) {
                 return 1;
@@ -847,7 +1066,14 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public boolean isEmpty() {
             if (searching && searchWas) {
-                return searchResult == null || searchResult.count == 0;
+                if (searchType == 1) {
+                    return MessagesController.getInstance().dialogsFromSearch == null || MessagesController.getInstance().dialogsFromSearch.size() <= 0;
+                    //return searchResult == null || searchResult.count == 0;
+                } else if (searchType == 2) {
+                    return MessagesController.getInstance().objectsUsersFromSearch == null || MessagesController.getInstance().objectsUsersFromSearch.size() <= 0;
+                } else {
+                    return true;
+                }
             }
             if (MessagesController.getInstance().loadingDialogs && MessagesController.getInstance().dialogs.isEmpty()) {
                 return false;
@@ -866,5 +1092,16 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             }
             return count == 0;
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (searching || searchWas || requestSearch) {
+            searching = searchWas = requestSearch = false;
+            searchQuery = "";
+            searchUserItem.setVisibility(View.GONE);
+            searchMessagesItem.setVisibility(View.GONE);
+        }
+        return super.onBackPressed();
     }
 }

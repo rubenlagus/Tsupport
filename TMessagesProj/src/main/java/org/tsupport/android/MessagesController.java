@@ -57,6 +57,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public ArrayList<TLRPC.TL_dialog> dialogsServerOnly = new ArrayList<TLRPC.TL_dialog>();
     public HashMap<Integer,TLRPC.TL_dialog> dialogsFromSearch = new HashMap<Integer,TLRPC.TL_dialog>();
     public ArrayList<TLRPC.TL_dialog> dialogsFromSearchOrdered = new ArrayList<TLRPC.TL_dialog>();
+    public ArrayList<TLObject> objectsUsersFromSearch = new ArrayList<TLObject>();
+    public ArrayList<CharSequence> namesUsersFromSearch = new ArrayList<CharSequence>();
     public ConcurrentHashMap<Long, TLRPC.TL_dialog> dialogs_dict = new ConcurrentHashMap<Long, TLRPC.TL_dialog>(100, 1.0f, 2);
     public HashMap<Integer, MessageObject> dialogMessage = new HashMap<Integer, MessageObject>();
     public ConcurrentHashMap<Long, ArrayList<PrintingUser>> printingUsers = new ConcurrentHashMap<Long, ArrayList<PrintingUser>>(100, 1.0f, 2);
@@ -175,6 +177,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public static final int readChatNotification = 50;
     public static final int updateTemplatesNotification = 51;
     public static final int reloadSearchChatResults = 52;
+    public static final int reloadSearchUserResults = 53;
 
 
     private static volatile MessagesController Instance = null;
@@ -686,7 +689,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     }
 
     public void searchDialogs(final Integer token, final String query, final int classGuid) {
-
+        FileLog.e("tsupportSearch", "Calling search internal: " + query);
         TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
         req.offset = 0;
         req.limit = 1000;
@@ -701,7 +704,11 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             public void run(TLObject response, TLRPC.TL_error error) {
                 if (error == null) {
                     final TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
+                    FileLog.e("tsupportSearch", "Result search: " + res.count);
                     processLoadedSearchDialogs(res, classGuid, token);
+                }
+                else {
+                    FileLog.e("tsupportSearch", "Error: " + error);
                 }
             }
         });
@@ -709,6 +716,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     }
 
     public void processLoadedSearchDialogs(final TLRPC.messages_Messages res, final int classGuid, final int token) {
+        FileLog.e("tsupportSearch", "Users: " + res.users.size());
+        FileLog.e("tsupportSearch", "Chats: " + res.chats.size());
         MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
         Utilities.RunOnUIThread(new Runnable() {
             @Override
@@ -727,6 +736,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 int last_message_date;
                 dialogsFromSearch.clear();
                 dialogsFromSearchOrdered.clear();
+                FileLog.e("tsupportSearch", "Results messages: " + res.messages.size());
                 for (TLRPC.Message message : res.messages) {
                     if (dialogsFromSearch.containsKey(message.from_id)) {
                         dialog = dialogsFromSearch.get(message.from_id);
@@ -751,25 +761,18 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         dialogsFromSearch.put(message.from_id, dialog);
                     }
                 }
+                FileLog.e("tsupportSearch", "DialogsFromSearch: " + dialogsFromSearch.size());
                 dialogsFromSearchOrdered.addAll(dialogsFromSearch.values());
                 Collections.sort(dialogsFromSearchOrdered, new Comparator<TLRPC.TL_dialog>() {
                     @Override
                     public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                        if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
-                            return -1;
-                        }
-                        else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
-                            return 1;
-                        }
-                        else {
-                            if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                                return 0;
-                            } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
-                                return 1;
-                            } else {
-                                return -1;
-                            }
-                        }
+                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                        return 0;
+                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
                     }
                 });
                 NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token, res);

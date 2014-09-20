@@ -3034,9 +3034,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     String selectedHashtag = items[which].toString();
                     Bundle arguments = new Bundle();
                     arguments.putString("query", selectedHashtag);
-                    MessagesActivity fragment = new MessagesActivity(arguments);
-                    fragment.setDelegate(ChatActivity.this);
-                    presentFragment(fragment);
+                    delegate.setSearchQuery(selectedHashtag);
+                    finishFragment();
                 }
             });
             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -3157,6 +3156,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     @Override
     public boolean onBackPressed() {
+        if (fromSearchQuery.compareToIgnoreCase("") != 0 && delegate != null) {
+            delegate.setSearchQuery(fromSearchQuery);
+        }
         if (actionBarLayer.isActionModeShowed()) {
             selectedMessagesIds.clear();
             selectedMessagesCanCopyIds.clear();

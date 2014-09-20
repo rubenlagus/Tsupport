@@ -462,4 +462,5 @@
     <string name="searching">Buscando...</string>
     <string name="hashtags">Hashtags</string>
     <string name="search">Búsqueda</string>
+    <string name="NoMoreSearch">No older messages available</string>
 </resources>

@@ -85,7 +85,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
             placeholderInDrawable = getResources().getDrawable(R.drawable.photo_placeholder_in);
             placeholderOutDrawable = getResources().getDrawable(R.drawable.photo_placeholder_out);
             buttonStatesDrawables[0] = getResources().getDrawable(R.drawable.photoload);
-            buttonStatesDrawables[0] = getResources().getDrawable(R.drawable.photoload);
+            buttonStatesDrawables[1] = getResources().getDrawable(R.drawable.photoload);
             buttonStatesDrawables[2] = getResources().getDrawable(R.drawable.photogif);
             buttonStatesDrawables[3] = getResources().getDrawable(R.drawable.playvideo);
             videoIconDrawable = getResources().getDrawable(R.drawable.ic_video);

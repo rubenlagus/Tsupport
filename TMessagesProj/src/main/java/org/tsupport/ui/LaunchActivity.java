@@ -28,6 +28,7 @@ import org.tsupport.android.ContactsController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.messenger.FileLoader;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
@@ -76,7 +77,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         String userId = "";
         try {
             userId = userNumberPreferences.getString("userId", "");
-        } catch (ClassCastException e) { // Compatibility with older versions of the app
+        } catch (ClassCastException e) { // Compatibility with oldfer versions of the app
             FileLog.e("tsupport","Tipe USERNUMBER: " + e);
             userId = "";
         }
@@ -113,6 +114,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                 }
             }
         }
+        MessagesStorage.getInstance();
         super.onCreate(savedInstanceState);
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -548,6 +550,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        FileLoader.getInstance().clearMemory();
         File dir = AndroidUtilities.getCacheDir();
         MessagesStorage.getInstance().closeDBandDeleteCache();
         if (dir != null && dir.isDirectory())
