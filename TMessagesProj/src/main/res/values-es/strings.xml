@@ -463,4 +463,9 @@
     <string name="hashtags">Hashtags</string>
     <string name="search">Búsqueda</string>
     <string name="NoMoreSearch">No older messages available</string>
+    <string name="Password">Password</string>
+    <string name="IncorrectPassword">Incorrect Password</string>
+    <string name="InsertYourPasswor">Insert your password</string>
+    <string name="Remove">Remove</string>
+    <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
 </resources>

@@ -18,15 +18,19 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.method.LinkMovementMethod;
 import android.util.Base64;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -87,6 +91,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int sendByEnterRow;
     private int terminateSessionsRow;
     private int templatesRow;
+    private int passwordRow;
 //    private int photoDownloadSection;
 //    private int userPhotosRow;
 //    private int photoDownloadPrivateRow;
@@ -184,6 +189,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         languageRow = rowCount++;
         notificationRow = rowCount++;
         templatesRow = rowCount++;
+        passwordRow = rowCount++;
         blockedRow = rowCount++;
 //        userPhotosRow = rowCount++;
         //backgroundRow = rowCount++;
@@ -298,7 +304,50 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         presentFragment(new SettingsTemplatesActivity());
                     } else if (i == blockedRow) {
                         presentFragment(new SettingsBlockedUsersActivity());
-                    } /*else if (i == backgroundRow) {
+                    } else if (i == passwordRow) {
+                        if (getParentActivity() == null) {
+                            return;
+                        }
+                        Context themedContext;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            themedContext = getParentActivity();
+                        } else {
+                            themedContext = new ContextThemeWrapper(getParentActivity(), android.R.style.Theme_Dialog);
+                        }
+                        AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
+                        builder.setMessage(LocaleController.getString("InsertYourPasswor", R.string.InsertYourPasswor));
+                        final EditText input = new EditText(getParentActivity());
+                        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        input.setMaxLines(1);
+                        input.setTextColor(getParentActivity().getResources().getColor(R.color.colorText));
+                        input.setHintTextColor(getParentActivity().getResources().getColor(R.color.colorTextHint));
+                        builder.setView(input);
+                        builder.setPositiveButton(LocaleController.getString("Ok", R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                if (input.length() >= 4) {
+                                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    editor.putInt("password", Integer.parseInt(input.getText().toString()));
+                                    editor.commit();
+                                } else {
+                                    Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("MinPasswordLengh", R.string.MinPasswordLengh) , Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        builder.setNeutralButton(LocaleController.getString("Remove", R.string.Remove), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.remove("password");
+                                editor.commit();
+                            }
+                        });
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        showAlertDialog(builder);
+                    }
+                    /*else if (i == backgroundRow) {
                         presentFragment(new SettingsWallpapersActivity());
                     }*/ /*else if (i == askQuestionRow) {
                         if (getParentActivity() == null) {
@@ -651,7 +700,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow /*|| i == backgroundRow*/ ||
                    /* i == askQuestionRow ||*/ i == sendLogsRow || i == sendByEnterRow || i == terminateSessionsRow ||/* i == photoDownloadPrivateRow ||*/
                     /* i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow ||
-                    i == switchBackendButtonRow /*|| i == telegramFaqRow*/ || i == contactsSortRow || i == contactsReimportRow || i == templatesRow;
+                    i == switchBackendButtonRow /*|| i == telegramFaqRow*/ || i == contactsSortRow || i == contactsReimportRow || i == templatesRow || passwordRow == i;
         }
 
         @Override
@@ -750,6 +799,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == templatesRow) {
                     textView.setText(LocaleController.getString("templates", R.string.templates));
                     divider.setVisibility(View.VISIBLE);
+                } else if (i == passwordRow) {
+                    textView.setText(LocaleController.getString("Password", R.string.Password));
+                    divider.setVisibility(View.VISIBLE);
                 }
                 else if (i == blockedRow) {
                     textView.setText(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));
@@ -768,7 +820,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     divider.setVisibility(View.INVISIBLE);
                 }*/ else if (i == terminateSessionsRow) {
                     textView.setText(LocaleController.getString("TerminateAllSessions", R.string.TerminateAllSessions));
-                    divider.setVisibility(View.VISIBLE);
+                    divider.setVisibility(View.GONE);
                 } else if (i == switchBackendButtonRow) {
                     textView.setText("Switch Backend");
                     divider.setVisibility(View.VISIBLE);

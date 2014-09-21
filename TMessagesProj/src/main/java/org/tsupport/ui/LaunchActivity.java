@@ -52,6 +52,7 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -78,11 +79,9 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         try {
             userId = userNumberPreferences.getString("userId", "");
         } catch (ClassCastException e) { // Compatibility with oldfer versions of the app
-            FileLog.e("tsupport","Tipe USERNUMBER: " + e);
             userId = "";
         }
         if (userId.compareToIgnoreCase("") !=  0) {
-            FileLog.e("tsupport","USERNUMBER: " + userId);
             if (android.os.Build.VERSION.SDK_INT >= 11) {
                 FileLog.e("tsupport","Sending user");
                 TsupportApi.getInstance().addUser(userId);
@@ -114,6 +113,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                 }
             }
         }
+
         MessagesStorage.getInstance();
         super.onCreate(savedInstanceState);
 
@@ -129,6 +129,11 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         NotificationCenter.getInstance().addObserver(this, 701);
         NotificationCenter.getInstance().addObserver(this, 702);
         NotificationCenter.getInstance().addObserver(this, 703);
+
+        SharedPreferences mainConfigPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        if (mainConfigPreferences.contains("password") && mainConfigPreferences.getInt("password", 0) > 0 && mainConfigPreferences.getLong("passwordTimeStampt", new Long(0)) < ((new Date()).getTime())-30000) {
+            addFragmentToStack(new PasswordView());
+        }
 
         if (fragmentsStack.isEmpty()) {
             if (!UserConfig.isClientActivated()) {
@@ -543,6 +548,10 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onPause() {
         super.onPause();
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong("passwordTimeStampt", (new Date()).getTime());
+        editor.commit();
         ApplicationLoader.mainInterfacePaused = true;
         ConnectionsManager.getInstance().setAppPaused(true, false);
     }

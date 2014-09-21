@@ -25,11 +25,13 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -2999,7 +3001,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         } else if (option == 6) {
             final String value = selectedObject.messageText.toString();
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+            Context themedContext;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                themedContext = getParentActivity();
+            } else {
+                themedContext = new ContextThemeWrapper(getParentActivity(), android.R.style.Theme_Dialog);
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
             builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
             builder.setMessage(LocaleController.getString("insertKey", R.string.insertKey));
             final EditText input = new EditText(getParentActivity());
