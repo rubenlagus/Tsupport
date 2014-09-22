@@ -766,13 +766,21 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 Collections.sort(dialogsFromSearchOrdered, new Comparator<TLRPC.TL_dialog>() {
                     @Override
                     public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                        return 0;
-                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
-                        return 1;
-                    } else {
-                        return -1;
-                    }
+                        if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
+                            return -1;
+                        }
+                        else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
+                            return 1;
+                        }
+                        else {
+                            if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                                return 0;
+                            } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
                     }
                 });
                 NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token, res);
@@ -4633,7 +4641,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             return -1;
                         }
                     }
-
                 }
             });
             for (TLRPC.TL_dialog d : dialogs) {

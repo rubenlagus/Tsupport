@@ -319,7 +319,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         actionBarLayer.onSearchFieldVisibilityChanged(menu.getItem(0).toggleSearch());
                         searchUserItem.setVisibility(View.GONE);
                         searchMessagesItem.setVisibility(View.GONE);
-                        refreshItem.setVisibility(View.GONE);
+                        refreshItem.setVisibility(View.VISIBLE);
                         if (visible) {
                             actionBarLayer.titleTextView.setVisibility(View.VISIBLE);
                             actionBarLayer.backButtonImageView.setVisibility(View.GONE);
@@ -544,37 +544,43 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             }
         }
         if (requestSearch && searchQuery.compareToIgnoreCase("") != 0) {
-            final ActionBarMenu menu = actionBarLayer.createMenu();
-            menu.getItem(0).searchField.setVisibility(View.VISIBLE);
-            menu.getItem(0).setVisibility(View.GONE);
-            menu.getItem(0).searchField.requestFocus();
-            if (searchQuery.compareToIgnoreCase("") != 0) {
-                AndroidUtilities.showKeyboard(menu.getItem(0).searchField);
-            }
-            actionBarLayer.setDisplayUseLogoEnabled(false, R.drawable.ic_ab_logo);
-            actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
-            actionBarLayer.onSearchFieldVisibilityChanged(true);
+            Utilities.RunOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    final ActionBarMenu menu = actionBarLayer.createMenu();
+                    menu.getItem(0).searchField.setVisibility(View.VISIBLE);
+                    menu.getItem(0).setVisibility(View.GONE);
+                    menu.getItem(0).searchField.requestFocus();
+                    if (searchQuery.compareToIgnoreCase("") != 0) {
+                        AndroidUtilities.showKeyboard(menu.getItem(0).searchField);
+                    }
+                    actionBarLayer.setDisplayUseLogoEnabled(false, R.drawable.ic_ab_logo);
+                    actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
+                    actionBarLayer.onSearchFieldVisibilityChanged(true);
 
-            if (menu.getItem(0).listener != null)
-                menu.getItem(0).listener.onSearchExpand();
-            searching = true;
-            menu.getItem(0).searchField.setText(searchQuery);
-            if (searchQuery.contains("#")) {
-                searchUserItem.setVisibility(View.GONE);
-                searchMessagesItem.setVisibility(View.GONE);
-                refreshItem.setVisibility(View.GONE);
-            }
-            searchDialogs(searchQuery, 1);
-            if (searchQuery.length() != 0) {
-                searchWas = true;
-                if (messagesListViewAdapter != null) {
-                    messagesListViewAdapter.notifyDataSetChanged();
+                    if (menu.getItem(0).listener != null)
+                        menu.getItem(0).listener.onSearchExpand();
+                    searching = true;
+                    menu.getItem(0).searchField.setText(searchQuery);
+                    if (searchQuery.contains("#")) {
+                        searchUserItem.setVisibility(View.GONE);
+                        searchMessagesItem.setVisibility(View.GONE);
+                        refreshItem.setVisibility(View.GONE);
+                    }
+                    searchDialogs(searchQuery, 1);
+                    if (searchQuery.length() != 0) {
+                        searchWas = true;
+                        if (messagesListViewAdapter != null) {
+                            messagesListViewAdapter.notifyDataSetChanged();
+                        }
+                        if (searchEmptyView != null) {
+
+                            messagesListView.setEmptyView(searchEmptyView);
+                            empryView.setVisibility(View.GONE);
+                        }
+                    }
                 }
-                if (searchEmptyView != null) {
-                    messagesListView.setEmptyView(searchEmptyView);
-                    empryView.setVisibility(View.GONE);
-                }
-            }
+            });
         }
         return fragmentView;
     }
