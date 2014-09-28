@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -110,8 +111,6 @@ public class TemplateSupport {
     }
 
     public static void loadFile(String fileName, boolean loadDefault) {
-        ArrayList<ArrayList<String>> lines = new ArrayList<ArrayList<String>>();
-        ArrayList<String> templine = new ArrayList<String>();
         try {
             InputStream is;
             if (loadDefault)
@@ -122,47 +121,32 @@ public class TemplateSupport {
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String fileString = "";
             if (br.ready()) {
                 String line;
                 boolean started = false;
-                while ((line = br.readLine()) != null) {
-                    if (line.contains("KEYS")) {
-                        lines.add(templine);
-                        templine = new ArrayList<String>();
-                        if (!started) {
-                            started = true;
-                        }
-                    } else {
-                        if (started) {
-                            templine.add(line);
-                        }
-                    }
-                }
-                br.close();
-                int i = 0;
-                ArrayList<String> keys = new ArrayList<String>();
-                Pattern patternEmptyLine = Pattern.compile("^\\s*$");
-                for (ArrayList<String> line2 : lines) {
-                    keys.clear();
-                    String value = "";
-                    boolean inkeys = true;
-                    for (String inline : line2) {
-                        if (inline.contains("{VALUE}"))
-                            inkeys = false;
-                        else if (inkeys) {
-                            keys.add(inline);
-                        } else if (!inkeys) {
-                            value = value + inline + "\n";
-                        }
-                    }
 
-                    for (String key : keys) {
-                        System.out.println(key);
-                        if (!patternEmptyLine.matcher(key).find()){
-                            modifing++;
-                            MessagesStorage.getInstance().putTemplate(key, value);
-                            templates.put(key.replace("\n", ""), value.replaceAll("\\n{3,}","\\n\\n").replaceAll("^\\s*","").replaceAll("\\s*$",""));
-                        }
+                while ((line = br.readLine()) != null) {
+                    fileString += line;
+                    fileString += "\n";
+                }
+            }
+            Pattern mainPattern = Pattern.compile("[{]KEYS[}]\\n([^{]+)[{]VALUE[}]\\n([^{]+)");
+            Pattern keysPattern = Pattern.compile("((\\w+))");
+            Matcher mainMatcher = mainPattern.matcher(fileString);
+            FileLog.e("TemplateSupport", "File: " + fileString);
+            FileLog.e("TemplateSupport", "Step 1");
+            while(mainMatcher.find()) {
+                String keys = mainMatcher.group(1);
+                String value = mainMatcher.group(2).replaceAll("\\n{3,}","\\n\\n").replaceAll("^\\s*","").replaceAll("\\s*$","");
+                Matcher keysMatcher = keysPattern.matcher(keys);
+                while(keysMatcher.find()) {
+                    String key = keysMatcher.group(0).replace("\n","");
+                    if (key.compareToIgnoreCase("") != 0){
+                        FileLog.e("TemplateSupport", "Adding" + key);
+                        modifing++;
+                        MessagesStorage.getInstance().putTemplate(key, value);
+                        templates.put(key, value);
                     }
                 }
             }
@@ -171,6 +155,7 @@ public class TemplateSupport {
         } catch (IOException e) {
             FileLog.e("TemplateSupport", "File IO Exception");
         }
+        FileLog.e("TemplateSupport", "Step 2");
     }
 
     public void putTemplate(String key, String value) {
