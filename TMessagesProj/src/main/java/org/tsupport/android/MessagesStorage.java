@@ -86,9 +86,15 @@ public class MessagesStorage {
         databaseFileInternal = new File(ApplicationLoader.applicationContext.getFilesDir(), "tsupportInternal.db");
         databaseFileCache = new File(ApplicationLoader.applicationContext.getCacheDir(), "tsupportCache.db");
         //boolean createTable = false;
-        boolean createTableInternal = true;
+        boolean createTableInternal = false;
         boolean createTableCache = true;
 
+        /*if (!databaseFileCache.exists()) {
+            createTableCache = true;
+        }*/
+        if (!databaseFileInternal.exists()) {
+            createTableInternal = true;
+        }
         try {
             database = new SQLiteDatabase(databaseFileCache.getPath(), databaseFileInternal.getPath());
             database.executeFastCache("PRAGMA secure_delete = ON").stepThis().dispose();

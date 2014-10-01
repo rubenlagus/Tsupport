@@ -145,7 +145,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         messsageEditText.setHint(LocaleController.getString("TypeMessage", R.string.TypeMessage));
         ArrayList<String> keys = new ArrayList<String>();
         keys.addAll(templates.keySet());
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(containerView.getContext(),android.R.layout.simple_list_item_1,keys);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(containerView.getContext(),R.layout.autocompletetemplaterow,keys);
         messsageEditText.setAdapter(adapter);
         messsageEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

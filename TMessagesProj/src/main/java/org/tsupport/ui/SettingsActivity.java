@@ -316,6 +316,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                         AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
                         builder.setMessage(LocaleController.getString("InsertYourPasswor", R.string.InsertYourPasswor));
+                        builder.setInverseBackgroundForced(true);
                         final EditText input = new EditText(getParentActivity());
                         input.setInputType(InputType.TYPE_CLASS_NUMBER);
                         input.setMaxLines(1);

@@ -2403,6 +2403,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             maxDate = Integer.MIN_VALUE;
             minDate = 0;
             selectedMessagesIds.clear();
+            selectedMessagesIds.clear();
             selectedMessagesCanCopyIds.clear();
             actionBarLayer.hideActionMode();
             chatAdapter.notifyDataSetChanged();
@@ -3010,8 +3011,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             AlertDialog.Builder builder = new AlertDialog.Builder(themedContext);
             builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
             builder.setMessage(LocaleController.getString("insertKey", R.string.insertKey));
+            builder.setInverseBackgroundForced(true);
             final EditText input = new EditText(getParentActivity());
-            input.setBackgroundColor(0xffffff);
+            /*input.setBackgroundColor(0xffffff);
+            input.setTextColor(0x000000);*/
             builder.setView(input);
             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
