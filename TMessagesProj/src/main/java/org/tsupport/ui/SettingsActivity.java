@@ -331,6 +331,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putInt("password", Integer.parseInt(input.getText().toString()));
                                     editor.commit();
+                                    Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("PasswordEdited", R.string.PasswordEdited) , Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("MinPasswordLengh", R.string.MinPasswordLengh) , Toast.LENGTH_SHORT).show();
                                 }
@@ -343,6 +344,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.remove("password");
                                 editor.commit();
+                                Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("PasswordRemoved", R.string.PasswordRemoved) , Toast.LENGTH_SHORT).show();
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);

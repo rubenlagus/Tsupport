@@ -468,5 +468,7 @@
     <string name="InsertYourPasswor">Insert your password</string>
     <string name="Remove">Remove</string>
     <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
+    <string name="PasswordEdited">Password saved</string>
+    <string name="PasswordRemoved">Password removed</string>
 
 </resources>

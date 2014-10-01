@@ -457,15 +457,16 @@
     <string name="ConversationOwnedByOther">Un altro membro della TSF sta rispondendo alla conversazione, fai attenzione</string>
     <string name="ConversationOwnedByMe">Questa conversazione é assegnata a te</string>
     <string name="ConversationOwnedNotSupported">Il tuo dispositivo non supporta la \"Gestione Conversazioni\" , per favore, fai attenzione quando rispondi</string>
-    <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
-    <string name="loadUserPhotos">Foto dell\'utente</string>
+    <string name="ConversationOwnedDelete">La conversazione non è più assegnata</string>
     <string name="searching">Sto cercando...</string>
     <string name="hashtags">Hashtag</string>
     <string name="search">Cerca</string>
-    <string name="NoMoreSearch">No older messages available</string>
+    <string name="NoMoreSearch">Non sono disponibili messaggi più vecchi</string>
     <string name="Password">Password</string>
-    <string name="IncorrectPassword">Incorrect Password</string>
-    <string name="InsertYourPasswor">Insert your password</string>
-    <string name="Remove">Remove</string>
-    <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
+    <string name="IncorrectPassword">Password non corretta</string>
+    <string name="InsertYourPasswor">Inserisci la tua password</string>
+    <string name="Remove">Rimuovi</string>
+    <string name="MinPasswordLengh">La tua password deve avere almeno 4 caratteri</string>
+    <string name="PasswordEdited">Password salvata</string>
+    <string name="PasswordRemoved">Password rimossa</string>
 </resources>

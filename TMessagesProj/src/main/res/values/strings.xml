@@ -458,7 +458,6 @@
     <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
     <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation", please take care when answering.</string>
     <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
-    <string name="loadUserPhotos">User photos</string>
     <string name="searching">Searching...</string>
     <string name="hashtags">Hashtags</string>
     <string name="search">Search</string>
@@ -468,5 +467,7 @@
     <string name="InsertYourPasswor">Insert your password</string>
     <string name="Remove">Remove</string>
     <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
+    <string name="PasswordEdited">Password saved</string>
+    <string name="PasswordRemoved">Password removed</string>
 
 </resources>
