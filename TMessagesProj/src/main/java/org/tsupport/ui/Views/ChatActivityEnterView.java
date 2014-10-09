@@ -25,6 +25,9 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -58,7 +61,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         public abstract void needSendTyping();
     }
 
-    private EditText messsageEditText = null;
+    private AutoCompleteTextView messsageEditText = null;
     private ImageButton sendButton;
     private PopupWindow emojiPopup;
     private PopupWindow templatePopup;
@@ -137,8 +140,22 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         sizeNotifierRelativeLayout = (SizeNotifierRelativeLayout)containerView.findViewById(R.id.chat_layout);
         sizeNotifierRelativeLayout.delegate = this;
 
-        messsageEditText = (EditText)containerView.findViewById(R.id.chat_text_edit);
+        messsageEditText = (AutoCompleteTextView)containerView.findViewById(R.id.chat_text_edit);
+        messsageEditText.setThreshold(1);
         messsageEditText.setHint(LocaleController.getString("TypeMessage", R.string.TypeMessage));
+        ArrayList<String> keys = new ArrayList<String>();
+        keys.addAll(templates.keySet());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(containerView.getContext(),R.layout.autocompletetemplaterow,keys);
+        messsageEditText.setAdapter(adapter);
+        messsageEditText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String key = (String)parent.getItemAtPosition(position);
+                messsageEditText.setText(templates.get(key));
+                messsageEditText.setSelection(messsageEditText.getText().length());
+            }
+        });
+
         sendButton = (ImageButton)containerView.findViewById(R.id.chat_send_button);
         sendButton.setEnabled(true);
         emojiButton = (ImageView)containerView.findViewById(R.id.chat_smile_button);
@@ -364,7 +381,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
 
     private void sendMessage() {
         if (processSendingText(messsageEditText.getText().toString())) {
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification);
+            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
             messsageEditText.setText("");
             lastTypingTimeSend = 0;
             if (delegate != null) {
@@ -399,7 +416,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             return true;
         }
         else { // Mark as read but send nothing
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification);
+            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
             return false;
         }
 

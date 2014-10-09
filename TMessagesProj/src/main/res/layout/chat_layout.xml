@@ -88,6 +88,7 @@
             android:layout_gravity="center"
             android:id="@+id/top_panel_text"
             android:textAllCaps="true"
+            android:textAlignment="center"
             android:textSize="12dp"
             android:textStyle="bold"
             android:textColor="#ffffff"/>
@@ -136,7 +137,7 @@
             android:src="@drawable/send_button_states"
             android:background="@android:color/transparent"/>
 
-        <EditText
+        <AutoCompleteTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/chat_text_edit"

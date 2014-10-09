@@ -414,6 +414,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         imagesByIdsTemp.clear();
                         needSearchImageInArr = false;
                         currentIndex = -1;
+                        if (foundIndex >= imagesArr.size()) {
+                            foundIndex = imagesArr.size() - 1;
+                        }
                         setImageIndex(foundIndex, true);
                     } else {
                         if (!cacheEndReached || !arr.isEmpty() && added != 0) {
@@ -1385,6 +1388,15 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         NotificationCenter.getInstance().addObserver(this, MessagesController.mediaDidLoaded);
         NotificationCenter.getInstance().addObserver(this, MessagesController.userPhotosLoaded);
 
+        try {
+            if (windowView.getParent() != null) {
+                WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
+                wm.removeView(windowView);
+            }
+        } catch (Exception e) {
+            FileLog.e("tsupport", e);
+        }
+
         placeProvider = provider;
         WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
         wm.addView(windowView, windowLayoutParams);
@@ -1703,8 +1715,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             return;
         }
         try {
-            WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
             if (windowView.getParent() != null) {
+                WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
                 wm.removeViewImmediate(windowView);
             }
             windowView = null;
@@ -1731,8 +1743,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             public void run() {
                 animatingImageView.setImageBitmap(null);
                 try {
-                    WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
                     if (windowView.getParent() != null) {
+                        WindowManager wm = (WindowManager) parentActivity.getSystemService(Context.WINDOW_SERVICE);
                         wm.removeView(windowView);
                     }
                 } catch (Exception e) {

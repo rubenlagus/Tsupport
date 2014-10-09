@@ -371,11 +371,6 @@ public class LoginActivityPhoneView extends SlideView implements AdapterView.OnI
             req.lang_code = "en";
         }
 
-        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
-        SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
-        String userId = "42"+phoneField.getText();
-        userNumberEditor.putString("userId", userId);
-        userNumberEditor.commit();
         final Bundle params = new Bundle();
         params.putString("phone", "+" + codeField.getText() + phoneField.getText());
         params.putString("phoneFormated", phone);

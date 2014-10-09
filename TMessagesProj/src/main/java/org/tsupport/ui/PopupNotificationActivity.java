@@ -875,9 +875,6 @@ public class PopupNotificationActivity extends Activity implements NotificationC
             chatActivityEnterView.setFieldFocused(false);
         }
         ConnectionsManager.getInstance().setAppPaused(true, false);
-        if (wakeLock.isHeld()) {
-            wakeLock.release();
-        }
     }
 
     @Override

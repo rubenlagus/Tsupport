@@ -28,6 +28,7 @@ import org.tsupport.android.ContactsController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.messenger.FileLoader;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
@@ -51,6 +52,7 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -76,11 +78,12 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         String userId = "";
         try {
             userId = userNumberPreferences.getString("userId", "");
-        } catch (ClassCastException e) { // Compatibility with older versions of the app
+        } catch (ClassCastException e) { // Compatibility with oldfer versions of the app
             userId = "";
         }
         if (userId.compareToIgnoreCase("") !=  0) {
             if (android.os.Build.VERSION.SDK_INT >= 11) {
+                FileLog.e("tsupport","Sending user");
                 TsupportApi.getInstance().addUser(userId);
             }
         }
@@ -110,6 +113,8 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                 }
             }
         }
+
+        MessagesStorage.getInstance();
         super.onCreate(savedInstanceState);
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -121,10 +126,14 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         currentConnectionState = ConnectionsManager.getInstance().getConnectionState();
 
         NotificationCenter.getInstance().addObserver(this, 1234);
-        NotificationCenter.getInstance().addObserver(this, 658);
         NotificationCenter.getInstance().addObserver(this, 701);
         NotificationCenter.getInstance().addObserver(this, 702);
         NotificationCenter.getInstance().addObserver(this, 703);
+
+        SharedPreferences mainConfigPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        if (mainConfigPreferences.contains("password") && mainConfigPreferences.getInt("password", 0) > 0 && mainConfigPreferences.getLong("passwordTimeStampt", new Long(0)) < ((new Date()).getTime())-30000) {
+            addFragmentToStack(new PasswordView());
+        }
 
         if (fragmentsStack.isEmpty()) {
             if (!UserConfig.isClientActivated()) {
@@ -181,6 +190,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         Integer push_chat_id = 0;
         Integer push_enc_id = 0;
         Integer open_settings = 0;
+        boolean showDialogsList = false;
 
         photoPathsArray = null;
         videoPath = null;
@@ -411,6 +421,8 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
                         NotificationCenter.getInstance().postNotificationName(MessagesController.closeChats);
                         push_enc_id = encId;
                     }
+                } else {
+                    showDialogsList = true;
                 }
             }
         }
@@ -439,6 +451,11 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
             ChatActivity fragment = new ChatActivity(args);
             if (presentFragment(fragment, false, true)) {
                 pushOpened = true;
+            }
+        } else if (showDialogsList) {
+            for (int a = 1; a < fragmentsStack.size(); a++) {
+                removeFragmentFromStack(fragmentsStack.get(a));
+                a--;
             }
         }
         if (videoPath != null || photoPathsArray != null || sendingText != null || documentsPathsArray != null || contactsToSend != null) {
@@ -472,15 +489,20 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     public void didSelectDialog(MessagesActivity messageFragment, long dialog_id, boolean param) {
         if (dialog_id != 0) {
             int lower_part = (int)dialog_id;
+            int high_id = (int)(dialog_id >> 32);
 
             Bundle args = new Bundle();
             args.putBoolean("scrollToTopOnResume", true);
             NotificationCenter.getInstance().postNotificationName(MessagesController.closeChats);
             if (lower_part != 0) {
-                if (lower_part > 0) {
-                    args.putInt("user_id", lower_part);
-                } else if (lower_part < 0) {
-                    args.putInt("chat_id", -lower_part);
+                if (high_id == 1) {
+                    args.putInt("chat_id", lower_part);
+                } else {
+                    if (lower_part > 0) {
+                        args.putInt("user_id", lower_part);
+                    } else if (lower_part < 0) {
+                        args.putInt("chat_id", -lower_part);
+                    }
                 }
             } else {
                 args.putInt("enc_id", (int)(dialog_id >> 32));
@@ -526,6 +548,10 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onPause() {
         super.onPause();
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putLong("passwordTimeStampt", (new Date()).getTime());
+        editor.commit();
         ApplicationLoader.mainInterfacePaused = true;
         ConnectionsManager.getInstance().setAppPaused(true, false);
     }
@@ -533,6 +559,7 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        FileLoader.getInstance().clearMemory();
         File dir = AndroidUtilities.getCacheDir();
         MessagesStorage.getInstance().closeDBandDeleteCache();
         if (dir != null && dir.isDirectory())
@@ -568,7 +595,6 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
         }
         finished = true;
         NotificationCenter.getInstance().removeObserver(this, 1234);
-        NotificationCenter.getInstance().removeObserver(this, 658);
         NotificationCenter.getInstance().removeObserver(this, 701);
         NotificationCenter.getInstance().removeObserver(this, 702);
         NotificationCenter.getInstance().removeObserver(this, 703);
@@ -592,30 +618,6 @@ public class LaunchActivity extends ActionBarActivity implements NotificationCen
             startActivity(intent2);
             onFinish();
             finish();
-        } else if (id == 658) {
-            if (PhotoViewer.getInstance().isVisible()) {
-                PhotoViewer.getInstance().closePhoto(false);
-            }
-            Integer push_chat_id = (Integer)args[0];
-            Integer push_user_id = (Integer)args[1];
-            Integer push_enc_id = (Integer)args[2];
-
-            if (push_user_id != 0) {
-                NotificationCenter.getInstance().postNotificationName(MessagesController.closeChats);
-                Bundle args2 = new Bundle();
-                args2.putInt("user_id", push_user_id);
-                presentFragment(new ChatActivity(args2), false, true);
-            } else if (push_chat_id != 0) {
-                NotificationCenter.getInstance().postNotificationName(MessagesController.closeChats);
-                Bundle args2 = new Bundle();
-                args2.putInt("chat_id", push_chat_id);
-                presentFragment(new ChatActivity(args2), false, true);
-            } else if (push_enc_id != 0) {
-                NotificationCenter.getInstance().postNotificationName(MessagesController.closeChats);
-                Bundle args2 = new Bundle();
-                args2.putInt("enc_id", push_enc_id);
-                presentFragment(new ChatActivity(args2), false, true);
-            }
         } else if (id == 702) {
             if (args[0] != this) {
                 onFinish();

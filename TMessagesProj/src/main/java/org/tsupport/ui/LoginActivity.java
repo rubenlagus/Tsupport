@@ -327,23 +327,6 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
 
     @Override
     public void needFinishActivity() {
-        /*AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setMessage(LocaleController.getString("loaddefaulttemplates", R.string.loaddefaulttemplates));
-        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                TemplateSupport.getInstanceWithDefault();
-                TemplateSupport.loadDefaults();
-            }
-        });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                TemplateSupport.getInstance();
-            }
-        });
-        showAlertDialog(builder);*/
         clearCurrentState();
         presentFragment(new MessagesActivity(null), true);
     }
