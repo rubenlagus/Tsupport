@@ -993,10 +993,11 @@ public class MessagesStorage {
             public void run() {
                 try {
                     String q = query.trim().toLowerCase();
-                    ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
-                    ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
+                    MessagesController.getInstance().usersSearchedNames.clear();
+                    MessagesController.getInstance().usersSearched.clear();
+
                     if (q.length() == 0) {
-                        NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchUserResults, token, resultArray, resultArrayNames);
+                        NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchUserResults, token);
                         return;
                     }
                     SQLiteCursor cursor = database.queryFinalizedInternal("SELECT data, status, name FROM users");
@@ -1012,8 +1013,9 @@ public class MessagesStorage {
                                     if (user.status != null) {
                                         user.status.expires = cursor.intValue(1);
                                     }
-                                    resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, q));
-                                    resultArray.add(user);
+                                    MessagesController.getInstance().users.putIfAbsent(user.id, user);
+                                    MessagesController.getInstance().usersSearchedNames.add(Utilities.generateSearchName(user.first_name, user.last_name, q));
+                                    MessagesController.getInstance().usersSearched.add(user);
                                 }
                             }
                             buffersStorage.reuseFreeBuffer(data);
@@ -1023,28 +1025,7 @@ public class MessagesStorage {
                     }
                     cursor.dispose();
 
-                    cursor = database.queryFinalizedCache("SELECT c.data, c.name FROM chats as c INNER JOIN dialogs as d ON c.uid = -d.did");
-                    int searchedChats = 0;
-                    while (cursor.next() && searchedChats < 200) {
-                        String name = cursor.stringValue(1);
-                        if (pattern.matcher(name).find()) {
-                            byte[] chatData = cursor.byteArrayValue(0);
-                            if (chatData != null) {
-                                SerializedData data = new SerializedData(chatData);
-                                TLRPC.Chat chat = (TLRPC.Chat) TLClassStore.Instance().TLdeserialize(data, data.readInt32());
-                                resultArrayNames.add(Utilities.generateSearchName(chat.title, null, q));
-                                resultArray.add(chat);
-                            }
-                            break;
-                        }
-                        searchedChats++;
-                    }
-
-                    MessagesController.getInstance().namesUsersFromSearch.clear();
-                    MessagesController.getInstance().namesUsersFromSearch.addAll(resultArrayNames);
-                    MessagesController.getInstance().objectsUsersFromSearch.clear();
-                    MessagesController.getInstance().objectsUsersFromSearch.addAll(resultArray);
-                    NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchUserResults, token, resultArray, resultArrayNames);
+                    NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchUserResults, token);
                 } catch (Exception e) {
                     FileLog.e("tsupport", e);
                 }

@@ -55,10 +55,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public ConcurrentHashMap<Integer, TLRPC.User> users = new ConcurrentHashMap<Integer, TLRPC.User>(100, 1.0f, 2);
     public ArrayList<TLRPC.TL_dialog> dialogs = new ArrayList<TLRPC.TL_dialog>();
     public ArrayList<TLRPC.TL_dialog> dialogsServerOnly = new ArrayList<TLRPC.TL_dialog>();
-    public HashMap<Integer,TLRPC.TL_dialog> dialogsFromSearch = new HashMap<Integer,TLRPC.TL_dialog>();
-    public ArrayList<TLRPC.TL_dialog> dialogsFromSearchOrdered = new ArrayList<TLRPC.TL_dialog>();
-    public ArrayList<TLObject> objectsUsersFromSearch = new ArrayList<TLObject>();
-    public ArrayList<CharSequence> namesUsersFromSearch = new ArrayList<CharSequence>();
+    public HashMap<Integer,TLRPC.User> usersFromSearch = new HashMap<Integer,TLRPC.User>();
+    public ArrayList<TLRPC.User> usersFromSearchOrdered = new ArrayList<TLRPC.User>();
+    public ArrayList<TLRPC.User> usersSearched = new ArrayList<TLRPC.User>();
+    public ArrayList<CharSequence> usersSearchedNames = new ArrayList<CharSequence>();
     public ConcurrentHashMap<Long, TLRPC.TL_dialog> dialogs_dict = new ConcurrentHashMap<Long, TLRPC.TL_dialog>(100, 1.0f, 2);
     public HashMap<Integer, MessageObject> dialogMessage = new HashMap<Integer, MessageObject>();
     public ConcurrentHashMap<Long, ArrayList<PrintingUser>> printingUsers = new ConcurrentHashMap<Long, ArrayList<PrintingUser>>(100, 1.0f, 2);
@@ -88,6 +88,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public boolean updatingState = false;
     public boolean firstGettingTask = false;
     public boolean registeringForPush = false;
+    public boolean canContinueSearch = true;
+    public Integer searchOffset = 0;
 
     private long lastStatusUpdateTime = 0;
     private long statusRequest = 0;
@@ -690,8 +692,14 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
     public void searchDialogs(final Integer token, final String query, final int classGuid) {
         FileLog.e("tsupportSearch", "Calling search internal: " + query);
+
+        if (searchOffset == 0) {
+            MessagesController.getInstance().usersFromSearch.clear();
+            MessagesController.getInstance().usersFromSearchOrdered.clear();
+        }
+
         TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
-        req.offset = 0;
+        req.offset = searchOffset;
         req.limit = 1000;
         req.max_id = 0;
         req.max_date = 0;
@@ -726,63 +734,23 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     MessagesController.getInstance().users.put(user.id, user);
                     if (user.id == UserConfig.getClientUserId()) {
                         UserConfig.setCurrentUser(user);
+                    } else {
+                        if (!MessagesController.getInstance().usersFromSearch.containsKey(user.id)) {
+                            MessagesController.getInstance().usersFromSearch.put(user.id, user);
+                            MessagesController.getInstance().usersFromSearchOrdered.add(user);
+                        }
                     }
                 }
                 for (TLRPC.Chat chat : res.chats) {
                     MessagesController.getInstance().chats.put(chat.id, chat);
                 }
 
-                TLRPC.TL_dialog dialog = null;
-                int last_message_date;
-                dialogsFromSearch.clear();
-                dialogsFromSearchOrdered.clear();
-                FileLog.e("tsupportSearch", "Results messages: " + res.messages.size());
-                for (TLRPC.Message message : res.messages) {
-                    if (dialogsFromSearch.containsKey(message.from_id)) {
-                        dialog = dialogsFromSearch.get(message.from_id);
-                        last_message_date = dialog.last_message_date;
-                        if (message.unread)
-                            dialog.unread_count += 1;
-                        if (last_message_date < message.date) {
-                            dialog.last_message_date = message.date;
-                            dialog.top_message = message.id;
-                        }
-                        dialogsFromSearch.put(message.from_id, dialog);
-                    } else {
-                        dialog = new TLRPC.TL_dialog();
-                        dialog.id = message.from_id;
-                        dialog.peer = new TLRPC.TL_peerUser();
-                        dialog.peer.user_id = message.from_id;
-                        dialog.top_message = message.id;
-                        if (message.unread)
-                            dialog.unread_count += 1;
-                        dialog.notify_settings = new TLRPC.PeerNotifySettings();
-                        dialog.last_message_date = message.date;
-                        dialogsFromSearch.put(message.from_id, dialog);
-                    }
+                if (res.users.size() <= 0) {
+                    canContinueSearch = false;
+                } else {
+                    searchOffset += res.messages.size();
                 }
-                FileLog.e("tsupportSearch", "DialogsFromSearch: " + dialogsFromSearch.size());
-                dialogsFromSearchOrdered.addAll(dialogsFromSearch.values());
-                Collections.sort(dialogsFromSearchOrdered, new Comparator<TLRPC.TL_dialog>() {
-                    @Override
-                    public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                        if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
-                            return -1;
-                        }
-                        else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
-                            return 1;
-                        }
-                        else {
-                            if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                                return 0;
-                            } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
-                                return 1;
-                            } else {
-                                return -1;
-                            }
-                        }
-                    }
-                });
+
                 NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token, res);
             }
         });

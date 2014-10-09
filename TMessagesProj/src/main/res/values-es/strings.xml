@@ -469,4 +469,5 @@
     <string name="MinPasswordLengh">La contraseña debe tener 4 dígitos como mínimo</string>
     <string name="PasswordEdited">Contraseña guardada</string>
     <string name="PasswordRemoved">Contraseña eliminada</string>
+    <string name="NoMoreResults">No more results found</string>
 </resources>

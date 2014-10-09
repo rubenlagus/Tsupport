@@ -469,4 +469,5 @@
     <string name="MinPasswordLengh">La tua password deve avere almeno 4 caratteri</string>
     <string name="PasswordEdited">Password salvata</string>
     <string name="PasswordRemoved">Password rimossa</string>
+    <string name="NoMoreResults">No more results found</string>
 </resources>
