@@ -751,7 +751,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     searchOffset += res.messages.size();
                 }
 
-                NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token, res);
+                NotificationCenter.getInstance().postNotificationName(MessagesController.reloadSearchChatResults, token);
             }
         });
     }
