@@ -471,4 +471,5 @@
     <string name="PasswordEdited">Password saved</string>
     <string name="PasswordRemoved">Password removed</string>
     <string name="NoMoreResults">No more results found</string>
+    <string name="IssueNoted">Your issue #@id has been recorded and we get back to you as soon as it\'s fixed.\n\nSorry for the inconvenience!</string>
 </resources>

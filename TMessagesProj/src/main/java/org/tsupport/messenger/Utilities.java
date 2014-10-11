@@ -810,9 +810,7 @@ public class Utilities {
     }
 
     public static void checkForUpdates(Activity context) {
-        if (BuildVars.DEBUG_VERSION) {
-            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH);
-        }
+        UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH);
     }
 
     public static boolean isTablet(Context context) {

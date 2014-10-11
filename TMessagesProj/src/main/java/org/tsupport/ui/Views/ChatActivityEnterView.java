@@ -78,6 +78,9 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private int minMessageId = Integer.MIN_VALUE;
     private int maxDate = Integer.MIN_VALUE;
     private static Pattern pattern = Pattern.compile("((?:[^\\s(]+\\()|(?:\\.{2}[^\\s\\.]+\\.{2}))");
+    private static Pattern patternContact = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
+    private static Pattern patternIssue = Pattern.compile("^#issue:([\\w]+)$");
+    private static Pattern patternIssueSolved = Pattern.compile("^^#solved:([\\w]+)$");
 
     private int keyboardHeight = 0;
     private int keyboardHeightLand = 0;
@@ -397,20 +400,33 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         else
             text = getTrimmedString(text);
         if (text.length() != 0) {
-            int count = (int)Math.ceil(text.length() / 2048.0f);
-            for (int a = 0; a < count; a++) {
-                String mess = text.substring(a * 2048, Math.min((a + 1) * 2048, text.length()));
-                Pattern pattern = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
-                Matcher matcher = pattern.matcher(mess);
+            Matcher matcher = patternIssue.matcher(text);
+            if (matcher.find()) {
+                String issueId = matcher.group(1);
+                String message = LocaleController.getString("IssueNoted", R.string.IssueNoted).replace("@id",issueId);
+                MessagesController.getInstance().sendMessage(message, dialog_id);
+            } else {
+                matcher = patternIssueSolved.matcher(text);
                 if (matcher.find()) {
-                    String number = matcher.group(1);
-                    String name = matcher.group(2);
-                    String surname = matcher.group(3);
-                    mess = mess.replace(matcher.group(),"");
-                    MessagesController.getInstance().sendMessage(mess, dialog_id);
-                    MessagesController.getInstance().sendMessageSupport(number, name, surname, dialog_id, "");
+                    String issueId = matcher.group(1);
+                    String message = LocaleController.getString("IssueSolved", R.string.IssueSolved).replace("@id", issueId);
+                    MessagesController.getInstance().sendMessage(message, dialog_id);
                 } else {
-                    MessagesController.getInstance().sendMessage(mess, dialog_id);
+                    int count = (int) Math.ceil(text.length() / 2048.0f);
+                    for (int a = 0; a < count; a++) {
+                        String mess = text.substring(a * 2048, Math.min((a + 1) * 2048, text.length()));
+                        matcher = patternContact.matcher(mess);
+                        if (matcher.find()) {
+                            String number = matcher.group(1);
+                            String name = matcher.group(2);
+                            String surname = matcher.group(3);
+                            mess = mess.replace(matcher.group(), "");
+                            MessagesController.getInstance().sendMessage(mess, dialog_id);
+                            MessagesController.getInstance().sendMessageSupport(number, name, surname, dialog_id, "");
+                        } else {
+                            MessagesController.getInstance().sendMessage(mess, dialog_id);
+                        }
+                    }
                 }
             }
             return true;
