@@ -801,16 +801,22 @@ public class Utilities {
     }
 
     public static void checkForCrashes(Activity context) {
-        CrashManager.register(context, BuildVars.HOCKEY_APP_HASH, new CrashManagerListener() {
-            @Override
-            public boolean includeDeviceData() {
-                return true;
-            }
-        });
+        if (BuildVars.DEBUG_VERSION) {
+            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_BETA, new CrashManagerListener() {
+                @Override
+                public boolean includeDeviceData() {
+                    return true;
+                }
+            });
+        }
     }
 
     public static void checkForUpdates(Activity context) {
-        UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH);
+        if (BuildVars.DEBUG_VERSION) {
+            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_BETA);
+        } else {
+            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_RELEASE);
+        }
     }
 
     public static boolean isTablet(Context context) {
