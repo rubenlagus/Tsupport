@@ -319,7 +319,8 @@ public class LoginActivitySmsView extends SlideView implements NotificationCente
                             ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
                             users.add(res.user);
                             if (android.os.Build.VERSION.SDK_INT >= 11) {
-                                TsupportApi.getInstance().addUser(res.user.id+"");
+                                TsupportApi.getInstance().addUser(requestPhone.replace("+",""));
+                                FileLog.d("tsupportID", requestPhone.replace("+",""));
                             }
                             MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                             MessagesController.getInstance().users.put(res.user.id, res.user);
