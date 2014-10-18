@@ -618,28 +618,20 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             }
             templatePopup.setHeight(View.MeasureSpec.makeMeasureSpec(currentHeight, View.MeasureSpec.EXACTLY));
             templatePopup.setWidth(View.MeasureSpec.makeMeasureSpec(sizeNotifierRelativeLayout.getWidth(), View.MeasureSpec.EXACTLY));
-            emojiPopup.setHeight(View.MeasureSpec.makeMeasureSpec(currentHeight, View.MeasureSpec.EXACTLY));
             if (sizeNotifierRelativeLayout != null) {
                 templatePopup.setWidth(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.x, View.MeasureSpec.EXACTLY));
             }
 
-            emojiPopup.showAtLocation(parentActivity.getWindow().getDecorView(), 83, 0, 0);
+            templatePopup.showAtLocation(parentActivity.getWindow().getDecorView(), 83, 0, 0);
             if (!keyboardVisible) {
                 if (sizeNotifierRelativeLayout != null) {
                     sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
-                    emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                    if (emojiButton != null) {
+                        emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                    }
                 }
                 return;
             }
-
-            templatePopup.showAtLocation(parentActivity.getWindow().getDecorView(), 83, 0, 0);
-            if (!keyboardVisible) {
-                sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
-                emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
-                return;
-            }
-            emojiButton.setImageResource(R.drawable.ic_msg_panel_kb);
-            return;
         }
         if (emojiButton != null) {
             emojiButton.setImageResource(R.drawable.ic_msg_panel_smiles);
