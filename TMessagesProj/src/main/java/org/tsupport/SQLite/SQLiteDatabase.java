@@ -11,23 +11,13 @@ package org.tsupport.SQLite;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.ui.ApplicationLoader;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SQLiteDatabase {
-	//private final int sqliteHandle;
     private final int sqliteHandleCache;
     private final int sqliteHandleInternal;
 
-	private final Map<String, SQLitePreparedStatement> preparedMap = new HashMap<String, SQLitePreparedStatement>();
 	private boolean isOpen = false;
-    //private boolean inTransaction = false;
     private boolean isInTransactionCache = false;
     private boolean isInTransactionInternal = false;
-
-/*	public int getSQLiteHandle() {
-		return sqliteHandle;
-	}*/
 
     public int getSQLiteHandleCache() {
         return sqliteHandleCache;
@@ -38,7 +28,6 @@ public class SQLiteDatabase {
     }
 
 	public SQLiteDatabase(String fileNameCache, String fileNameInternal) throws SQLiteException {
-		//sqliteHandle = opendb(fileName, ApplicationLoader.applicationContext.getFilesDir().getPath());
         sqliteHandleInternal = opendb(fileNameInternal, ApplicationLoader.applicationContext.getFilesDir().getPath());
         sqliteHandleCache = opendb(fileNameCache, ApplicationLoader.applicationContext.getFilesDir().getPath());
         isOpen = true;
@@ -62,40 +51,6 @@ public class SQLiteDatabase {
         return executeIntInternal(s, tableName) != null;
     }
 
-/*	public void execute(String sql, Object... args) throws SQLiteException {
-		checkOpened();
-		SQLiteCursor cursor = query(sql, args);
-		try {
-			cursor.next();
-		} finally {
-			cursor.dispose();
-		}
-	}*/
-
-    public void executeCache(String sql, Object... args) throws SQLiteException {
-        checkOpened();
-        SQLiteCursor cursor = queryCache(sql, args);
-        try {
-            cursor.next();
-        } finally {
-            cursor.dispose();
-        }
-    }
-
-    public void executeInternal(String sql, Object... args) throws SQLiteException {
-        checkOpened();
-        SQLiteCursor cursor = queryInternal(sql, args);
-        try {
-            cursor.next();
-        } finally {
-            cursor.dispose();
-        }
-    }
-
-/*    public SQLitePreparedStatement executeFast(String sql) throws SQLiteException {
-        return new SQLitePreparedStatement(this, sql, true);
-    }*/
-
     public SQLitePreparedStatement executeFastCache(String sql) throws SQLiteException {
         return new SQLitePreparedStatement(this, sql, true ,true);
     }
@@ -104,22 +59,9 @@ public class SQLiteDatabase {
         return new SQLitePreparedStatement(this, sql, false ,true);
     }
 
-/*	public Integer executeInt(String sql, Object... args) throws SQLiteException {
-		checkOpened();
-		SQLiteCursor cursor = query(sql, args);
-		try {
-			if (!cursor.next()) {
-				return null;
-			}
-			return cursor.intValue(0);
-		} finally {
-			cursor.dispose();
-		}
-	}*/
-
     public Integer executeIntCache(String sql, Object... args) throws SQLiteException {
         checkOpened();
-        SQLiteCursor cursor = queryCache(sql, args);
+        SQLiteCursor cursor = queryFinalizedCache(sql, args);
         try {
             if (!cursor.next()) {
                 return null;
@@ -132,7 +74,7 @@ public class SQLiteDatabase {
 
     public Integer executeIntInternal(String sql, Object... args) throws SQLiteException {
         checkOpened();
-        SQLiteCursor cursor = queryInternal(sql, args);
+        SQLiteCursor cursor = queryFinalizedInternal(sql, args);
         try {
             if (!cursor.next()) {
                 return null;
@@ -142,49 +84,6 @@ public class SQLiteDatabase {
             cursor.dispose();
         }
     }
-
-	/*public SQLiteCursor query(String sql, Object... args) throws SQLiteException {
-		checkOpened();
-		SQLitePreparedStatement stmt = preparedMap.get(sql);
-
-		if (stmt == null) {
-			stmt = new SQLitePreparedStatement(this, sql, false);
-			preparedMap.put(sql, stmt);
-		}
-
-		return stmt.query(args);
-	}*/
-
-    public SQLiteCursor queryCache(String sql, Object... args) throws SQLiteException {
-        checkOpened();
-        SQLitePreparedStatement stmt = preparedMap.get(sql);
-
-        if (stmt == null) {
-            stmt = new SQLitePreparedStatement(this, sql, true, false);
-            preparedMap.put(sql, stmt);
-        }
-
-        return stmt.query(args);
-    }
-
-    public SQLiteCursor queryInternal(String sql, Object... args) throws SQLiteException {
-        checkOpened();
-        SQLitePreparedStatement stmt = preparedMap.get(sql);
-
-        if (stmt == null) {
-            stmt = new SQLitePreparedStatement(this, sql, false, false);
-            preparedMap.put(sql, stmt);
-        }
-
-        return stmt.query(args);
-    }
-
-/*
-	public SQLiteCursor queryFinalized(String sql, Object... args) throws SQLiteException {
-		checkOpened();
-		return new SQLitePreparedStatement(this, sql, true).query(args);
-	}
-*/
 
     public SQLiteCursor queryFinalizedCache(String sql, Object... args) throws SQLiteException {
         checkOpened();
@@ -196,18 +95,13 @@ public class SQLiteDatabase {
         return new SQLitePreparedStatement(this, sql, false, true).query(args);
     }
 
-
     public void close() {
 		if (isOpen) {
 			try {
-				for (SQLitePreparedStatement stmt : preparedMap.values()) {
-					stmt.finalizeQuery();
-				}
                 commitTransactionCache();
                 commitTransactionInternal();
                 closedb(sqliteHandleCache);
                 closedb(sqliteHandleInternal);
-				//closedb(sqliteHandle);
 			} catch (SQLiteException e) {
                 FileLog.e("tsupport", e.getMessage(), e);
 			}
@@ -227,13 +121,6 @@ public class SQLiteDatabase {
 	}
 
     private StackTraceElement[] temp;
-/*    public void beginTransaction() throws SQLiteException {
-        if (inTransaction) {
-            throw new SQLiteException("database already in transaction");
-        }
-        inTransaction = true;
-        beginTransaction(sqliteHandle);
-    }*/
 
     public void beginTransactionCache() throws SQLiteException {
         if (isInTransactionCache) {
@@ -250,14 +137,6 @@ public class SQLiteDatabase {
         isInTransactionInternal = true;
         beginTransaction(sqliteHandleInternal);
     }
-
-/*    public void commitTransaction() {
-        if (!inTransaction) {
-            return;
-        }
-        inTransaction = false;
-        commitTransaction(sqliteHandle);
-    }*/
 
     public void commitTransactionCache() {
         if (!isInTransactionCache) {

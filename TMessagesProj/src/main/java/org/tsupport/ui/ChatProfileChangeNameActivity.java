@@ -22,9 +22,9 @@ import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.android.MessagesController;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 
 public class ChatProfileChangeNameActivity extends BaseFragment {
@@ -73,7 +73,7 @@ public class ChatProfileChangeNameActivity extends BaseFragment {
 
             fragmentView = inflater.inflate(R.layout.chat_profile_change_name_layout, container, false);
 
-            TLRPC.Chat currentChat = MessagesController.getInstance().chats.get(chat_id);
+            TLRPC.Chat currentChat = MessagesController.getInstance().getChat(chat_id);
 
             firstNameField = (EditText)fragmentView.findViewById(R.id.first_name_field);
             if (chat_id > 0) {

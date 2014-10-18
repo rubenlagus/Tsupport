@@ -8,11 +8,6 @@
 
 package org.tsupport.android;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Locale;
-
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -27,9 +22,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.ApplicationLoader;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Locale;
 
 public class Emoji {
 	private static HashMap<Long, DrawableInfo> rects = new HashMap<Long, DrawableInfo>();
@@ -215,7 +214,11 @@ public class Emoji {
             emojiFullSize = 90;
         }
 		drawImgSize = AndroidUtilities.dp(20);
-		bigImgSize = AndroidUtilities.dp(30);
+        if (AndroidUtilities.isTablet()) {
+            bigImgSize = AndroidUtilities.dp(40);
+        } else {
+            bigImgSize = AndroidUtilities.dp(30);
+        }
 
 		for (int j = 1; j < data.length; j++) {
 			for (int i = 0; i < data[j].length; i++) {
@@ -271,11 +274,11 @@ public class Emoji {
             Utilities.loadBitmap(imageFile.getAbsolutePath(), bitmap, imageResize, 0, width, height);
 
             final EmojiBitmap emojiBitmap = new EmojiBitmap(bitmap, width, height);
-            Utilities.RunOnUIThread(new Runnable() {
+            AndroidUtilities.RunOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     emojiBmp[page] = emojiBitmap;
-                    NotificationCenter.getInstance().postNotificationName(999);
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.emojiDidLoaded);
                 }
             });
 		} catch(Throwable x) {

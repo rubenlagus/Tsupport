@@ -17,22 +17,23 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
-import org.tsupport.ui.Views.BackupImageView;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
+import org.tsupport.ui.Views.BackupImageView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -80,7 +81,7 @@ public class DocumentSelectActivity extends BaseFragment {
             Runnable r = new Runnable() {
                 public void run() {
                     try {
-                        if (currentDir == null){
+                        if (currentDir == null) {
                             listRoots();
                         } else {
                             listFiles(currentDir);
@@ -151,6 +152,12 @@ public class DocumentSelectActivity extends BaseFragment {
             fragmentView = inflater.inflate(R.layout.document_select_layout, container, false);
             listAdapter = new ListAdapter(getParentActivity());
             emptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
+            emptyView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             listView = (ListView)fragmentView.findViewById(R.id.listView);
             listView.setEmptyView(emptyView);
             listView.setAdapter(listAdapter);
@@ -159,13 +166,22 @@ public class DocumentSelectActivity extends BaseFragment {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                     ListItem item = items.get(i);
                     File file = item.file;
-                    if (file.isDirectory()) {
+                    if (file == null) {
+                        HistoryEntry he = history.remove(history.size() - 1);
+                        actionBarLayer.setTitle(he.title);
+                        if (he.dir != null) {
+                            listFiles(he.dir);
+                        } else {
+                            listRoots();
+                        }
+                        listView.setSelectionFromTop(he.scrollItem, he.scrollOffset);
+                    } else if (file.isDirectory()) {
                         HistoryEntry he = new HistoryEntry();
                         he.scrollItem = listView.getFirstVisiblePosition();
                         he.scrollOffset = listView.getChildAt(0).getTop();
                         he.dir = currentDir;
                         he.title = actionBarLayer.getTitle().toString();
-                        if (!listFiles(file)){
+                        if (!listFiles(file)) {
                             return;
                         }
                         history.add(he);
@@ -212,7 +228,7 @@ public class DocumentSelectActivity extends BaseFragment {
 
     @Override
     public boolean onBackPressed() {
-        if (history.size() > 0){
+        if (history.size() > 0) {
             HistoryEntry he = history.remove(history.size() - 1);
             actionBarLayer.setTitle(he.title);
             if (he.dir != null) {
@@ -240,7 +256,7 @@ public class DocumentSelectActivity extends BaseFragment {
                     currentDir = dir;
                     items.clear();
                     String state = Environment.getExternalStorageState();
-                    if (Environment.MEDIA_SHARED.equals(state)){
+                    if (Environment.MEDIA_SHARED.equals(state)) {
                         emptyView.setText(LocaleController.getString("UsbActive", R.string.UsbActive));
                     } else {
                         emptyView.setText(LocaleController.getString("NotMounted", R.string.NotMounted));
@@ -296,6 +312,12 @@ public class DocumentSelectActivity extends BaseFragment {
             }
             items.add(item);
         }
+        ListItem item = new ListItem();
+        item.title = "..";
+        item.subtitle = "";
+        item.icon = R.drawable.ic_directory;
+        item.file = null;
+        items.add(0, item);
         listAdapter.notifyDataSetChanged();
         return true;
     }
@@ -374,10 +396,25 @@ public class DocumentSelectActivity extends BaseFragment {
         fs.icon = R.drawable.ic_directory;
         fs.file = new File("/");
         items.add(fs);
+
+        try {
+            File telegramPath = new File(Environment.getExternalStorageDirectory(), "Telegram");
+            if (telegramPath.exists()) {
+                fs = new ListItem();
+                fs.title = "Telegram";
+                fs.subtitle = telegramPath.toString();
+                fs.icon = R.drawable.ic_directory;
+                fs.file = telegramPath;
+                items.add(fs);
+            }
+        } catch (Exception e) {
+            FileLog.e("tsupport", e);
+        }
+
         listAdapter.notifyDataSetChanged();
     }
 
-    private String getRootSubtitle(String path){
+    private String getRootSubtitle(String path) {
         StatFs stat = new StatFs(path);
         long total = (long)stat.getBlockCount() * (long)stat.getBlockSize();
         long free = (long)stat.getAvailableBlocks() * (long)stat.getBlockSize();
@@ -409,11 +446,11 @@ public class DocumentSelectActivity extends BaseFragment {
             return 0;
         }
 
-        public int getViewTypeCount(){
+        public int getViewTypeCount() {
             return 2;
         }
 
-        public int getItemViewType(int pos){
+        public int getItemViewType(int pos) {
             return items.get(pos).subtitle.length() > 0 ? 0 : 1;
         }
 

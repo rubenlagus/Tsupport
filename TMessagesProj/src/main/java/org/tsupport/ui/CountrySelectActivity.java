@@ -10,6 +10,7 @@ package org.tsupport.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,8 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
-import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
@@ -193,6 +194,12 @@ public class CountrySelectActivity extends BaseFragment {
 
             listView = (PinnedHeaderListView)fragmentView.findViewById(R.id.listView);
             listView.setEmptyView(emptyTextView);
+            emptyTextView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             listView.setVerticalScrollBarEnabled(false);
 
             listView.setAdapter(listViewAdapter = new ListAdapter(getParentActivity()));
@@ -314,7 +321,7 @@ public class CountrySelectActivity extends BaseFragment {
     }
 
     private void updateSearchResults(final ArrayList<Country> arrCounties) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 searchResult = arrCounties;

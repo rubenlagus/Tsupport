@@ -19,7 +19,7 @@ public class BuffersStorage {
     private final ArrayList<ByteBufferDesc> freeBuffers32768;
     private final ArrayList<ByteBufferDesc> freeBuffersBig;
     private boolean isThreadSafe;
-    private final static Integer sync = 1;
+    private final static Object sync = new Object();
 
     private static volatile BuffersStorage Instance = null;
     public static BuffersStorage getInstance() {
@@ -129,7 +129,7 @@ public class BuffersStorage {
                     if (arrayToReuse.size() < maxCount) {
                         arrayToReuse.add(buffer);
                     } else {
-                        FileLog.e("tmessages", "too more");
+                        FileLog.e("tsupport", "too more");
                     }
                 }
             } else {

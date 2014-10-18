@@ -23,7 +23,6 @@ import android.widget.TextView;
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
 import org.tsupport.messenger.R;
-import org.tsupport.messenger.UserConfig;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 
 import java.util.Date;

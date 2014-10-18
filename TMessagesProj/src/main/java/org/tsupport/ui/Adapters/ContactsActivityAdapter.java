@@ -14,11 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.android.ContactsController;
-import org.tsupport.android.MessagesController;
 import org.tsupport.ui.Cells.ChatOrUserCell;
 import org.tsupport.ui.Views.SectionedBaseAdapter;
 
@@ -86,7 +86,7 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
         if (usersAsSections) {
             if (section < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
-                user = MessagesController.getInstance().users.get(arr.get(position).user_id);
+                user = MessagesController.getInstance().getUser(arr.get(position).user_id);
                 count = arr.size();
             }
         } else {
@@ -106,7 +106,7 @@ public class ContactsActivityAdapter extends SectionedBaseAdapter {
                     }
                     return convertView;
                 }
-                user = MessagesController.getInstance().users.get(ContactsController.getInstance().contacts.get(position - 1).user_id);
+                user = MessagesController.getInstance().getUser(ContactsController.getInstance().contacts.get(position - 1).user_id);
                 count = ContactsController.getInstance().contacts.size();
             }
         }

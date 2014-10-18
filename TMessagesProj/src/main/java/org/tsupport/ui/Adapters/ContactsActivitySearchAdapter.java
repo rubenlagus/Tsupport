@@ -12,10 +12,11 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.tsupport.messenger.TLRPC;
+import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
-import org.tsupport.messenger.FileLog;
 import org.tsupport.android.MessagesController;
+import org.tsupport.messenger.FileLog;
+import org.tsupport.messenger.TLRPC;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Cells.ChatOrUserCell;
@@ -58,7 +59,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
                         searchTimer.cancel();
                         searchTimer = null;
                     } catch (Exception e) {
-                        FileLog.e("tmessages", e);
+                        FileLog.e("tsupport", e);
                     }
                     processSearch(query);
                 }
@@ -67,7 +68,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
     }
 
     private void processSearch(final String query) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 final ArrayList<TLRPC.TL_contact> contactsCopy = new ArrayList<TLRPC.TL_contact>();
@@ -85,8 +86,9 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
                         ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
 
                         for (TLRPC.TL_contact contact : contactsCopy) {
-                            TLRPC.User user = MessagesController.getInstance().users.get(contact.user_id);
-                            if (user.first_name != null && user.first_name.toLowerCase().startsWith(q) || user.last_name != null && user.last_name.toLowerCase().startsWith(q)) {
+                            TLRPC.User user = MessagesController.getInstance().getUser(contact.user_id);
+                            String name = ContactsController.formatName(user.first_name, user.last_name).toLowerCase();
+                            if (name.startsWith(q) || name.contains(" " + q)) {
                                 if (user.id == UserConfig.getClientUserId()) {
                                     continue;
                                 }
@@ -103,7 +105,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
     }
 
     private void updateSearchResults(final ArrayList<TLRPC.User> users, final ArrayList<CharSequence> names) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 searchResult = users;
@@ -161,7 +163,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
         ((ChatOrUserCell) view).useSeparator = i != searchResult.size() - 1;
 
         Object obj = searchResult.get(i);
-        TLRPC.User user = MessagesController.getInstance().users.get(((TLRPC.User)obj).id);
+        TLRPC.User user = MessagesController.getInstance().getUser(((TLRPC.User)obj).id);
 
         if (user != null) {
             ((ChatOrUserCell)view).setData(user, null, null, searchResultNames.get(i), null);

@@ -1,12 +1,6 @@
 package org.tsupport.android;
 
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
-import org.tsupport.messenger.R;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.BufferedReader;
@@ -16,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -98,7 +90,7 @@ public class TemplateSupport {
             if (templates != null) {
                 templates.clear();
                 templates.putAll(MessagesStorage.getInstance().getTemplates());
-                NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             }
             modifing--;
         }

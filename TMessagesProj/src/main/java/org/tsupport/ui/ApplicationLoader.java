@@ -8,7 +8,6 @@
 
 package org.tsupport.ui;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -31,15 +30,17 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
+import org.tsupport.android.LocaleController;
+import org.tsupport.android.MediaController;
+import org.tsupport.android.MessagesController;
+import org.tsupport.android.NativeLoader;
 import org.tsupport.android.NotificationsService;
+import org.tsupport.android.ScreenReceiver;
+import org.tsupport.android.SendMessagesHelper;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.BuildVars;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.android.LocaleController;
-import org.tsupport.android.MessagesController;
-import org.tsupport.android.NativeLoader;
-import org.tsupport.android.ScreenReceiver;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 
@@ -95,9 +96,11 @@ public class ApplicationLoader extends Application {
 
         UserConfig.loadConfig();
         if (UserConfig.getCurrentUser() != null) {
-            MessagesController.getInstance().users.put(UserConfig.getClientUserId(), UserConfig.getCurrentUser());
+            MessagesController.getInstance().putUser(UserConfig.getCurrentUser(), true);
             ConnectionsManager.getInstance().applyCountryPortNumber(UserConfig.getCurrentUser().phone);
             ConnectionsManager.getInstance().initPushConnection();
+            MessagesController.getInstance().getBlockedUsers(true);
+            SendMessagesHelper.getInstance().checkUnsentMessages();
         }
 
         ApplicationLoader app = (ApplicationLoader)ApplicationLoader.applicationContext;
@@ -105,6 +108,7 @@ public class ApplicationLoader extends Application {
         FileLog.e("tsupport", "app initied");
 
         ContactsController.getInstance().checkAppAccount();
+        MediaController.getInstance();
     }
 
     @Override
@@ -268,7 +272,7 @@ public class ApplicationLoader extends Application {
                 UserConfig.registeredForPush = !isNew;
                 UserConfig.saveConfig(false);
                 if (UserConfig.getClientUserId() != 0) {
-                    Utilities.RunOnUIThread(new Runnable() {
+                    AndroidUtilities.RunOnUIThread(new Runnable() {
                         @Override
                         public void run() {
                             MessagesController.getInstance().registerForPush(regid);

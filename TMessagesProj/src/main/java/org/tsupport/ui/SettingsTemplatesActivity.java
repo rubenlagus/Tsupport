@@ -20,14 +20,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
-import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.android.NotificationCenter;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
@@ -55,8 +54,8 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateTemplatesNotification);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
         loadTemplates();
         return true;
     }
@@ -64,8 +63,8 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateTemplatesNotification);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateTemplatesNotification);
 
     }
 
@@ -186,7 +185,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     }
 
     private void loadTemplatesInternal() {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 if (progressView != null) {
@@ -225,7 +224,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == MessagesController.updateTemplatesNotification) {
+        if (id == NotificationCenter.updateTemplatesNotification) {
             loadTemplates();
         }
     }

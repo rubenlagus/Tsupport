@@ -12,12 +12,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.ApplicationLoader;
 
 public class AppStartReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 ApplicationLoader.startPushService();

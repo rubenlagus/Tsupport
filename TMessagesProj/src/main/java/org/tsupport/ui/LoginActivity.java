@@ -23,11 +23,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
-import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
-import org.tsupport.messenger.TsupportApi;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
@@ -56,7 +54,13 @@ public class LoginActivity extends BaseFragment implements SlideView.SlideViewDe
                 v.onDestroyActivity();
             }
         }
-        Utilities.HideProgressDialog(getParentActivity());
+        if (progressDialog != null) {
+            try {
+                progressDialog.dismiss();
+            } catch (Exception e) {
+                FileLog.e("tsupport", e);
+            }
+        }
     }
 
     @Override

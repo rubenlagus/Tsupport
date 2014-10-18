@@ -15,9 +15,8 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 
 import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.MessageObject;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.objects.MessageObject;
-import org.tsupport.ui.ChatActivity;
 
 public class ChatMessageCell extends ChatBaseCell {
 
@@ -30,7 +29,7 @@ public class ChatMessageCell extends ChatBaseCell {
     private int totalVisibleBlocksCount = 0;
 
     public ChatMessageCell(Context context) {
-        super(context, false);
+        super(context);
         drawForwardedName = true;
     }
 
@@ -132,12 +131,23 @@ public class ChatMessageCell extends ChatBaseCell {
             }
             pressedLink = null;
             int maxWidth;
-            if (isChat && !messageObject.isOut()) {
-                maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(122);
-                drawName = true;
+
+            if (AndroidUtilities.isTablet()) {
+                if (isChat && !messageObject.isOut()) {
+                    maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(122);
+                    drawName = true;
+                } else {
+                    maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(80);
+                    drawName = false;
+                }
             } else {
-                maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(80);
-                drawName = false;
+                if (isChat && !messageObject.isOut()) {
+                    maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(122);
+                    drawName = true;
+                } else {
+                    maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(80);
+                    drawName = false;
+                }
             }
 
             backgroundWidth = maxWidth;
@@ -212,7 +222,7 @@ public class ChatMessageCell extends ChatBaseCell {
             try {
                 block.textLayout.draw(canvas);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tsupport", e);
             }
             canvas.restore();
         }

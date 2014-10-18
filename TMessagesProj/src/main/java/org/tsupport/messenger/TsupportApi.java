@@ -9,6 +9,7 @@ import com.appspot.tsupport_android.ownedConversation.model.BooleanType;
 import com.appspot.tsupport_android.users.Users;
 import com.appspot.tsupport_android.users.model.User;
 
+import org.tsupport.android.NotificationCenter;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.IOException;
@@ -19,10 +20,6 @@ import java.io.IOException;
  */
 public class TsupportApi {
     private static TsupportApi instance = null;
-    public static final Integer ConversationOwned = 452;
-    public static final Integer ConversationNotOwned = 453;
-    public static final Integer ConversationOwnedNotSupported = 454;
-    public static final Integer ConversationOwnedDeleted = 455;
 
     private static OwnedConversation apiServiceOwnConversation = null;
     private static Users apiServiceUsers = null;
@@ -121,9 +118,9 @@ public class TsupportApi {
                     @Override
                     protected void onPostExecute(Boolean result) {
                         if (result)
-                            NotificationCenter.getInstance().postNotificationName(ConversationOwned, dialogId);
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.ConversationOwned, dialogId);
                         else
-                            NotificationCenter.getInstance().postNotificationName(ConversationNotOwned, dialogId);
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.ConversationNotOwned, dialogId);
                     }
 
                 };
@@ -146,9 +143,9 @@ public class TsupportApi {
                     @Override
                     protected void onPostExecute(Boolean result) {
                         if (result)
-                            NotificationCenter.getInstance().postNotificationName(ConversationOwnedDeleted, dialogId);
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.ConversationOwnedDeleted, dialogId);
                         else
-                            NotificationCenter.getInstance().postNotificationName(ConversationOwned, dialogId);
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.ConversationOwned, dialogId);
                     }
 
                 };
