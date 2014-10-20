@@ -10,10 +10,11 @@ package org.tsupport.messenger;
 
 public class BuildVars {
     public static boolean DEBUG_VERSION = true;
-    public static int APP_ID = 16093;
-    public static String APP_HASH = "ca9417149175ce52dd092f2aa7da891e";
-    public static String HOCKEY_APP_HASH = "your-hockeyapp-api-key-here";
-    public static String GCM_SENDER_ID = "760348033672";
+    public static int APP_ID = 0; // Your api ID
+    public static String APP_HASH = "your-app-hash";
+    public static String HOCKEY_APP_HASH_DEBUG = "your-api-key-debug";
+    public static String HOCKEY_APP_HASH_RELEASE = "your-api-key-release";
+    public static String GCM_SENDER_ID = "your-GCM-sender-id";
     public static String SEND_LOGS_EMAIL = "rubenlagus92@gmail.com";
-    public static String APPENGINE_CLIENT_ID = "APPENGINE_CLIENT_ID";
+    public static String TRELLO_API_KEY = "trello-api-key";
 }

@@ -698,17 +698,28 @@ public class Utilities {
     }
 
     public static void checkForCrashes(Activity context) {
-        CrashManager.register(context, BuildVars.HOCKEY_APP_HASH, new CrashManagerListener() {
-            @Override
-            public boolean includeDeviceData() {
-                return true;
-            }
-        });
+        if (BuildVars.DEBUG_VERSION) {
+            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_DEBUG, new CrashManagerListener() {
+                @Override
+                public boolean includeDeviceData() {
+                    return true;
+                }
+            });
+        } else {
+            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_RELEASE, new CrashManagerListener() {
+                @Override
+                public boolean includeDeviceData() {
+                    return true;
+                }
+            });
+        }
     }
 
     public static void checkForUpdates(Activity context) {
         if (BuildVars.DEBUG_VERSION) {
-            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH);
+            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_DEBUG);
+        } else {
+            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_RELEASE);
         }
     }
 }
