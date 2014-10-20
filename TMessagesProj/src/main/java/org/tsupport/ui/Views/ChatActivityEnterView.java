@@ -78,7 +78,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private static final Pattern pattern = Pattern.compile("((?:[^\\s(]+\\()|(?:\\.{2}[^\\s\\.]+\\.{2}))");
     private static final Pattern patternContact = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
     private static final Pattern patternIssue = Pattern.compile("^#issue:([\\w]+)$");
-    private static final Pattern patternIssueSolved = Pattern.compile("^^#solved:([\\w]+)$");
+    private static final Pattern patternIssueSolved = Pattern.compile("^#solved:([\\w]+)$");
 
     private int keyboardHeight = 0;
     private int keyboardHeightLand = 0;
@@ -384,6 +384,17 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private void sendMessage() {
         if (processSendingText(messsageEditText.getText().toString())) {
 			NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+            messsageEditText.setText("");
+            lastTypingTimeSend = 0;
+            if (delegate != null) {
+                delegate.onMessageSend();
+            }
+        }
+    }
+
+    public void sendMessage(String text) {
+        if (processSendingText(text)) {
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
             messsageEditText.setText("");
             lastTypingTimeSend = 0;
             if (delegate != null) {

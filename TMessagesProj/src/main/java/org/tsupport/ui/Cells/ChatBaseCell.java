@@ -96,7 +96,7 @@ public class ChatBaseCell extends BaseCell {
 
     private StaticLayout timeLayout;
     protected int timeWidth;
-    protected int timeX;
+    private int timeX;
     private TextPaint currentTimePaint;
     private String currentTimeString;
     protected boolean drawTime = true;
@@ -108,59 +108,15 @@ public class ChatBaseCell extends BaseCell {
     private TLRPC.User currentForwardUser;
     private String currentForwardNameString;
 
-    public ChatBaseCellDelegate delegate;
+    protected ChatBaseCellDelegate delegate;
 
     protected int namesOffset = 0;
-
-    private boolean checkingForLongPress = false;
-    private int pressCount = 0;
-    private CheckForLongPress pendingCheckForLongPress = null;
-    private CheckForTap pendingCheckForTap = null;
 
     private int last_send_state = 0;
     private int last_delete_date = 0;
 
-    private final class CheckForTap implements Runnable {
-        public void run() {
-            if (pendingCheckForLongPress == null) {
-                pendingCheckForLongPress = new CheckForLongPress();
-            }
-            pendingCheckForLongPress.currentPressCount = ++pressCount;
-            postDelayed(pendingCheckForLongPress, ViewConfiguration.getLongPressTimeout() - ViewConfiguration.getTapTimeout());
-        }
-    }
-
-    class CheckForLongPress implements Runnable {
-        public int currentPressCount;
-
-        public void run() {
-            if (checkingForLongPress && getParent() != null && currentPressCount == pressCount) {
-                if (delegate != null) {
-                    checkingForLongPress = false;
-                    MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-                    onTouchEvent(event);
-                    event.recycle();
-                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                    delegate.didLongPressed(ChatBaseCell.this);
-                }
-            }
-        }
-    }
-
     public ChatBaseCell(Context context) {
         super(context);
-        init();
-        avatarImage = new ImageReceiver(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        avatarImage.clearImage();
-        currentPhoto = null;
-    }
-
-    private void init() {
         if (backgroundDrawableIn == null) {
             backgroundDrawableIn = getResources().getDrawable(R.drawable.msg_in);
             backgroundDrawableInSelected = getResources().getDrawable(R.drawable.msg_in_selected);
@@ -199,12 +155,24 @@ public class ChatBaseCell extends BaseCell {
             forwardNamePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             forwardNamePaint.setTextSize(AndroidUtilities.dp(14));
         }
+        avatarImage = new ImageReceiver(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        avatarImage.clearImage();
+        currentPhoto = null;
     }
 
     @Override
     public void setPressed(boolean pressed) {
         super.setPressed(pressed);
         invalidate();
+    }
+
+    public void setDelegate(ChatBaseCellDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void setCheckPressed(boolean value, boolean pressed) {
@@ -349,27 +317,6 @@ public class ChatBaseCell extends BaseCell {
         return backgroundWidth - AndroidUtilities.dp(8);
     }
 
-    protected void startCheckLongPress() {
-        if (checkingForLongPress) {
-            return;
-        }
-        checkingForLongPress = true;
-        if (pendingCheckForTap == null) {
-            pendingCheckForTap = new CheckForTap();
-        }
-        postDelayed(pendingCheckForTap, ViewConfiguration.getTapTimeout());
-    }
-
-    protected void cancelCheckLongPress() {
-        checkingForLongPress = false;
-        if (pendingCheckForLongPress != null) {
-            removeCallbacks(pendingCheckForLongPress);
-        }
-        if (pendingCheckForTap != null) {
-            removeCallbacks(pendingCheckForTap);
-        }
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = false;
@@ -466,6 +413,12 @@ public class ChatBaseCell extends BaseCell {
 
     }
 
+    @Override
+    protected void onLongPress() {
+        if (delegate != null) {
+            delegate.didLongPressed(this);
+        }
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {

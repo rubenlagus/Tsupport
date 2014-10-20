@@ -118,12 +118,6 @@
     <string name="MessageLifetimeChangedOutgoing">자동삭제를 %1$s 후로 설정했습니다</string>
     <string name="MessageLifetimeRemoved">%1$s님이 자동삭제를 해제했습니다</string>
     <string name="MessageLifetimeYouRemoved">자동삭제를 해제했습니다</string>
-    <string name="MessageLifetime2s">2초</string>
-    <string name="MessageLifetime5s">5초</string>
-    <string name="MessageLifetime1m">1분</string>
-    <string name="MessageLifetime1h">1시간</string>
-    <string name="MessageLifetime1d">하루</string>
-    <string name="MessageLifetime1w">일주일</string>
     <string name="YouHaveNewMessage">새 메시지가 있습니다</string>
     <string name="NotificationMessageText">%1$s: %2$s</string>
     <string name="NotificationMessageNoText">%1$s님이 메시지를 보냈습니다</string>
@@ -166,6 +160,7 @@
     <string name="LastSeen">마지막 접속: </string>
     <string name="LastSeenDate">마지막 접속: </string>
     <string name="InviteFriends">친구 초대</string>
+    <string name="GlobalSearch">GLOBAL SEARCH</string>
     <!--group create view-->
     <string name="SendMessageTo">메시지 보내기...</string>
     <string name="EnterGroupNamePlaceholder">그룹 이름 입력</string>
@@ -202,13 +197,13 @@
     <string name="EncryptionKey">암호화 키</string>
     <string name="MessageLifetime">자동삭제 타이머</string>
     <string name="ShortMessageLifetimeForever">해제</string>
-    <string name="ShortMessageLifetime2s">2초</string>
-    <string name="ShortMessageLifetime5s">5초</string>
-    <string name="ShortMessageLifetime1m">1분</string>
-    <string name="ShortMessageLifetime1h">1시간</string>
-    <string name="ShortMessageLifetime1d">하루</string>
-    <string name="ShortMessageLifetime1w">일주일</string>
     <string name="EncryptionKeyDescription">이 이미지는 <![CDATA[<b>]]>%1$s<![CDATA[</b>]]>님과의 비밀대화에 사용 중인 암호화 키의 모습입니다.<![CDATA[<br><br>]]>이 이미지가 <![CDATA[<b>]]>%2$s<![CDATA[</b>]]>님의 암호화 키와 똑같다면 대화는 200%% 안전합니다.<![CDATA[<br><br>]]>더 자세한 사항은 telegram.org 를 참고해 주세요.</string>
+    <string name="Unknown">Unknown</string>
+    <string name="Info">INFO</string>
+    <string name="Phone">전화번호</string>
+    <string name="Username">Username</string>
+    <string name="UsernameInUse">Username already in use</string>
+    <string name="UsernameInvalid">Username invalid</string>
     <!--settings view-->
     <string name="ResetNotificationsText">모든 알림 설정이 초기화되었습니다</string>
     <string name="TextSize">채팅 글자 크기</string>
@@ -217,7 +212,6 @@
     <string name="Unblock">차단 해제</string>
     <string name="UnblockText">차단을 해제하려면 대화상대를 길게 누르세요.</string>
     <string name="NoBlocked">차단한 친구가 없습니다</string>
-    <string name="YourPhoneNumber">전화번호</string>
     <string name="MessageNotifications">메시지 알림</string>
     <string name="Alert">알림 사용</string>
     <string name="MessagePreview">메시지 미리보기</string>
@@ -434,6 +428,36 @@
     <string name="FromContacts_few">채팅방 %1$d개에서</string>
     <string name="FromContacts_many">채팅방 %1$d개에서</string>
     <string name="FromContacts_other">채팅방 %1$d개에서</string>
+    <string name="Seconds_zero">%1$d seconds</string>
+    <string name="Seconds_one">%1$d second</string>
+    <string name="Seconds_two">%1$d seconds</string>
+    <string name="Seconds_few">%1$d seconds</string>
+    <string name="Seconds_many">%1$d seconds</string>
+    <string name="Seconds_other">%1$d seconds</string>
+    <string name="Minutes_zero">%1$d minutes</string>
+    <string name="Minutes_one">%1$d minute</string>
+    <string name="Minutes_two">%1$d minutes</string>
+    <string name="Minutes_few">%1$d minutes</string>
+    <string name="Minutes_many">%1$d minutes</string>
+    <string name="Minutes_other">%1$d minutes</string>
+    <string name="Hours_zero">%1$d hours</string>
+    <string name="Hours_one">%1$d hour</string>
+    <string name="Hours_two">%1$d hours</string>
+    <string name="Hours_few">%1$d hours</string>
+    <string name="Hours_many">%1$d hours</string>
+    <string name="Hours_other">%1$d hours</string>
+    <string name="Days_zero">%1$d days</string>
+    <string name="Days_one">%1$d day</string>
+    <string name="Days_two">%1$d days</string>
+    <string name="Days_few">%1$d days</string>
+    <string name="Days_many">%1$d days</string>
+    <string name="Days_other">%1$d days</string>
+    <string name="Weeks_zero">%1$d weeks</string>
+    <string name="Weeks_one">%1$d week</string>
+    <string name="Weeks_two">%1$d weeks</string>
+    <string name="Weeks_few">%1$d weeks</string>
+    <string name="Weeks_many">%1$d weeks</string>
+    <string name="Weeks_other">%1$d weeks</string>
     <!--date formatters-->
     <string name="formatterMonth">M\'월\' d\'일\'</string>
     <string name="formatterYear">yyyy.MM.dd.</string>
@@ -444,9 +468,49 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">a h:mm</string>
     <string name="formatDateAtTime">%1$s %2$s</string>
-    <!--Don't change this! Not for localization!-->
-    <string name="CacheTag">CACHE_TAG</string>
+    <!-- Tsupport -->
+    <!-- Tsupport -->
+    <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
+    <string name="saveToTemplates">Save as template</string>
+    <string name="insertKey">Insert key for the template</string>
+    <string name="templates">Templates</string>
+    <string name="noTemplates">No templates found</string>
+    <string name="deleteTemplateText">Tap and hold on a template to delete.</string>
+    <string name="templateKey">Key</string>
+    <string name="templateValue">Value</string>
+    <string name="template">Template</string>
+    <string name="templatesRemoved">All templates have been removed</string>
+    <string name="loadtemplatesfromfile">The file you will load must have KEYS-VALUE format, otherwise templates will load incorrectly.</string>
+    <string name="ConversationOwnedByOther">Other TSF member is answering this conversation.</string>
+    <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
+    <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation".</string>
+    <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
+    <string name="searching">Searching...</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="search">Search</string>
+    <string name="NoMoreSearch">No older messages available</string>
+    <string name="Password">Password</string>
+    <string name="IncorrectPassword">Incorrect Password</string>
+    <string name="InsertYourPasswor">Insert your password</string>
+    <string name="Remove">Remove</string>
+    <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
+    <string name="PasswordEdited">Password saved</string>
+    <string name="PasswordRemoved">Password removed</string>
+    <string name="NoMoreResults">No more results found</string>
+    <string name="IssueNoted">Your issue #issue_@id has been recorded and we get back to you as soon as it\'s fixed.\n\nSorry for the inconvenience!</string>
+    <string name="IssueSolved">Hello there!\n\nJust a quick info that we were able to fix your issue #issue_@id.\n\nSorry for the delay. Please update Telegram as soon as possible to get our latest version and let us know if you have any further questions.</string>
     <string name="clearCache">Clear cache</string>
     <string name="AreYouSureClearCache">After clear cache, tsupport will be restarted.</string>
     <string name="downloadUserPhotos">Users photos</string>
+    <string name="exportTemplates">Your templates will be exported and then you will be able to send it anywhere you like. This may take a while, please have patient.</string>
+    <string name="exporting">Exporting...</string>
+    <string name="linkTrello">Link with Trello</string>
+    <string name="trelloTokenExists">Trello access has already be granted.</string>
+    <string name="grantTrelloAccess">Granting acccess to Trello, the app will get a list of open and solved issues.</string>
+    <string name="tokenNotFetched">Couldn\'t fetch the Access Token, please try again.</string>
+    <string name="tokenFetched">Access Token has been correctly fetched.</string>
+    <string name="openIssues">Open issues</string>
+    <string name="SolvedIssues">Closed issues</string>
+    <string name="noIssues">No issues found</string>
+    <string name="trelloTokenNeeded"><![CDATA[Trello access token needed. Go to Settings->Link with Trello]]></string>
 </resources>

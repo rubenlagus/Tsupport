@@ -48,6 +48,8 @@ public class NotificationCenter {
     public static final int reloadSearchChatResults = 52;
     public static final int reloadSearchUserResults = 53;
     public static final int hideTemplatesKeyboard = 54;
+    public static final int exportTemplates = 55;
+    public static final int trelloLoaded = 56;
 
     public static final int wallpapersDidLoaded = 171;
 
@@ -80,6 +82,7 @@ public class NotificationCenter {
     public final static int screenshotTook = 50007;
     public final static int albumsDidLoaded = 50008;
     public final static int audioDidSent = 50009;
+
 
     final private HashMap<Integer, ArrayList<Object>> observers = new HashMap<Integer, ArrayList<Object>>();
 

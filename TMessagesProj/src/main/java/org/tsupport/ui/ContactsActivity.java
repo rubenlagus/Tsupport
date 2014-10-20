@@ -32,6 +32,7 @@ import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
+import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.NotificationCenter;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
@@ -220,6 +221,12 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         TLRPC.User user = searchListViewAdapter.getItem(i);
                         if (user == null || user.id == UserConfig.getClientUserId()) {
                             return;
+                        }
+                        if (searchListViewAdapter.isGlobalSearch(i)) {
+                            ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
+                            users.add(user);
+                            MessagesController.getInstance().putUsers(users, false);
+                            MessagesStorage.getInstance().putUsersAndChats(users, null, false, true);
                         }
                         if (returnAsResult) {
                             if (ignoreUsers != null && ignoreUsers.containsKey(user.id)) {

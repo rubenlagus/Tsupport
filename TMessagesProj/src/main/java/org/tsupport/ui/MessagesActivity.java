@@ -8,9 +8,12 @@
 
 package org.tsupport.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,12 +28,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.appspot.tsupport_android.users.model.User;
+
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.NotificationCenter;
+import org.tsupport.android.TrelloSupport;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLObject;
@@ -45,6 +51,7 @@ import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -131,6 +138,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             MessagesController.getInstance().loadDialogs(0, 0, 100, true);
             dialogsLoaded = true;
         }
+
         return true;
     }
 

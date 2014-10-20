@@ -49,6 +49,7 @@ import org.tsupport.android.MessageObject;
 import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.NotificationCenter;
+import org.tsupport.android.TrelloSupport;
 import org.tsupport.messenger.BuildVars;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLoader;
@@ -65,6 +66,7 @@ import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.AvatarUpdater;
 import org.tsupport.ui.Views.BackupImageView;
+import org.tsupport.ui.Views.NumberPicker;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,6 +80,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int profileRow;
     private int numberSectionRow;
     private int numberRow;
+    private int usernameRow;
     private int settingsSectionRow;
     private int textSizeRow;
     private int enableAnimationsRow;
@@ -91,6 +94,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int messagesSectionRow;
     private int sendByEnterRow;
     private int clearCacheRow;
+    private int trelloLink;
     private int mediaDownloadSection;
     private int mobileDownloadRow;
     private int wifiDownloadRow;
@@ -100,6 +104,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int languageRow;
     private int versionRow;
     private int rowCount;
+
+    private static final int requestCodeTrello = 569874;
 
     private static class LinkMovementMethodMy extends LinkMovementMethod {
         @Override
@@ -179,6 +185,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         profileRow = rowCount++;
         numberSectionRow = rowCount++;
         numberRow = rowCount++;
+        usernameRow = rowCount++;
         settingsSectionRow = rowCount++;
         enableAnimationsRow = rowCount++;
         downloadUserPhotos = rowCount++;
@@ -187,6 +194,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         templatesRow = rowCount++;
         passwordRow = rowCount++;
         blockedRow = rowCount++;
+        trelloLink = rowCount++;
 //        userPhotosRow = rowCount++;
         //backgroundRow = rowCount++;
         clearCacheRow = rowCount++;
@@ -213,12 +221,15 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         logoutRow = rowCount++;
         versionRow = rowCount++;
 
+        MessagesController.getInstance().loadFullUser(UserConfig.getCurrentUser(), classGuid);
+
         return true;
     }
 
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
+        MessagesController.getInstance().cancelLoadFullUser(UserConfig.getClientUserId());
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
         avatarUpdater.clear();
     }
@@ -251,39 +262,24 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setTitle(LocaleController.getString("TextSize", R.string.TextSize));
-                        builder.setItems(new CharSequence[] {
-                                String.format("%d", 12),
-                                String.format("%d", 13),
-                                String.format("%d", 14),
-                                String.format("%d", 15),
-                                String.format("%d", 16),
-                                String.format("%d", 17),
-                                String.format("%d", 18),
-                                String.format("%d", 19),
-                                String.format("%d", 20),
-                                String.format("%d", 21),
-                                String.format("%d", 22),
-                                String.format("%d", 23),
-                                String.format("%d", 24),
-                                String.format("%d", 25),
-                                String.format("%d", 26),
-                                String.format("%d", 27),
-                                String.format("%d", 28),
-                                String.format("%d", 29),
-                                String.format("%d", 30)}, new DialogInterface.OnClickListener() {
+                        final NumberPicker numberPicker = new NumberPicker(getParentActivity());
+                        numberPicker.setMinValue(12);
+                        numberPicker.setMaxValue(30);
+                        numberPicker.setValue(MessagesController.getInstance().fontSize);
+                        builder.setView(numberPicker);
+                        builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
-                                editor.putInt("fons_size", 12 + which);
-                                MessagesController.getInstance().fontSize = 12 + which;
+                                editor.putInt("fons_size", numberPicker.getValue());
+                                MessagesController.getInstance().fontSize = numberPicker.getValue();
                                 editor.commit();
                                 if (listView != null) {
                                     listView.invalidateViews();
                                 }
                             }
                         });
-                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
                     } else if (i == enableAnimationsRow) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -309,6 +305,29 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         presentFragment(new SettingsTemplatesActivity());
                     } else if (i == blockedRow) {
                         presentFragment(new SettingsBlockedUsersActivity());
+                    } else if (i == trelloLink) {
+                        if (getParentActivity()==null) {
+                            return;
+                        }
+                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
+                        String token = preferences.getString("token", "");
+                        if (token.compareToIgnoreCase("") != 0) {
+                            Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("trelloTokenExists", R.string.trelloTokenExists) , Toast.LENGTH_SHORT).show();
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                            builder.setMessage(LocaleController.getString("grantTrelloAccess", R.string.grantTrelloAccess));
+                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                            builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent trelloBrowser = new Intent(getParentActivity(), TrelloTokenActivity.class);
+                                    startActivityForResult(trelloBrowser, requestCodeTrello);
+                                    // TODO
+                                }
+                            });
+                            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                            showAlertDialog(builder);
+                        }
                     } else if (i == passwordRow) {
                         if (getParentActivity() == null) {
                             return;
@@ -411,7 +430,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 AlarmManager mgr = (AlarmManager)getParentActivity().getSystemService(Context.ALARM_SERVICE);
                                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                                 System.exit(0);
-                                // TODO
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -535,6 +553,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 });
                         builder.setNegativeButton(LocaleController.getString("OK", R.string.OK), null);
                         showAlertDialog(builder);
+                    } else if (i == usernameRow) {
+                        presentFragment(new SettingsChangeUsernameActivity());
                     }
                 }
             });
@@ -690,7 +710,23 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
     @Override
     public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
-        avatarUpdater.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == requestCodeTrello) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("token");
+                SharedPreferences trelloPreferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor trelloEditor = trelloPreferences.edit();
+                trelloEditor.putString("token", result);
+                trelloEditor.commit();
+                FileLog.d("tsupportTrello", "Request saved");
+                TrelloSupport.getInstance();
+                Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("tokenFetched", R.string.tokenFetched) , Toast.LENGTH_SHORT).show();
+                // TODO
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("tokenNotFetched", R.string.tokenNotFetched) , Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            avatarUpdater.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
@@ -768,7 +804,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow /*|| i == backgroundRow*/ ||
                     i == mobileDownloadRow || i == wifiDownloadRow || i == roamingDownloadRow ||
                     i == downloadUserPhotos || i == sendLogsRow || i == sendByEnterRow || i == clearCacheRow ||/* i == photoDownloadPrivateRow ||*/
-                    /* i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow ||
+                    /* i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow || i == usernameRow || trelloLink == i ||
                     i == switchBackendButtonRow /*|| i == telegramFaqRow || i == contactsSortRow || i == contactsReimportRow*/ || i == templatesRow || passwordRow == i;
         }
 
@@ -833,7 +869,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 }
                 TextView textView = (TextView)view.findViewById(R.id.settings_section_text);
                 if (i == numberSectionRow) {
-                    textView.setText(LocaleController.getString("YourPhoneNumber", R.string.YourPhoneNumber));
+                    textView.setText(LocaleController.getString("Info", R.string.Info));
                 } else if (i == settingsSectionRow) {
                     textView.setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
                 } /*else if (i == supportSectionRow) {
@@ -852,15 +888,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 }
                 TextView textView = (TextView)view.findViewById(R.id.settings_row_text);
                 View divider = view.findViewById(R.id.settings_row_divider);
-                if (i == numberRow) {
-                    TLRPC.User user = UserConfig.getCurrentUser();
-                    if (user != null && user.phone != null && user.phone.length() != 0) {
-                        textView.setText(PhoneFormat.getInstance().format("+" + user.phone));
-                    } else {
-                        textView.setText("Unknown");
-                    }
-                    divider.setVisibility(View.INVISIBLE);
-                } else if (i == notificationRow) {
+                if (i == notificationRow) {
                     textView.setText(LocaleController.getString("NotificationsAndSounds", R.string.NotificationsAndSounds));
                     divider.setVisibility(View.VISIBLE);
                 } else if (i == templatesRow) {
@@ -869,8 +897,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == passwordRow) {
                     textView.setText(LocaleController.getString("Password", R.string.Password));
                     divider.setVisibility(View.VISIBLE);
-                }
-                else if (i == blockedRow) {
+                } else if (i == trelloLink) {
+                    textView.setText(LocaleController.getString("linkTrello", R.string.linkTrello));
+                    divider.setVisibility(View.VISIBLE);
+                } else if (i == blockedRow) {
                     textView.setText(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));
                     divider.setVisibility(View.VISIBLE);
                 } /*else if (i == backgroundRow) {
@@ -990,7 +1020,16 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 TextView textView = (TextView)view.findViewById(R.id.settings_row_text);
                 TextView detailTextView = (TextView)view.findViewById(R.id.settings_row_text_detail);
                 View divider = view.findViewById(R.id.settings_row_divider);
-                if (i == textSizeRow) {
+                if (i == numberRow) {
+                    TLRPC.User user = UserConfig.getCurrentUser();
+                    textView.setText(LocaleController.getString("Phone", R.string.Phone));
+                    if (user != null && user.phone != null && user.phone.length() != 0) {
+                        detailTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
+                    } else {
+                        detailTextView.setText(LocaleController.getString("Unknown", R.string.Unknown));
+                    }
+                    divider.setVisibility(View.VISIBLE);
+                } else if (i == textSizeRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                     int size = preferences.getInt("fons_size", AndroidUtilities.isTablet() ? 18 : 16);
                     detailTextView.setText(String.format("%d", size));
@@ -1000,7 +1039,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     detailTextView.setText(LocaleController.getCurrentLanguageName());
                     textView.setText(LocaleController.getString("Language", R.string.Language));
                     divider.setVisibility(View.VISIBLE);
-                } /*else if (i == contactsSortRow) {
+                /*} else if (i == contactsSortRow) {
                     textView.setText(LocaleController.getString("SortBy", R.string.SortBy));
                     divider.setVisibility(View.VISIBLE);
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -1011,20 +1050,18 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         detailTextView.setText(LocaleController.getString("FirstName", R.string.SortFirstName));
                     } else if (sort == 2) {
                         detailTextView.setText(LocaleController.getString("LastName", R.string.SortLastName));
+                    }*/
+                } else if (i == usernameRow) {
+                    TLRPC.User user = UserConfig.getCurrentUser();
+                    textView.setText(LocaleController.getString("Username", R.string.Username));
+                    if (user != null && user.username != null && user.username.length() != 0) {
+                        detailTextView.setText("@" + user.username);
+                    } else {
+                        detailTextView.setText("-");
                     }
-                }  else if (i == photoDownloadPrivateRow) {
-                    textView.setText(LocaleController.getString("AutomaticPhotoDownloadPrivateChats", R.string.AutomaticPhotoDownloadPrivateChats));
                     divider.setVisibility(View.INVISIBLE);
-                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                    int value = preferences.getInt("photo_download_user2", 0);
-                    if (value == 0) {
-                        detailTextView.setText(LocaleController.getString("Enabled", R.string.Enabled));
-                    } else if (value == 1) {
-                        detailTextView.setText(LocaleController.getString("Disabled", R.string.Disabled));
-                    } else if (value == 2) {
-                        detailTextView.setText(LocaleController.getString("WiFiOnly", R.string.WiFiOnly));
-                    }
-                } else if (i == audioDownloadChatRow) {
+                }
+                /*} else if (i == audioDownloadChatRow) {
                     textView.setText(LocaleController.getString("AutomaticPhotoDownloadGroups", R.string.AutomaticPhotoDownloadGroups));
                     divider.setVisibility(View.VISIBLE);
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -1121,11 +1158,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return 0;
             } else if (i == numberSectionRow || i == settingsSectionRow /*|| i == supportSectionRow*/ || i == messagesSectionRow /*|| i == photoDownloadSection || i == audioDownloadSection || i == contactsSectionRow*/|| i == mediaDownloadSection) {
                 return 1;
-            } else if (i == textSizeRow || i == languageRow /*|| i == contactsSortRow  || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow*/) {
+            } else if (i == textSizeRow || i == languageRow /*|| i == contactsSortRow  || i == photoDownloadPrivateRow || i == audioDownloadChatRow || i == audioDownloadPrivateRow*/ || i == numberRow || i == usernameRow) {
                 return 5;
             } else if (i == enableAnimationsRow || i == sendByEnterRow || i == downloadUserPhotos) {
                 return 3;
-            } else if (i == numberRow || i == notificationRow || i == blockedRow /*|| i == backgroundRow*/ /*|| i == askQuestionRow*/ || i == sendLogsRow || i == clearCacheRow || i == clearLogsRow || i == switchBackendButtonRow /*|| i == telegramFaqRow || i == contactsReimportRow*/) {
+            } else if (/*i == numberRow ||*/ i == notificationRow || i == blockedRow /*|| i == backgroundRow*/ /*|| i == askQuestionRow*/ || i == sendLogsRow || i == clearCacheRow || i == clearLogsRow || i == switchBackendButtonRow /*|| i == telegramFaqRow || i == contactsReimportRow*/) {
                 return 2;
             } else if (i == logoutRow) {
                 return 4;
