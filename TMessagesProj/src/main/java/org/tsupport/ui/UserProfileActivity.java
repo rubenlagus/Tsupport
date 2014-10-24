@@ -40,6 +40,7 @@ import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.BackupImageView;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.util.ArrayList;
 
@@ -556,16 +557,14 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                 return view;
             } else if (type == 1) {
                 if (view == null) {
-                    LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    view = li.inflate(R.layout.settings_section_layout, viewGroup, false);
+                    view = new SettingsSectionLayout(mContext);
                 }
-                TextView textView = (TextView)view.findViewById(R.id.settings_section_text);
                 if (i == phoneSectionRow) {
-                    textView.setText(LocaleController.getString("Info", R.string.Info));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("Info", R.string.Info));
                 } else if (i == settingsSectionRow) {
-                    textView.setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
                 } else if (i == sharedMediaSectionRow) {
-                    textView.setText(LocaleController.getString("SHAREDMEDIA", R.string.SHAREDMEDIA));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("SHAREDMEDIA", R.string.SHAREDMEDIA));
                 }
             } else if (type == 2) {
                 final TLRPC.User user = MessagesController.getInstance().getUser(user_id);
@@ -638,7 +637,7 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                     if (user.phone != null && user.phone.length() != 0) {
                         textView.setText(PhoneFormat.getInstance().format("+" + user.phone));
                     } else {
-                        textView.setText(LocaleController.getString("Unknown", R.string.Unknown));
+                        textView.setText(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
                     }
                     divider.setVisibility(usernameRow != -1 ? View.VISIBLE : View.INVISIBLE);
                     detailTextView.setText(LocaleController.getString("PhoneMobile", R.string.PhoneMobile));

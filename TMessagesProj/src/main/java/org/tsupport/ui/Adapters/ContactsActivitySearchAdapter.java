@@ -9,6 +9,7 @@
 package org.tsupport.ui.Adapters;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,140 +33,35 @@ import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Cells.ChatOrUserCell;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
+public class ContactsActivitySearchAdapter extends BaseContactsSearchAdapter {
     private Context mContext;
     private HashMap<Integer, TLRPC.User> ignoreUsers;
-    private ArrayList<TLRPC.User> searchResult;
-    private ArrayList<CharSequence> searchResultNames;
     private Timer searchTimer;
-    private ArrayList<TLRPC.User> globalSearch;
-    private long reqId = 0;
-    private int lastReqId;
+    private boolean allowUsernameSearch;
 
-    public ContactsActivitySearchAdapter(Context context, HashMap<Integer, TLRPC.User> arg1) {
+    public ContactsActivitySearchAdapter(Context context, HashMap<Integer, TLRPC.User> arg1, boolean usernameSearch) {
         mContext = context;
         ignoreUsers = arg1;
+        allowUsernameSearch = usernameSearch;
     }
 
     public void searchDialogs(final String query) {
-        if (query == null) {
-            searchResult = null;
-            searchResultNames = null;
-            globalSearch = null;
-            queryServerSearch(null);
-            notifyDataSetChanged();
-        } else {
-            try {
-                if (searchTimer != null) {
-                    searchTimer.cancel();
-                }
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
-            }
-            searchTimer = new Timer();
-            searchTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        searchTimer.cancel();
-                        searchTimer = null;
-                    } catch (Exception e) {
-                        FileLog.e("tsupport", e);
-                    }
-                    processSearch(query);
-                }
-            }, 200, 300);
-        }
-    }
-
-    private void queryServerSearch(String query) {
-        if (query == null || query.length() < 5) {
-            if (reqId != 0) {
-                ConnectionsManager.getInstance().cancelRpc(reqId, true);
-                reqId = 0;
-            }
-            globalSearch = null;
-            lastReqId = 0;
-            notifyDataSetChanged();
-            return;
-        }
-        TLRPC.TL_contacts_search req = new TLRPC.TL_contacts_search();
-        req.q = query;
-        req.limit = 50;
-        final int currentReqId = ++lastReqId;
-        reqId = ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
-            @Override
-            public void run(final TLObject response, final TLRPC.TL_error error) {
-                AndroidUtilities.RunOnUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (currentReqId == lastReqId) {
-                            if (error == null) {
-                                TLRPC.TL_contacts_found res = (TLRPC.TL_contacts_found) response;
-                                globalSearch = res.users;
-                                notifyDataSetChanged();
-                            }
-                        }
-                        reqId = 0;
-                    }
-                });
-            }
-        }, true, RPCRequest.RPCRequestClassGeneric | RPCRequest.RPCRequestClassFailOnServerErrors);
+       // Disabled
     }
 
     private void processSearch(final String query) {
-        AndroidUtilities.RunOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                queryServerSearch(query);
-                final ArrayList<TLRPC.TL_contact> contactsCopy = new ArrayList<TLRPC.TL_contact>();
-                contactsCopy.addAll(ContactsController.getInstance().contacts);
-                Utilities.searchQueue.postRunnable(new Runnable() {
-                    @Override
-                    public void run() {
-                        String q = query.trim().toLowerCase();
-                        if (q.length() == 0) {
-                            updateSearchResults(new ArrayList<TLRPC.User>(), new ArrayList<CharSequence>());
-                            return;
-                        }
-                        long time = System.currentTimeMillis();
-                        ArrayList<TLRPC.User> resultArray = new ArrayList<TLRPC.User>();
-                        ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
-
-                        for (TLRPC.TL_contact contact : contactsCopy) {
-                            TLRPC.User user = MessagesController.getInstance().getUser(contact.user_id);
-                            String name = ContactsController.formatName(user.first_name, user.last_name).toLowerCase();
-                            if (name.startsWith(q) || name.contains(" " + q)) {
-                                if (user.id == UserConfig.getClientUserId()) {
-                                    continue;
-                                }
-                                resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, q));
-                                resultArray.add(user);
-                            }
-                        }
-
-                        updateSearchResults(resultArray, resultArrayNames);
-                    }
-                });
-            }
-        });
+        // Disabled
     }
 
     private void updateSearchResults(final ArrayList<TLRPC.User> users, final ArrayList<CharSequence> names) {
-        AndroidUtilities.RunOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                searchResult = users;
-                searchResultNames = names;
-                notifyDataSetChanged();
-            }
-        });
+        // Disabled
     }
 
     @Override
@@ -175,13 +71,13 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
 
     @Override
     public boolean isEnabled(int i) {
-        return i != (searchResult == null ? 0 : searchResult.size());
+        return i != MessagesController.getInstance().usersSearched.size();
     }
 
     @Override
     public int getCount() {
-        int count = searchResult == null ? 0 : searchResult.size();
-        int globalCount = globalSearch == null ? 0 : globalSearch.size();
+        int count = MessagesController.getInstance().usersSearched.size();
+        int globalCount = MessagesController.getInstance().globalSearched.size();
         if (globalCount != 0) {
             count += globalCount + 1;
         }
@@ -189,8 +85,8 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
     }
 
     public boolean isGlobalSearch(int i) {
-        int localCount = searchResult == null ? 0 : searchResult.size();
-        int globalCount = globalSearch == null ? 0 : globalSearch.size();
+        int localCount = MessagesController.getInstance().usersSearched.size();
+        int globalCount = MessagesController.getInstance().globalSearched.size();
         if (i >= 0 && i < localCount) {
             return false;
         } else if (i > localCount && i <= globalCount + localCount) {
@@ -201,12 +97,12 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
 
     @Override
     public TLRPC.User getItem(int i) {
-        int localCount = searchResult == null ? 0 : searchResult.size();
-        int globalCount = globalSearch == null ? 0 : globalSearch.size();
+        int localCount = MessagesController.getInstance().usersSearched.size();
+        int globalCount = MessagesController.getInstance().globalSearched.size();
         if (i >= 0 && i < localCount) {
-            return searchResult.get(i);
+            return MessagesController.getInstance().usersSearched.get(i);
         } else if (i > localCount && i <= globalCount + localCount) {
-            return globalSearch.get(i - localCount - 1);
+            return MessagesController.getInstance().globalSearched.get(i - localCount - 1);
         }
         return null;
     }
@@ -223,12 +119,10 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        if (i == (searchResult == null ? 0 : searchResult.size())) {
+        if (i == MessagesController.getInstance().usersSearched.size()) {
             if (view == null) {
-                LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = li.inflate(R.layout.settings_section_layout, viewGroup, false);
-                TextView textView = (TextView)view.findViewById(R.id.settings_section_text);
-                textView.setText(LocaleController.getString("GlobalSearch", R.string.GlobalSearch));
+                view = new SettingsSectionLayout(mContext);
+                ((SettingsSectionLayout) view).setText(LocaleController.getString("GlobalSearch", R.string.GlobalSearch));
             }
         } else {
             if (view == null) {
@@ -236,10 +130,29 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
                 ((ChatOrUserCell) view).usePadding = false;
             }
 
-            ((ChatOrUserCell) view).useSeparator = (i != getCount() - 1 && i != searchResult.size() - 1);
+            ((ChatOrUserCell) view).useSeparator = (i != getCount() - 1 && i != MessagesController.getInstance().usersSearched.size() - 1);
             TLRPC.User user = getItem(i);
             if (user != null) {
-                ((ChatOrUserCell) view).setData(user, null, null, i < searchResult.size() ? searchResultNames.get(i) : null, i > searchResult.size() ? "@" + user.username : null);
+                CharSequence username = null;
+                CharSequence name = null;
+                if (i < MessagesController.getInstance().usersSearched.size()) {
+                    name = Utilities.generateSearchName(user.first_name, user.last_name, "");
+                    if (name != null && user != null && user.username != null && user.username.length() > 0) {
+                        if (name.toString().startsWith("@" + user.username)) {
+                            username = name;
+                            name = null;
+                        }
+                    }
+                } else if (i > MessagesController.getInstance().usersSearched.size() && user.username != null) {
+                    try {
+                        username = Html.fromHtml(String.format("<font color=\"#357aa8\">@%s</font>%s", user.username.substring(0, lastFoundUsername.length()), user.username.substring(lastFoundUsername.length())));
+                    } catch (Exception e) {
+                        username = user.username;
+                        FileLog.e("tmessages", e);
+                    }
+                }
+
+                ((ChatOrUserCell) view).setData(user, null, null, name, username);
 
                 if (ignoreUsers != null) {
                     if (ignoreUsers.containsKey(user.id)) {
@@ -255,7 +168,7 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
 
     @Override
     public int getItemViewType(int i) {
-        if (i == (searchResult == null ? 0 : searchResult.size())) {
+        if (i == MessagesController.getInstance().usersSearched.size()) {
             return 1;
         }
         return 0;
@@ -268,6 +181,6 @@ public class ContactsActivitySearchAdapter extends BaseFragmentAdapter {
 
     @Override
     public boolean isEmpty() {
-        return (searchResult == null || searchResult.size() == 0) && (globalSearch == null || globalSearch.isEmpty());
+        return MessagesController.getInstance().usersSearched.isEmpty() && MessagesController.getInstance().globalSearched.isEmpty();
     }
 }

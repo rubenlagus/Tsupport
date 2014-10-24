@@ -324,7 +324,7 @@ public class LoginActivitySmsView extends SlideView implements NotificationCente
                             MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                             MessagesController.getInstance().putUser(res.user, false);
                             ContactsController.getInstance().checkAppAccount();
-                            MessagesController.getInstance().getBlockedUsers(true);
+                            MessagesController.getInstance().getBlockedUsers(false);
                             delegate.needFinishActivity();
                             ConnectionsManager.getInstance().initPushConnection();
                         } else {

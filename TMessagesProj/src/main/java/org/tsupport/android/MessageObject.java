@@ -223,7 +223,7 @@ public class MessageObject {
                     } else {
                         messageText = LocaleController.formatString("NotificationContactNewPhoto", R.string.NotificationContactNewPhoto, "");
                     }
-                } else if (message.action instanceof TLRPC.TL_messageEcryptedAction) {
+                } else if (message.action instanceof TLRPC.TL_messageEncryptedAction) {
                     if (message.action.encryptedAction instanceof TLRPC.TL_decryptedMessageActionScreenshotMessages) {
                         if (isFromMe()) {
                             messageText = LocaleController.formatString("ActionTakeScreenshootYou", R.string.ActionTakeScreenshootYou);
@@ -232,6 +232,29 @@ public class MessageObject {
                                 messageText = replaceWithLink(LocaleController.getString("ActionTakeScreenshoot", R.string.ActionTakeScreenshoot), "un1", fromUser);
                             } else {
                                 messageText = LocaleController.formatString("ActionTakeScreenshoot", R.string.ActionTakeScreenshoot).replace("un1", "");
+                            }
+                        }
+                    } else if (message.action.encryptedAction instanceof TLRPC.TL_decryptedMessageActionSetMessageTTL) {
+                        TLRPC.TL_decryptedMessageActionSetMessageTTL action = (TLRPC.TL_decryptedMessageActionSetMessageTTL) message.action.encryptedAction;
+                        if (action.ttl_seconds != 0) {
+                            if (isFromMe()) {
+                                messageText = LocaleController.formatString("MessageLifetimeChangedOutgoing", R.string.MessageLifetimeChangedOutgoing, AndroidUtilities.formatTTLString(action.ttl_seconds));
+                            } else {
+                                if (fromUser != null) {
+                                    messageText = LocaleController.formatString("MessageLifetimeChanged", R.string.MessageLifetimeChanged, fromUser.first_name, AndroidUtilities.formatTTLString(action.ttl_seconds));
+                                } else {
+                                    messageText = LocaleController.formatString("MessageLifetimeChanged", R.string.MessageLifetimeChanged, "", AndroidUtilities.formatTTLString(action.ttl_seconds));
+                                }
+                            }
+                        } else {
+                            if (isFromMe()) {
+                                messageText = LocaleController.getString("MessageLifetimeYouRemoved", R.string.MessageLifetimeYouRemoved);
+                            } else {
+                                if (fromUser != null) {
+                                    messageText = LocaleController.formatString("MessageLifetimeRemoved", R.string.MessageLifetimeRemoved, fromUser.first_name);
+                                } else {
+                                    messageText = LocaleController.formatString("MessageLifetimeRemoved", R.string.MessageLifetimeRemoved, "");
+                                }
                             }
                         }
                     }
@@ -292,6 +315,14 @@ public class MessageObject {
             } else if (message.action instanceof TLRPC.TL_messageActionChatEditPhoto || message.action instanceof TLRPC.TL_messageActionUserUpdatedPhoto) {
                 contentType = 4;
                 type = 11;
+            } else if (message.action instanceof TLRPC.TL_messageEncryptedAction) {
+                if (message.action.encryptedAction instanceof TLRPC.TL_decryptedMessageActionScreenshotMessages || message.action.encryptedAction instanceof TLRPC.TL_decryptedMessageActionSetMessageTTL) {
+                    contentType = 4;
+                    type = 10;
+                } else {
+                    contentType = -1;
+                    type = -1;
+                }
             } else {
                 contentType = 4;
                 type = 10;
@@ -604,8 +635,15 @@ public class MessageObject {
         messageOwner.flags &=~ TLRPC.MESSAGE_FLAG_UNREAD;
     }
 
-    public boolean isSecretMedia() {
+    public boolean isSecretPhoto() {
         return messageOwner instanceof TLRPC.TL_message_secret && messageOwner.media instanceof TLRPC.TL_messageMediaPhoto && messageOwner.ttl != 0 && messageOwner.ttl <= 60;
+    }
+
+    public boolean isSecretMedia() {
+        return messageOwner instanceof TLRPC.TL_message_secret &&
+                (messageOwner.media instanceof TLRPC.TL_messageMediaPhoto && messageOwner.ttl != 0 && messageOwner.ttl <= 60 ||
+                        messageOwner.media instanceof TLRPC.TL_messageMediaAudio ||
+                        messageOwner.media instanceof TLRPC.TL_messageMediaVideo);
     }
 
     public static void setIsUnread(TLRPC.Message message, boolean unread) {

@@ -44,7 +44,7 @@ public class ChatOrUserCell extends BaseCell {
 
     private CharSequence currentName;
     private ImageReceiver avatarImage;
-    private String subLabel;
+    private CharSequence subLabel;
 
     private ChatOrUserCellLayout cellLayout;
     private TLRPC.User user = null;
@@ -115,7 +115,7 @@ public class ChatOrUserCell extends BaseCell {
         }
     }
 
-    public void setData(TLRPC.User u, TLRPC.Chat c, TLRPC.EncryptedChat ec, CharSequence n, String s) {
+    public void setData(TLRPC.User u, TLRPC.Chat c, TLRPC.EncryptedChat ec, CharSequence n, CharSequence s) {
         currentName = n;
         user = u;
         chat = c;
@@ -244,6 +244,16 @@ public class ChatOrUserCell extends BaseCell {
             return;
         }
 
+        if (useSeparator) {
+            int h = getMeasuredHeight();
+            if (!usePadding) {
+                canvas.drawLine(0, h - 1, getMeasuredWidth(), h - 1, linePaint);
+            } else {
+                canvas.drawLine(AndroidUtilities.dp(11), h - 1, getMeasuredWidth() - AndroidUtilities.dp(11), h - 1, linePaint);
+            }
+        }
+
+
         if (drawAlpha != 1) {
             canvas.saveLayerAlpha(0, 0, canvas.getWidth(), canvas.getHeight(), (int)(255 * drawAlpha), Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
         }
@@ -271,16 +281,7 @@ public class ChatOrUserCell extends BaseCell {
             canvas.restore();
         }
 
-        avatarImage.draw(canvas, cellLayout.avatarLeft, cellLayout.avatarTop, AndroidUtilities.dp(50), AndroidUtilities.dp(50));
-
-        if (useSeparator) {
-            int h = getMeasuredHeight();
-            if (!usePadding) {
-                canvas.drawLine(0, h - 1, getMeasuredWidth(), h, linePaint);
-            } else {
-                canvas.drawLine(AndroidUtilities.dp(11), h - 1, getMeasuredWidth() - AndroidUtilities.dp(11), h, linePaint);
-            }
-        }
+        avatarImage.draw(canvas);
     }
 
     private class ChatOrUserCellLayout {
@@ -389,7 +390,7 @@ public class ChatOrUserCell extends BaseCell {
                     onlineLeft = usePadding ? AndroidUtilities.dp(11) : 0;
                 }
 
-                String onlineString = "";
+                CharSequence onlineString = "";
                 TextPaint currentOnlinePaint = offlinePaint;
 
                 if (subLabel != null) {

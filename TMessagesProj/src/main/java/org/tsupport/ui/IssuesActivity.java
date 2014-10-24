@@ -8,8 +8,11 @@
 
 package org.tsupport.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
 import org.tsupport.android.NotificationCenter;
 import org.tsupport.android.TrelloSupport;
 import org.tsupport.messenger.FileLog;
@@ -114,12 +118,26 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (open && i < TrelloSupport.getInstance().openIssuesList.size()) {
-                        delegate.didSelectIssue(IssuesActivity.this, TrelloSupport.getInstance().openIssuesList.get(i).getKey(), open);
-                    } else if (!open && i < TrelloSupport.getInstance().closedIssuesList.size()) {
-                        delegate.didSelectIssue(IssuesActivity.this, TrelloSupport.getInstance().closedIssuesList.get(i).getKey(), open);
+                    final int index = i;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    if (open) {
+                        builder.setMessage(LocaleController.getString("AreYouSentIssue", R.string.AreYouSentIssue).replace("@title@", TrelloSupport.getInstance().openIssuesList.get(index).getValue()));
+                    } else {
+                        builder.setMessage(LocaleController.getString("AreYouSentClosedIssue", R.string.AreYouSentClosedIssue).replace("@title@", TrelloSupport.getInstance().closedIssuesList.get(index).getValue()));
                     }
-
+                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            if (open && i < TrelloSupport.getInstance().openIssuesList.size()) {
+                                delegate.didSelectIssue(IssuesActivity.this, TrelloSupport.getInstance().openIssuesList.get(index).getKey(), open);
+                            } else if (!open && i < TrelloSupport.getInstance().closedIssuesList.size()) {
+                                delegate.didSelectIssue(IssuesActivity.this, TrelloSupport.getInstance().closedIssuesList.get(index).getKey(), open);
+                            }
+                        }
+                    });
+                    builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                    showAlertDialog(builder);
                 }
             });
             if (open) {
@@ -252,6 +270,8 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     FileLog.d("tsupportTrello", "Key to draw: " + TrelloSupport.getInstance().openIssuesList.get(i).getKey());
                     if (TrelloSupport.getInstance().openIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 20);
+                        textView.setHeight(22);
                         if (textView != null) {
                             try {
                                 FileLog.d("tsupportTrello", "Content to draw: " + TrelloSupport.getInstance().openIssuesList.get(i).getValue());
@@ -265,6 +285,8 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     FileLog.d("tsupportTrello", "Key to draw: " + TrelloSupport.getInstance().closedIssuesList.get(i).getKey());
                     if (TrelloSupport.getInstance().closedIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 20);
+                        textView.setHeight(22);
                         if (textView != null) {
                             try {
                                 FileLog.d("tsupportTrello", "Content to draw: " + TrelloSupport.getInstance().closedIssuesList.get(i).getValue());

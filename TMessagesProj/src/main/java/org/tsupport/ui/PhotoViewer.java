@@ -22,6 +22,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -85,6 +86,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private ActionBarLayer actionBarLayer;
     private boolean isActionBarVisible = true;
 
+    private static Drawable[] progressDrawables = null;
+
     private WindowManager.LayoutParams windowLayoutParams;
     private FrameLayoutDrawer containerView;
     private FrameLayoutTouchListener windowView;
@@ -101,6 +104,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private View pickerView;
     private TextView doneButtonTextView;
     private TextView doneButtonBadgeTextView;
+    private ImageView shareButton;
     private boolean canShowBottom = true;
     private boolean overlayViewVisible = true;
 
@@ -465,6 +469,14 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
         parentActivity = activity;
 
+        if (progressDrawables == null) {
+            progressDrawables = new Drawable[4];
+            progressDrawables[0] = parentActivity.getDrawable(R.drawable.cancel_big);
+            progressDrawables[1] = parentActivity.getDrawable(R.drawable.circle_big);
+            progressDrawables[2] = parentActivity.getDrawable(R.drawable.load_big);
+            progressDrawables[3] = parentActivity.getDrawable(R.drawable.play_big);
+        }
+
         scroller = new Scroller(activity);
 
         windowView = new FrameLayoutTouchListener(activity);
@@ -595,7 +607,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         bottomLayout.setLayoutParams(layoutParams);
         bottomLayout.setBackgroundColor(0x7F000000);
 
-        ImageView shareButton = new ImageView(containerView.getContext());
+        shareButton = new ImageView(containerView.getContext());
         shareButton.setImageResource(R.drawable.ic_ab_share_white);
         shareButton.setScaleType(ImageView.ScaleType.CENTER);
         shareButton.setBackgroundResource(R.drawable.bar_selector_white);
@@ -656,7 +668,16 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (obj.isSent()) {
                         ArrayList<Integer> arr = new ArrayList<Integer>();
                         arr.add(obj.messageOwner.id);
-                        MessagesController.getInstance().deleteMessages(arr, null, null);
+
+                        ArrayList<Long> random_ids = null;
+                        TLRPC.EncryptedChat encryptedChat = null;
+                        if ((int)obj.getDialogId() == 0 && obj.messageOwner.random_id != 0) {
+                            random_ids = new ArrayList<Long>();
+                            random_ids.add(obj.messageOwner.random_id);
+                            encryptedChat = MessagesController.getInstance().getEncryptedChat((int)(obj.getDialogId() >> 32));
+                        }
+
+                        MessagesController.getInstance().deleteMessages(arr, random_ids, encryptedChat);
                         closePhoto(false);
                     }
                 } else if (!avatarsArr.isEmpty()) {
@@ -1159,6 +1180,13 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             } else {
                 menuItem.hideSubItem(gallery_menu_showall);
             }
+            if ((int) currentDialogId == 0) {
+                menuItem.hideSubItem(gallery_menu_save);
+                shareButton.setVisibility(View.GONE);
+            } else {
+                menuItem.showSubItem(gallery_menu_save);
+                shareButton.setVisibility(View.VISIBLE);
+            }
             setImageIndex(0, true);
         } else if (fileLocation != null) {
             avatarsUserId = object.user_id;
@@ -1166,6 +1194,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             imagesArrLocationsSizes.add(object.size);
             avatarsArr.add(new TLRPC.TL_photoEmpty());
             bottomLayout.setVisibility(View.GONE);
+            shareButton.setVisibility(View.VISIBLE);
             menuItem.hideSubItem(gallery_menu_showall);
             setImageIndex(0, true);
             currentUserAvatarLocation = fileLocation;
@@ -1194,6 +1223,13 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 }
             }
+            if ((int) currentDialogId == 0) {
+                menuItem.hideSubItem(gallery_menu_save);
+                shareButton.setVisibility(View.GONE);
+            } else {
+                menuItem.showSubItem(gallery_menu_save);
+                shareButton.setVisibility(View.VISIBLE);
+            }
             opennedFromMedia = true;
             setImageIndex(index, true);
         } else if (photos != null) {
@@ -1203,6 +1239,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             setImageIndex(index, true);
             pickerView.setVisibility(View.VISIBLE);
             bottomLayout.setVisibility(View.GONE);
+            shareButton.setVisibility(View.VISIBLE);
             canShowBottom = false;
             updateSelectedCount();
         }
@@ -2140,7 +2177,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         float ai = -1;
         if (System.currentTimeMillis() - animationStartTime < animationDuration) {
             ai = interpolator.getInterpolation((float)(System.currentTimeMillis() - animationStartTime) / animationDuration);
-            if (ai >= 0.999f) {
+            if (ai >= 0.95f) {
                 ai = -1;
             }
         }
@@ -2221,7 +2258,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             int height = (int) (bitmapHeight * scale);
 
             centerImage.setImageCoords(-width / 2, -height / 2, width, height);
-            centerImage.draw(canvas, -width / 2, -height / 2, width, height);
+            centerImage.draw(canvas);
         }
 
         if (scale >= 1.0f) {
@@ -2252,7 +2289,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     int height = (int) (bitmapHeight * scale);
 
                     sideImage.setImageCoords(-width / 2, -height / 2, width, height);
-                    sideImage.draw(canvas, -width / 2, -height / 2, width, height);
+                    sideImage.draw(canvas);
                 }
             } else {
                 changingPage = false;

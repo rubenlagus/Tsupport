@@ -67,6 +67,7 @@ import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.AvatarUpdater;
 import org.tsupport.ui.Views.BackupImageView;
 import org.tsupport.ui.Views.NumberPicker;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -299,7 +300,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         if (listView != null) {
                             listView.invalidateViews();
                         }
-                    }else if (i == notificationRow) {
+                    } else if (i == notificationRow) {
                         presentFragment(new SettingsNotificationsActivity());
                     } else if (i == templatesRow) {
                         presentFragment(new SettingsTemplatesActivity());
@@ -373,8 +374,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    }
-                    /*else if (i == backgroundRow) {
+                    /*} else if (i == backgroundRow) {
                         presentFragment(new SettingsWallpapersActivity());
                     }*/ /*else if (i == askQuestionRow) {
                         if (getParentActivity() == null) {
@@ -395,8 +395,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
-                    }*/ else if (i == sendLogsRow) {
+                        showAlertDialog(builder);*/
+                    } else if (i == sendLogsRow) {
                         sendLogs();
                     } else if (i == clearLogsRow) {
                         FileLog.cleanupLogs();
@@ -451,7 +451,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
-                    } /*else if (i == telegramFaqRow) {
+                    /*} else if (i == telegramFaqRow) {
                         try {
                             Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl)));
                             getParentActivity().startActivity(pickIntent);
@@ -483,8 +483,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
-                    }*/ else if (i == wifiDownloadRow || i == mobileDownloadRow || i == roamingDownloadRow) {
+                        showAlertDialog(builder);*/
+                    } else if (i == wifiDownloadRow || i == mobileDownloadRow || i == roamingDownloadRow) {
                         if (getParentActivity() == null) {
                             return;
                         }
@@ -864,22 +864,20 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 return view;
             } else if (type == 1) {
                 if (view == null) {
-                    LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    view = li.inflate(R.layout.settings_section_layout, viewGroup, false);
+                    view = new SettingsSectionLayout(mContext);
                 }
-                TextView textView = (TextView)view.findViewById(R.id.settings_section_text);
                 if (i == numberSectionRow) {
-                    textView.setText(LocaleController.getString("Info", R.string.Info));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("Info", R.string.Info));
                 } else if (i == settingsSectionRow) {
-                    textView.setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
-                } /*else if (i == supportSectionRow) {
-                    textView.setText(LocaleController.getString("Support", R.string.Support));
-                }*/ else if (i == messagesSectionRow) {
-                    textView.setText(LocaleController.getString("MessagesSettings", R.string.MessagesSettings));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
+                /*} else if (i == supportSectionRow) {
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("Support", R.string.Support));*/
+                } else if (i == messagesSectionRow) {
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("MessagesSettings", R.string.MessagesSettings));
                 } else if (i == mediaDownloadSection) {
-                    textView.setText(LocaleController.getString("AutomaticMediaDownload", R.string.AutomaticMediaDownload));
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("AutomaticMediaDownload", R.string.AutomaticMediaDownload));
                 } /*else if (i == contactsSectionRow) {
-                    textView.setText(LocaleController.getString("Contacts", R.string.Contacts).toUpperCase());
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("Contacts", R.string.Contacts).toUpperCase());
                 }*/
             } else if (type == 2) {
                 if (view == null) {
@@ -903,10 +901,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 } else if (i == blockedRow) {
                     textView.setText(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));
                     divider.setVisibility(View.VISIBLE);
-                } /*else if (i == backgroundRow) {
+                /*} else if (i == backgroundRow) {
                     textView.setText(LocaleController.getString("ChatBackground", R.string.ChatBackground));
-                    divider.setVisibility(View.VISIBLE);
-                }*/ else if (i == sendLogsRow) {
+                    divider.setVisibility(View.VISIBLE);*/
+                } else if (i == sendLogsRow) {
                     textView.setText("Send Logs");
                     divider.setVisibility(View.VISIBLE);
                 } else if (i == clearLogsRow) {
@@ -1026,7 +1024,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     if (user != null && user.phone != null && user.phone.length() != 0) {
                         detailTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
                     } else {
-                        detailTextView.setText(LocaleController.getString("Unknown", R.string.Unknown));
+                        detailTextView.setText(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
                     }
                     divider.setVisibility(View.VISIBLE);
                 } else if (i == textSizeRow) {
@@ -1057,7 +1055,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     if (user != null && user.username != null && user.username.length() != 0) {
                         detailTextView.setText("@" + user.username);
                     } else {
-                        detailTextView.setText("-");
+                        detailTextView.setText(LocaleController.getString("UsernameEmpty", R.string.UsernameEmpty));
                     }
                     divider.setVisibility(View.INVISIBLE);
                 }

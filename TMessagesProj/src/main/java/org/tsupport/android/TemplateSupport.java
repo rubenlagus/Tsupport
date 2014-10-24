@@ -121,7 +121,11 @@ public class TemplateSupport {
      * @param loadDefault if loading default file
      */
     public static void loadFile(String fileName, boolean loadDefault) {
+        if (modifing>0) {
+            return;
+        }
         try {
+            modifing++;
             InputStream is;
             if (loadDefault)
                 is = ApplicationLoader.applicationContext.getAssets().open(fileName);
@@ -163,7 +167,9 @@ public class TemplateSupport {
             MessagesStorage.getInstance().putTemplates(templates);
         } catch (FileNotFoundException e) {
             FileLog.e("TemplateSupport", "File not found");
+            modifing--;
         } catch (IOException e) {
+            modifing--;
             FileLog.e("TemplateSupport", "File IO Exception");
         }
         FileLog.e("TemplateSupport", "Step 2");
@@ -227,10 +233,10 @@ public class TemplateSupport {
                 for (String key : templates.keySet()) {
                     out.write("{KEYS}\n".getBytes());
                     out.write(key.getBytes());
-                    out.write("\n".getBytes());
+                    out.write("\n\n".getBytes());
                     out.write("{VALUE}\n".getBytes());
                     out.write(templates.get(key).getBytes());
-                    out.write("\n".getBytes());
+                    out.write("\n\n\n".getBytes());
                 }
             } catch (IOException e) {
                 e.printStackTrace();

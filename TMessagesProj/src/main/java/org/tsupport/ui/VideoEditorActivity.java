@@ -58,6 +58,7 @@ import java.util.List;
 @TargetApi(16)
 public class VideoEditorActivity extends BaseFragment implements TextureView.SurfaceTextureListener {
 
+    private boolean created = false;
     private MediaPlayer videoPlayer = null;
     private VideoTimelineView videoTimelineView = null;
     private View videoContainerView = null;
@@ -161,6 +162,9 @@ public class VideoEditorActivity extends BaseFragment implements TextureView.Sur
 
     @Override
     public boolean onFragmentCreate() {
+        if (created) {
+            return true;
+        }
         if (videoPath == null || !processOpenVideo()) {
             return false;
         }
@@ -190,6 +194,8 @@ public class VideoEditorActivity extends BaseFragment implements TextureView.Sur
             FileLog.e("tsupport", e);
             return false;
         }
+
+        created = true;
 
         return super.onFragmentCreate();
     }
@@ -451,11 +457,17 @@ public class VideoEditorActivity extends BaseFragment implements TextureView.Sur
     }
 
     private void onPlayComplete() {
-        playButton.setImageResource(R.drawable.video_play);
-        videoSeekBarView.setProgress(videoTimelineView.getLeftProgress());
+        if (playButton != null) {
+            playButton.setImageResource(R.drawable.video_play);
+        }
+        if (videoSeekBarView != null && videoTimelineView != null) {
+            videoSeekBarView.setProgress(videoTimelineView.getLeftProgress());
+        }
         try {
             if (videoPlayer != null) {
-                videoPlayer.seekTo((int) (videoTimelineView.getLeftProgress() * videoDuration));
+                if (videoTimelineView != null) {
+                    videoPlayer.seekTo((int) (videoTimelineView.getLeftProgress() * videoDuration));
+                }
             }
         } catch (Exception e) {
             FileLog.e("tsupport", e);

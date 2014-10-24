@@ -160,7 +160,7 @@ public class LoginActivityRegisterView extends SlideView {
                             //MessagesController.getInstance().uploadAndApplyUserAvatar(avatarPhotoBig);
                             MessagesController.getInstance().putUser(res.user, false);
                             ContactsController.getInstance().checkAppAccount();
-                            MessagesController.getInstance().getBlockedUsers(true);
+                            MessagesController.getInstance().getBlockedUsers(false);
                             if (delegate != null) {
                                 delegate.needFinishActivity();
                             }

@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.text.Layout;
@@ -51,6 +52,8 @@ public class DialogCell extends BaseCell {
     private static Drawable groupDrawable;
     private static Drawable broadcastDrawable;
 
+    private static Paint linePaint;
+
     private TLRPC.TL_dialog currentDialog;
     private ImageReceiver avatarImage;
 
@@ -59,6 +62,8 @@ public class DialogCell extends BaseCell {
     private TLRPC.Chat chat = null;
     private TLRPC.EncryptedChat encryptedChat = null;
     private CharSequence lastPrintString = null;
+
+    public boolean useSeparator = false;
 
     private void init() {
         if (namePaint == null) {
@@ -86,6 +91,11 @@ public class DialogCell extends BaseCell {
             messagePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             messagePaint.setTextSize(AndroidUtilities.dp(16));
             messagePaint.setColor(0xff808080);
+        }
+
+        if (linePaint == null) {
+            linePaint = new Paint();
+            linePaint.setColor(0xffdcdcdc);
         }
 
         if (messagePrintingPaint == null) {
@@ -349,7 +359,15 @@ public class DialogCell extends BaseCell {
             canvas.restore();
         }
 
-        avatarImage.draw(canvas, cellLayout.avatarLeft, cellLayout.avatarTop, AndroidUtilities.dp(54), AndroidUtilities.dp(54));
+        avatarImage.draw(canvas);
+        if (useSeparator) {
+            int h = getMeasuredHeight();
+            if (AndroidUtilities.isTablet()) {
+                canvas.drawLine(0, h - 1, getMeasuredWidth(), h - 1, linePaint);
+            } else {
+                canvas.drawLine(AndroidUtilities.dp(11), h - 1, getMeasuredWidth() - AndroidUtilities.dp(11), h - 1, linePaint);
+            }
+        }
     }
 
     private class DialogCellLayout {

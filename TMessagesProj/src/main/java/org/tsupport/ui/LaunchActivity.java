@@ -684,12 +684,14 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                         actionBarLayout.presentFragment(fragment, false, true, true);
                     }
 
-                    if (!fragment.openVideoEditor(videoPath, true, actionBarLayout)) {
-                        if (!AndroidUtilities.isTablet()) {
-                            actionBarLayout.presentFragment(fragment, true);
-                        }
-                    } else if (!AndroidUtilities.isTablet()) {
+                    if (!AndroidUtilities.isTablet()) {
                         actionBarLayout.addFragmentToStack(fragment, actionBarLayout.fragmentsStack.size() - 1);
+                    }
+
+                    if (!fragment.openVideoEditor(videoPath, true)) {
+                        if (!AndroidUtilities.isTablet()) {
+                            messageFragment.finishFragment(true);
+                        }
                     }
                 } else {
                     actionBarLayout.presentFragment(fragment, true);
@@ -808,6 +810,9 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
 
     public void fixLayout() {
         if (AndroidUtilities.isTablet()) {
+            if (actionBarLayout == null) {
+                return;
+            }
             actionBarLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {

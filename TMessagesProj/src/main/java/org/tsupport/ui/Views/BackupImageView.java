@@ -99,6 +99,6 @@ public class BackupImageView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         imageReceiver.setImageCoords(0, 0, getWidth(), getHeight());
-        imageReceiver.draw(canvas, 0, 0, getWidth(), getHeight());
+        imageReceiver.draw(canvas);
     }
 }

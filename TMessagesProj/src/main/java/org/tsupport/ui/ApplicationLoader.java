@@ -99,7 +99,7 @@ public class ApplicationLoader extends Application {
             MessagesController.getInstance().putUser(UserConfig.getCurrentUser(), true);
             ConnectionsManager.getInstance().applyCountryPortNumber(UserConfig.getCurrentUser().phone);
             ConnectionsManager.getInstance().initPushConnection();
-            MessagesController.getInstance().getBlockedUsers(true);
+            MessagesController.getInstance().getBlockedUsers(false);
             SendMessagesHelper.getInstance().checkUnsentMessages();
         }
 

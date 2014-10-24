@@ -2453,6 +2453,7 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
                 }
             });
         } else if ((connection.transportRequestClass & RPCRequest.RPCRequestClassPush) != 0) {
+            FileLog.e("tsupport", "call connection closed");
             sendingPushPing = false;
             lastPushPingTime = System.currentTimeMillis() - 60000 * 3 + 4000;
         }

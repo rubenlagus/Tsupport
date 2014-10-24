@@ -15,8 +15,10 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -33,6 +35,7 @@ import com.appspot.tsupport_android.users.model.User;
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessageObject;
 import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
 import org.tsupport.android.NotificationCenter;
@@ -43,6 +46,7 @@ import org.tsupport.messenger.TLObject;
 import org.tsupport.messenger.TLRPC;
 import org.tsupport.messenger.UserConfig;
 import org.tsupport.messenger.Utilities;
+import org.tsupport.ui.Adapters.BaseContactsSearchAdapter;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Cells.ChatOrUserCell;
 import org.tsupport.ui.Cells.DialogCell;
@@ -50,6 +54,7 @@ import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,9 +83,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private static boolean requestSearch = false;
     private static String searchQuery = "";
     private static String previousSearch = "";
-    private static int searchType = 0; // 0=nothing 1=messages 2=users
-
-    private Timer searchTimer;
+    private static Integer searchType = 0; // 0=nothing 1=messages 2=users
 
     private MessagesActivityDelegate delegate;
 
@@ -120,6 +123,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.openedChatChanged);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.reloadSearchChatResults);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.reloadSearchUserResults);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.messagesRead);
+
         if (getArguments() != null) {
             if (arguments.containsKey("query")) {
                 requestSearch = true;
@@ -155,6 +160,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.openedChatChanged);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.reloadSearchChatResults);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.reloadSearchUserResults);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messagesRead);
         delegate = null;
     }
 
@@ -180,7 +186,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
                 @Override
                 public void onSearchCollapse() {
-                    searchDialogs(null, 0);
+                    messagesListViewAdapter.searchDialogs(null, 0);
                     searching = false;
                     searchWas = false;
                     refreshItem.setVisibility(View.VISIBLE);
@@ -208,7 +214,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
                         refreshItem.setVisibility(View.GONE);
                         searchQuery = v.getText().toString();
-                        searchDialogs(searchQuery, 1);
+                        messagesListViewAdapter.searchDialogs(searchQuery, 1);
                         if (searchQuery.length() != 0) {
                             searchWas = true;
                             requestSearch = true;
@@ -237,10 +243,6 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 searchUserItem.setVisibility(View.GONE);
                 searchMessagesItem.setVisibility(View.GONE);
                 ActionBarMenuItem item = menu.addItem(0, R.drawable.ic_ab_other);
-                //item.addSubItem(messages_list_menu_new_chat, LocaleController.getString("NewGroup", R.string.NewGroup), 0);
-                //item.addSubItem(messages_list_menu_new_secret_chat, LocaleController.getString("NewSecretChat", R.string.NewSecretChat), 0);
-                //item.addSubItem(messages_list_menu_new_broadcast, LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), 0);
-                //item.addSubItem(messages_list_menu_contacts, LocaleController.getString("Contacts", R.string.Contacts), 0);
                 item.addSubItem(messages_list_menu_settings, LocaleController.getString("Settings", R.string.Settings), 0);
             }
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
@@ -263,7 +265,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         searchMessagesItem.setVisibility(View.VISIBLE);
                         searchUserItem.setVisibility(View.GONE);
                         searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
-                        searchDialogs(searchQuery, 2);
+                        messagesListViewAdapter.searchDialogs(searchQuery, 2);
                         Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("searching", R.string.searching) , Toast.LENGTH_SHORT).show();
                         if (searchQuery.length() != 0) {
                             searchWas = true;
@@ -280,7 +282,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         searchUserItem.setVisibility(View.VISIBLE);
                         searchMessagesItem.setVisibility(View.GONE);
                         searchEmptyView.setText(LocaleController.getString("searching", R.string.searching));
-                        searchDialogs(searchQuery, 1);
+                        messagesListViewAdapter.searchDialogs(searchQuery, 1);
                         Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("searching", R.string.searching) , Toast.LENGTH_SHORT).show();
                         if (searchQuery.length() != 0) {
                             searchWas = true;
@@ -293,31 +295,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                                 emptyView.setVisibility(View.GONE);
                             }
                         }
-                    }
-                    /*else if (id == messages_list_menu_new_messages) {
-                        Bundle args = new Bundle();
-                        args.putBoolean("onlyUsers", true);
-                        args.putBoolean("destroyAfterSelect", true);
-                        args.putBoolean("usersAsSections", true);
-                        presentFragment(new ContactsActivity(args));
-                    } else if (id == messages_list_menu_new_secret_chat) {
-                        Bundle args = new Bundle();
-                        args.putBoolean("onlyUsers", true);
-                        args.putBoolean("destroyAfterSelect", true);
-                        args.putBoolean("usersAsSections", true);
-                        args.putBoolean("createSecretChat", true);
-                        presentFragment(new ContactsActivity(args));
-                    }*//* else if (id == messages_list_menu_new_chat) {
-                        presentFragment(new GroupCreateActivity());
-                    }*/ else if (id == -1) {
+                    } else if (id == -1) {
                         if (onlySelect) {
                             finishFragment();
                         }
-                    } /*else if (id == messages_list_menu_new_broadcast) {
-                        Bundle args = new Bundle();
-                        args.putBoolean("broadcast", true);
-                        presentFragment(new GroupCreateActivity(args));
-                    }*/
+                    }
                 }
             });
 
@@ -332,6 +314,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         requestSearch = false;
                         searchQuery = "";
                         previousSearch = "";
+                        messagesListViewAdapter.searchDialogs(null, searchType);
                         actionBarLayer.onSearchFieldVisibilityChanged(menu.getItem(0).toggleSearch());
                         searchUserItem.setVisibility(View.GONE);
                         searchMessagesItem.setVisibility(View.GONE);
@@ -352,14 +335,25 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             messagesListViewAdapter = new MessagesAdapter(getParentActivity());
 
             messagesListView = (ListView)fragmentView.findViewById(R.id.messages_list_view);
-
             messagesListView.setAdapter(messagesListViewAdapter);
 
             progressView = fragmentView.findViewById(R.id.progressLayout);
             messagesListViewAdapter.notifyDataSetChanged();
             searchEmptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
+            searchEmptyView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             searchEmptyView.setText(LocaleController.getString("NoResult", R.string.NoResult));
             emptyView = fragmentView.findViewById(R.id.list_empty_view);
+            emptyView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             TextView textView = (TextView)fragmentView.findViewById(R.id.list_empty_view_text1);
             textView.setText(LocaleController.getString("NoChats", R.string.NoChats));
             textView = (TextView)fragmentView.findViewById(R.id.list_empty_view_text2);
@@ -385,37 +379,43 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             messagesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (messagesListViewAdapter == null) {
+                        return;
+                    }
+                    TLObject obj = messagesListViewAdapter.getItem(i);
+                    if (obj == null) {
+                        return;
+                    }
                     if (searching && searchWas) {
+                        TLRPC.User user = (TLRPC.User) obj;
                         Bundle args = new Bundle();
-                        if (searchType == 1) {
-                            if (i >= MessagesController.getInstance().usersFromSearchOrdered.size()) {
-                                return;
-                            }
-                            args.putInt("user_id", MessagesController.getInstance().usersFromSearchOrdered.get(i).id);
-                        } else if (searchType == 2) {
-                            args.putInt("user_id", MessagesController.getInstance().usersSearched.get(i).id);
-                        } else {
-                            return;
-                        }
+                        args.putInt("user_id", user.id);
                         args.putString("query", searchQuery);
                         ChatActivity chatActivity = new ChatActivity(args);
                         chatActivity.setDelegate(MessagesActivity.this);
-                        presentFragment(new ChatActivity(args));
+                        presentFragment(chatActivity);
                     } else {
                         long dialog_id = 0;
-                        if (serverOnly) {
-                            if (i >= MessagesController.getInstance().dialogsServerOnly.size()) {
-                                return;
+                        if (obj instanceof TLRPC.User) {
+                            dialog_id = ((TLRPC.User) obj).id;
+                            if (messagesListViewAdapter.isGlobalSearch(i)) {
+                                ArrayList<TLRPC.User> users = new ArrayList<TLRPC.User>();
+                                users.add((TLRPC.User)obj);
+                                MessagesController.getInstance().putUsers(users, false);
+                                MessagesStorage.getInstance().putUsersAndChats(users, null, false, true);
                             }
-                            TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogsServerOnly.get(i);
-                            dialog_id = dialog.id;
-                        } else {
-                            if (i >= MessagesController.getInstance().dialogs.size()) {
-                                return;
+                        } else if (obj instanceof TLRPC.Chat) {
+                            if (((TLRPC.Chat) obj).id > 0) {
+                                dialog_id = -((TLRPC.Chat) obj).id;
+                            } else {
+                                dialog_id = AndroidUtilities.makeBroadcastId(((TLRPC.Chat) obj).id);
                             }
-                            TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs.get(i);
-                            dialog_id = dialog.id;
+                        } else if (obj instanceof TLRPC.EncryptedChat) {
+                            dialog_id = ((long)((TLRPC.EncryptedChat) obj).id) << 32;
+                        } else if (obj instanceof TLRPC.TL_dialog) {
+                            dialog_id = ((TLRPC.TL_dialog) obj).id;
                         }
+
                         if (onlySelect) {
                             didSelectResult(dialog_id, true, false);
                         } else {
@@ -435,9 +435,16 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                             } else {
                                 args.putInt("enc_id", high_id);
                             }
+                            if (AndroidUtilities.isTablet()) {
+                                if (openedDialogId == dialog_id) {
+                                    return;
+                                }
+                                openedDialogId = dialog_id;
+                            }
                             ChatActivity chatActivity = new ChatActivity(args);
                             chatActivity.setDelegate(MessagesActivity.this);
                             presentFragment(chatActivity);
+                            updateVisibleRows(0);
                         }
                     }
                 }
@@ -539,7 +546,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                         if (searching && searchWas && searchType == 1) {
                             if (absListView.getLastVisiblePosition() == MessagesController.getInstance().usersFromSearch.size()-3) {
                                 if (MessagesController.getInstance().canContinueSearch) {
-                                    searchDialogs(searchQuery, searchType);
+                                    messagesListViewAdapter.searchDialogs(searchQuery, searchType);
                                 } else {
                                     Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("NoMoreResults", R.string.NoMoreResults) , Toast.LENGTH_SHORT).show();
                                 }
@@ -580,15 +587,15 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     refreshItem.setVisibility(View.GONE);
                     if (previousSearch.compareToIgnoreCase("") == 0) {
                         if (searchType == 1) {
-                            searchDialogs(searchQuery, 1);
+                            messagesListViewAdapter.searchDialogs(searchQuery, 1);
                             searchUserItem.setVisibility(View.VISIBLE);
                             searchMessagesItem.setVisibility(View.GONE);
                         } else if (searchType == 2) {
-                            searchDialogs(searchQuery, 2);
+                            messagesListViewAdapter.searchDialogs(searchQuery, 2);
                             searchUserItem.setVisibility(View.GONE);
                             searchMessagesItem.setVisibility(View.VISIBLE);
                         } else {
-                            searchDialogs(searchQuery, 1);
+                            messagesListViewAdapter.searchDialogs(searchQuery, 1);
                             searchUserItem.setVisibility(View.VISIBLE);
                             searchMessagesItem.setVisibility(View.GONE);
                         }
@@ -613,12 +620,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                             searchMessagesItem.setVisibility(View.VISIBLE);
                         }
                         if (searchQuery.length() != 0) {
-                            searchWas = true;
+                            searchWas = false;
                             if (messagesListViewAdapter != null) {
                                 messagesListViewAdapter.notifyDataSetChanged();
                             }
                             if (searchEmptyView != null) {
-
                                 messagesListView.setEmptyView(searchEmptyView);
                                 emptyView.setVisibility(View.GONE);
                             }
@@ -674,10 +680,40 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         } else if (id == NotificationCenter.updateInterfaces) {
             updateVisibleRows((Integer)args[0]);
         } else if (id == NotificationCenter.reloadSearchResults) {
-            int token = (Integer)args[0];
-            if (token == activityToken) {
-                updateSearchResults((ArrayList<TLObject>)args[1], (ArrayList<CharSequence>)args[2], (ArrayList<TLRPC.User>)args[3]);
+        } else if (id == NotificationCenter.messagesRead) {
+            /*ArrayList<Integer> markAsReadMessages = (ArrayList<Integer>)args[0];
+            boolean updated = false;
+            for (Integer ids : markAsReadMessages) {
+                MessagesController.getInstance().
+                TLRPC.TL_dialog obj = MessagesController.getInstance().dialogs.get(ids);
+                if (obj != null) {
+                    if (obj.unread_count > 0) {
+                        FileLog.d("tsupportRead", "set to 0");
+                        obj.unread_count = 0;
+                        MessagesController.getInstance().dialogs.add(ids, obj);
+                    }
+                    updated = true;
+                }
+                obj = MessagesController.getInstance().dialogsServerOnly.get(ids);
+                if (obj != null) {
+                    if (obj.unread_count > 0) {
+                        FileLog.d("tsupportRead", "set to 0 server only");
+                        obj.unread_count = 0;
+                        MessagesController.getInstance().dialogsServerOnly.add(ids, obj);
+                    }
+                    updated = true;
+                }
             }
+            if (updated) {*/
+                AndroidUtilities.RunOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (messagesListViewAdapter != null) {
+                            messagesListViewAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+           // }
         } else if (id == NotificationCenter.appDidLogout) {
             dialogsLoaded = false;
         } else if (id == NotificationCenter.encryptedChatUpdated) {
@@ -703,11 +739,11 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                 AndroidUtilities.RunOnUIThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (MessagesController.getInstance().usersFromSearchOrdered.size() <= 0) {
+                        if (MessagesController.getInstance().usersFromSearch.size() <= 0) {
                             FileLog.d("tsupportSearch", "No results");
                             searchEmptyView.setText(LocaleController.getString("NoResult", R.string.NoResult));
                         } else {
-                            FileLog.d("tsupportSearch", "Yes Results: " + MessagesController.getInstance().usersFromSearchOrdered.size());
+                            FileLog.d("tsupportSearch", "Yes Results: " + MessagesController.getInstance().usersFromSearch.size());
                             searchWas = true;
                             searching = true;
                         }
@@ -848,110 +884,113 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         requestSearch = true;
     }
 
-    public void updateSearchResults(final ArrayList<TLObject> result, final ArrayList<CharSequence> names, final ArrayList<TLRPC.User> encUsers) {
-//        Utilities.RunOnUIThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                for (TLObject obj : result) {
-//                    if (obj instanceof TLRPC.User) {
-//                        TLRPC.User user = (TLRPC.User) obj;
-//                        MessagesController.getInstance().users.putIfAbsent(user.id, user);
-//                    } else if (obj instanceof TLRPC.Chat) {
-//                        TLRPC.Chat chat = (TLRPC.Chat) obj;
-//                        MessagesController.getInstance().chats.putIfAbsent(chat.id, chat);
-//                    } else if (obj instanceof TLRPC.EncryptedChat) {
-//                        TLRPC.EncryptedChat chat = (TLRPC.EncryptedChat) obj;
-//                        MessagesController.getInstance().encryptedChats.putIfAbsent(chat.id, chat);
-//                    }
-//                }
-//                for (TLRPC.User user : encUsers) {
-//                    MessagesController.getInstance().users.putIfAbsent(user.id, user);
-//                }
-//                searchResult = result;
-//                searchResultNames = names;
-//                if (searching) {
-//                    messagesListViewAdapter.notifyDataSetChanged();
-//                }
-//            }
-//        });
-    }
-
-    public void searchDialogs(final String query, final int type) {
-        if (query == null || query.compareToIgnoreCase(previousSearch) != 0 || query.compareToIgnoreCase("") == 0 || searchType == 0) {
-            MessagesController.getInstance().searchOffset = 0;
-            MessagesController.getInstance().canContinueSearch = true;
-            if (query == null || type == 0 || query.compareToIgnoreCase("") == 0) {
-                FileLog.e("tsupportSearch", "Leaving search fast");
-                return;
-            }
-        }
-
-        if (type == 1) {
-            try {
-                if (searchTimer != null) {
-                    searchTimer.cancel();
-                }
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
-            }
-            searchTimer = new Timer();
-            searchTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        searchTimer.cancel();
-                        searchTimer = null;
-                    } catch (Exception e) {
-                        FileLog.e("tsupport", e);
-                    }
-                    FileLog.e("tsupportSearch", "Calling search: " + query);
-                    previousSearch = query;
-                    searchType = type;
-                    MessagesController.getInstance().searchDialogs(activityToken, query, classGuid);
-                }
-            }, 1000, 1000);
-        } else if (type == 2) {
-            try {
-                if (searchTimer != null) {
-                    searchTimer.cancel();
-                }
-            } catch (Exception e) {
-                FileLog.e("tsupport", e);
-            }
-            searchTimer = new Timer();
-            searchTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    try {
-                        searchTimer.cancel();
-                        searchTimer = null;
-                    } catch (Exception e) {
-                        FileLog.e("tsupport", e);
-                    }
-                    FileLog.e("tsupportSearch", "Calling users search: " + query);
-                    previousSearch = query;
-                    searchType = type;
-                    MessagesStorage.getInstance().searchDialogs(activityToken, query, classGuid);
-                }
-            }, 1000, 1000);
-        }
-    }
-
-    private class MessagesAdapter extends BaseFragmentAdapter {
+    private class MessagesAdapter extends BaseContactsSearchAdapter {
         private Context mContext;
+        private Timer searchTimer;
 
         public MessagesAdapter(Context context) {
             mContext = context;
         }
 
+        public boolean isGlobalSearch(int i) {
+            if (searching && searchWas) {
+                int localCount = MessagesController.getInstance().usersSearched.size();
+                int globalCount = MessagesController.getInstance().globalSearched.size();
+                if (i >= 0 && i < localCount) {
+                    return false;
+                } else if (i > localCount && i <= globalCount + localCount) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void searchDialogs(final String query, final int type) {
+            if (query == null || query.compareToIgnoreCase(previousSearch) != 0 || query.compareToIgnoreCase("") == 0 || searchType == 0) {
+                FileLog.e("tsupportSearch", "clearing search");
+                MessagesController.getInstance().searchOffset = 0;
+                MessagesController.getInstance().canContinueSearch = true;
+                MessagesController.getInstance().globalSearched.clear();
+                MessagesController.getInstance().usersSearched.clear();
+                MessagesController.getInstance().usersFromSearch.clear();
+                if (query == null || type == 0 || query.compareToIgnoreCase("") == 0) {
+                    FileLog.e("tsupportSearch", "Leaving search fast");
+                    return;
+                }
+                notifyDataSetChanged();
+            }
+
+            if (type == 1) {
+                try {
+                    if (searchTimer != null) {
+                        searchTimer.cancel();
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupport", e);
+                }
+                searchTimer = new Timer();
+                searchTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            searchTimer.cancel();
+                            searchTimer = null;
+                        } catch (Exception e) {
+                            FileLog.e("tsupport", e);
+                        }
+                        FileLog.e("tsupportSearch", "Calling search: " + query);
+                        previousSearch = query;
+                        searchType = type;
+                        MessagesController.getInstance().searchDialogs(activityToken, query, classGuid);
+                    }
+                }, 1000, 1000);
+            } else if (type == 2) {
+                try {
+                    if (searchTimer != null) {
+                        searchTimer.cancel();
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupport", e);
+                }
+                searchTimer = new Timer();
+                searchTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            searchTimer.cancel();
+                            searchTimer = null;
+                        } catch (Exception e) {
+                            FileLog.e("tsupport", e);
+                        }
+                        FileLog.e("tsupportSearch", "Calling users search: " + query);
+                        previousSearch = query;
+                        searchType = type;
+                        MessagesStorage.getInstance().searchDialogs(activityToken, query, classGuid);
+                        AndroidUtilities.RunOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                queryServerSearch(query);
+                            }
+                        });
+                    }
+                }, 1000, 1000);
+            }
+        }
+
         @Override
         public boolean areAllItemsEnabled() {
-            return true;
+            return false;
         }
 
         @Override
         public boolean isEnabled(int i) {
-            return true;
+            if (searchType == 1) {
+                FileLog.d("tsupportSearch", "IsEnabled: " + (!(searching && searchWas) || i != MessagesController.getInstance().usersFromSearch.size()));
+                return !(searching && searchWas) || i != MessagesController.getInstance().usersFromSearch.size();
+            } else {
+                FileLog.d("tsupportSearch", "IsEnabled: " + (!(searching && searchWas) || i != MessagesController.getInstance().usersSearched.size()));
+                return !(searching && searchWas) || i != MessagesController.getInstance().usersSearched.size();
+            }
         }
 
         @Override
@@ -959,15 +998,18 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             if (searching && searchWas) {
                 if (searchType == 1) {
                     if (MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0) {
+                        FileLog.d("tsupportSearch", "Get count 0");
                         return 0;
                     }
-                    return MessagesController.getInstance().usersFromSearchOrdered.size();
+                    FileLog.d("tsupportSearch", "1Get count " + MessagesController.getInstance().usersFromSearch.size());
+                    return MessagesController.getInstance().usersFromSearch.size();
                 } else if (searchType == 2) {
-                    if (MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0) {
-                        return 0;
-                    }
-                    return MessagesController.getInstance().usersSearched.size();
+                    FileLog.d("tsupportSearch", "2Get count " + (MessagesController.getInstance().usersSearched == null ? 0 : MessagesController.getInstance().usersSearched.size()) +
+                            (MessagesController.getInstance().globalSearched == null ? 0 : MessagesController.getInstance().globalSearched.size()+1));
+                    return (MessagesController.getInstance().usersSearched == null ? 0 : MessagesController.getInstance().usersSearched.size()) +
+                            (MessagesController.getInstance().globalSearched == null ? 0 : MessagesController.getInstance().globalSearched.size()+1);
                 } else {
+                    FileLog.d("tsupportSearch", "3Get count 0");
                     return 0;
                 }
             }
@@ -987,71 +1029,149 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         }
 
         @Override
-        public Object getItem(int i) {
-            return null;
+        public TLObject getItem(int i) {
+            if (searching && searchWas) {
+                if (searchType == 1) {
+                    if (i > MessagesController.getInstance().usersFromSearch.size()) {
+                        FileLog.d("tsupportSearch", "Get Item null");
+                        return null;
+                    }
+                    FileLog.d("tsupportSearch", "0Get item " + MessagesController.getInstance().usersFromSearch.get(i));
+                    return MessagesController.getInstance().usersFromSearch.get(i);
+                } else if (searchType == 2) {
+                    if (i >= MessagesController.getInstance().usersSearched.size()) {
+                        int globalSearchIndex = i - MessagesController.getInstance().usersSearched.size();
+                        if (globalSearchIndex < MessagesController.getInstance().globalSearched.size()) {
+                            FileLog.d("tsupportSearch", "1Get item " + MessagesController.getInstance().globalSearched.get(globalSearchIndex));
+                            return MessagesController.getInstance().globalSearched.get(globalSearchIndex);
+                        } else {
+                            return null;
+                        }
+                    } else {
+                        FileLog.d("tsupportSearch", "2Get item " + MessagesController.getInstance().usersSearched.get(i));
+                        return MessagesController.getInstance().usersSearched.get(i);
+                    }
+                }
+                FileLog.d("tsupportSearch", "3Get item  null");
+                return null;
+            }
+            if (serverOnly) {
+                if (i < 0 || i >= MessagesController.getInstance().dialogsServerOnly.size()) {
+                    return null;
+                }
+                return MessagesController.getInstance().dialogsServerOnly.get(i);
+            } else {
+                if (i < 0 || i >= MessagesController.getInstance().dialogs.size()) {
+                    return null;
+                }
+                return MessagesController.getInstance().dialogs.get(i);
+            }
         }
 
         @Override
         public long getItemId(int i) {
+            FileLog.d("tsupportSearch", "Get itemId " + i);
             return i;
         }
 
         @Override
         public boolean hasStableIds() {
-            return false;
+            return true;
         }
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            if (searching && searchWas) {
+            int type = getItemViewType(i);
+            FileLog.d("tsupportSearch", "Get viewType " + type);
+            if (type == 3) {
+                if (view == null) {
+                    FileLog.d("tsupportSearch", "Get viewType Global");
+                    view = new SettingsSectionLayout(mContext);
+                    ((SettingsSectionLayout) view).setText(LocaleController.getString("GlobalSearch", R.string.GlobalSearch));
+                    view.setPadding(AndroidUtilities.dp(11), 0, AndroidUtilities.dp(11), 0);
+                }
+            } else if (type == 2) {
                 if (view == null) {
                     view = new ChatOrUserCell(mContext);
                 }
-                TLRPC.User user = null;
-                TLRPC.Chat chat = null;
-                CharSequence name = null;
-                if (searchType == 1) { // Searching messages
-                    if (i >= MessagesController.getInstance().usersFromSearchOrdered.size()) {
-                        return view;
+                if (searching && searchWas) {
+                    TLRPC.User user = null;
+                    TLRPC.Chat chat = null;
+                    TLRPC.EncryptedChat encryptedChat = null;
+                    CharSequence username = null;
+                    CharSequence name = null;
+
+                    TLObject obj = getItem(i);
+                    if (obj instanceof TLRPC.User) {
+                        //user = MessagesController.getInstance().getUser(((TLRPC.User) obj).id);
+                        if (user == null) {
+                            user = (TLRPC.User) obj;
+                            FileLog.d("tsupportSearch", "Get view 0");
+                        }
+                    } else {
+                        FileLog.d("tsupportSearch", "Get view 1");
                     }
-                    user = MessagesController.getInstance().usersFromSearchOrdered.get(i);
-                    name = Utilities.generateSearchName(user.first_name, user.last_name, searchQuery);
-                } else if (searchType == 2) { // Searching users
-                    if (i >= MessagesController.getInstance().usersSearched.size()) {
-                        return view;
+
+                    if (searchType == 1 && user != null) {
+                        FileLog.d("tsupportSearch", "Get view 2");
+                        ((ChatOrUserCell) view).useSeparator = (i != getCount() - 1 && i != MessagesController.getInstance().usersFromSearch.size() - 1);
+                        if (i < MessagesController.getInstance().usersFromSearch.size()) {
+                            FileLog.d("tsupportSearch", "Get view 3");
+                            name = Utilities.generateSearchName(user.first_name, user.last_name, searchQuery);
+                            FileLog.d("tsupportSearch", "Get view 3.1");
+                            if (name != null && user != null && user.username != null && user.username.length() > 0) {
+                                FileLog.d("tsupportSearch", "Get view 4");
+                                if (name.toString().startsWith("@" + user.username)) {
+                                    FileLog.d("tsupportSearch", "Get view 5");
+                                    username = name;
+                                    name = null;
+                                }
+                            }
+                        }
+                    } else if (searchType == 2 && user != null) {
+                        ((ChatOrUserCell) view).useSeparator = (i != getCount() - 1 && i != MessagesController.getInstance().usersSearched.size() - 1);
+                        if (i < MessagesController.getInstance().usersSearched.size()) {
+                            name = Utilities.generateSearchName(user.first_name, user.last_name, searchQuery);
+                            if (name != null && user != null && user.username != null && user.username.length() > 0) {
+                                if (name.toString().startsWith("@" + user.username)) {
+                                    username = name;
+                                    name = null;
+                                }
+                            }
+                        } else if (i > MessagesController.getInstance().usersSearched.size() && user != null && user.username != null) {
+                            try {
+                                username = Html.fromHtml(String.format("<font color=\"#357aa8\">@%s</font>%s", user.username.substring(0, lastFoundUsername.length()), user.username.substring(lastFoundUsername.length())));
+                            } catch (Exception e) {
+                                username = user.username;
+                                FileLog.e("tmessages", e);
+                            }
+                        }
                     }
-                    user = MessagesController.getInstance().usersSearched.get(i);
-                    name = MessagesController.getInstance().usersSearchedNames.get(i);
-                } else { // Other
-                    return view;
+                    ((ChatOrUserCell) view).setData(user, chat, encryptedChat, name, username);
                 }
-                ((ChatOrUserCell)view).setData(user, chat, null, name, null);
-                return view;
-            }
-            int type = getItemViewType(i);
-            if (type == 1) {
+            } else if (type == 1) {
                 if (view == null) {
                     LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                     view = li.inflate(R.layout.loading_more_layout, viewGroup, false);
                 }
-                return view;
-            }
-
-            if (view == null) {
-                view = new DialogCell(mContext);
-            }
-            if (serverOnly) {
-                ((DialogCell)view).setDialog(MessagesController.getInstance().dialogsServerOnly.get(i));
-            } else {
-                TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs.get(i);
-                if (AndroidUtilities.isTablet()) {
-                    if (dialog.id == openedDialogId) {
-                        view.setBackgroundColor(0x0f000000);
-                    } else {
-                        view.setBackgroundColor(0);
-                    }
+            } else if (type == 0) {
+                if (view == null) {
+                    view = new DialogCell(mContext);
                 }
-                ((DialogCell)view).setDialog(dialog);
+                ((DialogCell) view).useSeparator = (i != getCount() - 1);
+                if (serverOnly) {
+                    ((DialogCell) view).setDialog(MessagesController.getInstance().dialogsServerOnly.get(i));
+                } else {
+                    TLRPC.TL_dialog dialog = MessagesController.getInstance().dialogs.get(i);
+                    if (AndroidUtilities.isTablet()) {
+                        if (dialog.id == openedDialogId) {
+                            view.setBackgroundColor(0x0f000000);
+                        } else {
+                            view.setBackgroundColor(0);
+                        }
+                    }
+                    ((DialogCell) view).setDialog(dialog);
+                }
             }
 
             return view;
@@ -1060,7 +1180,20 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public int getItemViewType(int i) {
             if (searching && searchWas) {
-                return 2;
+                if (searchType == 1) {
+                    if (i <= MessagesController.getInstance().usersFromSearch.size()) {
+                        return 2;
+                    } else {
+                        return 0;
+                    }
+                } else if (searchType == 2) {
+                    if (i == MessagesController.getInstance().usersSearched.size()) {
+                        FileLog.d("tsupportSearch", "Get viewType Item 3");
+                        return 3;
+                    }
+                    FileLog.d("tsupportSearch", "Get viewType Item 2");
+                    return 2;
+                }
             }
             if (serverOnly && i == MessagesController.getInstance().dialogsServerOnly.size() || !serverOnly && i == MessagesController.getInstance().dialogs.size()) {
                 return 1;
@@ -1077,9 +1210,13 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         public boolean isEmpty() {
             if (searching && searchWas) {
                 if (searchType == 1) {
+                    FileLog.d("tsupportSearch", "isEmpty " + (MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0));
                     return MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0;
                 } else if (searchType == 2) {
-                    return MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0;
+                    FileLog.d("tsupportSearch", "isEmpty " + ((MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0) &&
+                            (MessagesController.getInstance().globalSearched == null || MessagesController.getInstance().globalSearched.size() <= 0)));
+                    return (MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0) &&
+                            (MessagesController.getInstance().globalSearched == null || MessagesController.getInstance().globalSearched.size() <= 0);
                 } else {
                     return true;
                 }
@@ -1103,6 +1240,10 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public boolean onBackPressed() {
         if (searching || searchWas || requestSearch) {
