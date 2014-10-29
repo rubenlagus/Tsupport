@@ -36,7 +36,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
-import android.widget.Scroller;
 import android.widget.TextView;
 
 import org.tsupport.messenger.R;

@@ -471,10 +471,10 @@ de
 contact:+42449 Support Deutschland 
 Wir verstehen leider hier im italienischen Support-Team nur Englisch und Italienisch. Bitte melde dich gerne direkt bei unserem deutschsprachigen Support-Team.
 
-{VALUE}
+{KEYS}
 nomeutente
 nm
 
-{KEYS}
+{VALUE}
 Su Telegram puoi impostare un nome utente pubblico. Diventa quindi possibile per gli altri utenti cercarti tramite il nome utente - comparirai nei risultati della ‘ricerca globale’. Per favore ricorda che le persone che ti troveranno saranno in grado di scriverti, anche senza sapere il tuo numero. Se la cosa non ti piace, ti sconsigliamo di impostare un nome utente di Telegram.
 Al momento, i nomi utente e la ricerca di essi è supportata dal nostro client web ufficiale - puoi impostare un nome utente dalle Impostazioni. Ovviamente anche le altre app di Telegram supporteranno i nomi utente coi prossimi aggiornamenti.

@@ -2560,7 +2560,20 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         final ArrayList<MessageObject> pushMessages = new ArrayList<MessageObject>();
                                         for (TLRPC.Message message : res.new_messages) {
                                             MessageObject obj = new MessageObject(message, usersDict, 2);
+                                            if (obj.isFromMe()) {
+                                                if (!patternTSFBot.matcher(obj.messageText).find()) {
+                                                    FileLog.d("TsupportUnread", "Message unread from me and no robot - " + obj.isUnread());
+                                                    obj.setIsRead();
+                                                } else {
+                                                    FileLog.d("TsupportUnread", "Message unread from me but robot - " + obj.isUnread());
+                                                }
+                                                if (obj.hashtags.contains("#tsfBot")) {
+                                                    FileLog.d("TsupportUnread", "Message from me but robot");
+                                                }
+                                                FileLog.d("TsupportUnread", "Message: " + obj.messageText);
+                                                FileLog.d("TsupportUnread", "Message post check - " + obj.isUnread());
 
+                                            }
                                             long dialog_id = obj.messageOwner.dialog_id;
                                             if (dialog_id == 0) {
                                                 if (obj.messageOwner.to_id.chat_id != 0) {
@@ -2694,7 +2707,17 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     message.to_id.chat_id = updates.chat_id;
                     message.message = updates.message;
                     message.date = updates.date;
-                    message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                    if (updates.from_id == UserConfig.getCurrentUser().id) {
+                        if (patternTSFBot.matcher(updates.message).find()) {
+                            FileLog.d("tsupportUnread", "Unread in processUpdates 1");
+                            message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                        } else {
+                            FileLog.d("tsupportUnread", "Mine but not #tsbot 1: " + updates.message);
+                        }
+                    } else {
+                        message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                        FileLog.d("tsupportUnread", "Not mine 1: " + updates.message);
+                    }
                     message.media = new TLRPC.TL_messageMediaEmpty();
                     MessagesStorage.lastSeqValue = updates.seq;
                     MessagesStorage.lastPtsValue = updates.pts;
@@ -2759,7 +2782,17 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     message.to_id.user_id = updates.from_id;
                     message.message = updates.message;
                     message.date = updates.date;
-                    message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                    if (updates.from_id == UserConfig.getCurrentUser().id) {
+                        if (patternTSFBot.matcher(updates.message).find()) {
+                            FileLog.d("tsupportUnread", "Unread in processUpdates 2");
+                            message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                        } else {
+                            FileLog.d("tsupportUnread", "Mine but not #tsbot 2: " + updates.message);
+                        }
+                    } else {
+                        FileLog.d("tsupportUnread", "Not mine 2: " + updates.message);
+                        message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                    }
                     message.media = new TLRPC.TL_messageMediaEmpty();
                     MessagesStorage.lastSeqValue = updates.seq;
                     MessagesStorage.lastPtsValue = updates.pts;
@@ -2959,6 +2992,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
 
                 if (upd.message.from_id == UserConfig.getCurrentUser().id) {
+                    FileLog.d("TsupportUnread", "Message unread pre check proccessupdateArray");
+                    FileLog.d("TsupportUnread", upd.message.message);
                     if (!patternTSFBot.matcher(upd.message.message).find()) {
                         FileLog.d("TsupportUnread", "Message unread from me and no robot - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
                         upd.message.flags = TLRPC.MESSAGE_FLAG_OUT;
@@ -2966,6 +3001,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         FileLog.d("TsupportUnread", "Message unread from me but robot - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
                     }
                     FileLog.d("TsupportUnread", "Message post check - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
+                } else {
+                    FileLog.d("TsupportUnread", "Message read because not mine pre." + upd.message.flags);
+                    FileLog.d("TsupportUnread", upd.message.message);
+                    FileLog.d("TsupportUnread", "Message read because not mine post." + upd.message.flags);
                 }
 
                 messagesArr.add(upd.message);
@@ -3048,7 +3087,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     newMessage.action = new TLRPC.TL_messageActionUserJoined();
                     newMessage.local_id = newMessage.id = UserConfig.getNewMessageId();
                     UserConfig.saveConfig(false);
-                    newMessage.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                    newMessage.flags = 0;
                     newMessage.date = update.date;
                     newMessage.from_id = update.user_id;
                     newMessage.to_id = new TLRPC.TL_peerUser();

@@ -138,9 +138,9 @@ https://telegram.org/dl/webogram
 ls
 ultimavez
 {VALUE}
-Lo siento. Por el momento, no tenemos un modo 'invisible' en Telegram. Puede que lo agreguemos a futuro.
+Lo siento. Por el momento, no tenemos un modo 'invisible' en Telegram. Pero esperamos que esté disponible antes de fin de año.
 
-Sin embargo, si bloqueas a uno de tus contactos, él no podrá ver tu estado de conexión (aparecerás como ‘fuera de línea’) ni tampoco tu foto de perfil. Puede ser bastante útil si quieres desaparecer para alguien.
+Mientras tatno, si bloqueas a uno de tus contactos, él no podrá ver tu estado de conexión (aparecerás como ‘fuera de línea’) ni tampoco tu foto de perfil. Puede ser bastante útil si quieres desaparecer para alguien.
 
 {KEYS}
 estado

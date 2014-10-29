@@ -90,7 +90,7 @@ public class MessagesStorage {
         boolean createTableCache = true;
 
         if (databaseFileCache.exists()) {
-            FileLog.d("tsupportStorage", "Cache need to recreate");
+            FileLog.d("tsupportStorage", "Cache not need to recreate");
             createTableCache = false;
         }
         if (!databaseFileInternal.exists()) {
@@ -120,7 +120,7 @@ public class MessagesStorage {
                 database.executeFastCache("CREATE TABLE IF NOT EXISTS user_photos(uid INTEGER, id INTEGER, data BLOB, PRIMARY KEY (uid, id))").stepThis().dispose();
                 database.executeFastCache("CREATE TABLE IF NOT EXISTS download_queue(uid INTEGER, type INTEGER, date INTEGER, data BLOB, PRIMARY KEY (uid, type));").stepThis().dispose();
                 database.executeFastCache("CREATE TABLE IF NOT EXISTS dialog_settings(did INTEGER PRIMARY KEY, flags INTEGER);").stepThis().dispose();
-
+                database.executeFastCache("CREATE TABLE IF NOT EXISTS messages_seq(mid INTEGER PRIMARY KEY, seq_in INTEGER, seq_out INTEGER);").stepThis().dispose();
                 database.executeFastCache("CREATE TABLE IF NOT EXISTS user_contacts_v6(uid INTEGER PRIMARY KEY, fname TEXT, sname TEXT)").stepThis().dispose();
                 database.executeFastCache("CREATE TABLE IF NOT EXISTS user_phones_v6(uid INTEGER, phone TEXT, sphone TEXT, deleted INTEGER, PRIMARY KEY (uid, phone))").stepThis().dispose();
 
@@ -215,13 +215,20 @@ public class MessagesStorage {
                     }
                 }
             }
-            int version = database.executeIntInternal("PRAGMA user_version");
-            if (version < 8) {
-                updateDbToLastVersion(version);
-            }
         } catch (Exception e) {
             FileLog.e("tsupportStorage", e);
         }
+
+        int version = 0;
+        try {
+            version = database.executeIntInternal("PRAGMA user_version");
+        } catch (SQLiteException e) {
+            FileLog.e("tsupportStorage", "Pragma not found");
+        }
+        if (version < 8) {
+                updateDbToLastVersion(version);
+            }
+
         loadUnreadMessages();
 
     }
@@ -233,59 +240,66 @@ public class MessagesStorage {
             public void run() {
                 try {
                     int version = currentVersion;
-                    if (version < 8) {
-                        database.executeFastCache("DROP TABLE IF EXISTS messages").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE messages(mid INTEGER PRIMARY KEY, uid INTEGER, read_state INTEGER, send_state INTEGER, date INTEGER, data BLOB, out INTEGER, ttl INTEGER, media INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS chats").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS chats(uid INTEGER PRIMARY KEY, name TEXT, data BLOB)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS enc_chats").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS enc_chats(uid INTEGER PRIMARY KEY, user INTEGER, name TEXT, data BLOB, g BLOB, authkey BLOB, ttl INTEGER, layer INTEGER, seq_in INTEGER, seq_out INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS dialogs").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS dialogs(did INTEGER PRIMARY KEY, date INTEGER, unread_count INTEGER, last_mid INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS chat_settings").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS chat_settings(uid INTEGER PRIMARY KEY, participants BLOB)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS contacts").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS contacts(uid INTEGER PRIMARY KEY, mutual INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS pending_read").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS pending_read(uid INTEGER PRIMARY KEY, max_id INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS media").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS media(mid INTEGER PRIMARY KEY, uid INTEGER, date INTEGER, data BLOB)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS media_counts").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS media_counts(uid INTEGER PRIMARY KEY, count INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS randoms").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS randoms(random_id INTEGER PRIMARY KEY, mid INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS enc_tasks").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS enc_tasks_v2(mid INTEGER PRIMARY KEY, date INTEGER)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS params").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS params(id INTEGER PRIMARY KEY, seq INTEGER, pts INTEGER, date INTEGER, qts INTEGER, lsv INTEGER, sg INTEGER, pbytes BLOB)").stepThis().dispose();
-                        database.executeFastCache("INSERT INTO params VALUES(1, 0, 0, 0, 0, 0, 0, NULL)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS user_photos").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS user_photos(uid INTEGER, id INTEGER, data BLOB, PRIMARY KEY (uid, id))").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS download_queue(uid INTEGER, type INTEGER, date INTEGER, data BLOB, PRIMARY KEY (uid, type));").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE IF NOT EXISTS dialog_settings(did INTEGER PRIMARY KEY, flags INTEGER);").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS user_contacts_v6").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE user_contacts_v6(uid INTEGER PRIMARY KEY, fname TEXT, sname TEXT)").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS user_phones_v6").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE user_phones_v6(uid INTEGER, phone TEXT, sphone TEXT, deleted INTEGER, PRIMARY KEY (uid, phone))").stepThis().dispose();
-                        database.executeFastCache("DROP TABLE IF EXISTS sent_files_v2").stepThis().dispose();
-                        database.executeFastCache("CREATE TABLE sent_files_v2(uid TEXT, type INTEGER, data BLOB, PRIMARY KEY (uid, type))").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS type_date_idx_download_queue ON download_queue(type, date);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_idx_randoms ON randoms(mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS sphone_deleted_idx_user_phones ON user_phones_v6(sphone, deleted);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS date_idx_dialogs ON dialogs(date);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS date_idx_enc_tasks_v2 ON enc_tasks_v2(date);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS last_mid_idx_dialogs ON dialogs(last_mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS unread_count_idx_dialogs ON dialogs(unread_count);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_mid_idx_media ON media(uid, mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_idx_media ON media(mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_date_mid_idx_media ON media(uid, date, mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_mid_idx_messages ON messages(uid, mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_date_mid_idx_messages ON messages(uid, date, mid);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_out_idx_messages ON messages(mid, out);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS task_idx_messages ON messages(uid, out, read_state, ttl, date, send_state);").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS send_state_idx_messages ON messages(mid, send_state, date) WHERE mid < 0 AND send_state = 1;").stepThis().dispose();
-                        database.executeFastCache("CREATE INDEX IF NOT EXISTS seq_idx_messages_seq ON messages_seq(seq_in, seq_out);").stepThis().dispose();
-                        database.executeFastCache("PRAGMA user_version = 8").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS messages").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE messages(mid INTEGER PRIMARY KEY, uid INTEGER, read_state INTEGER, send_state INTEGER, date INTEGER, data BLOB, out INTEGER, ttl INTEGER, media INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS chats").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS chats(uid INTEGER PRIMARY KEY, name TEXT, data BLOB)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS enc_chats").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS enc_chats(uid INTEGER PRIMARY KEY, user INTEGER, name TEXT, data BLOB, g BLOB, authkey BLOB, ttl INTEGER, layer INTEGER, seq_in INTEGER, seq_out INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS dialogs").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS dialogs(did INTEGER PRIMARY KEY, date INTEGER, unread_count INTEGER, last_mid INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS chat_settings").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS chat_settings(uid INTEGER PRIMARY KEY, participants BLOB)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS contacts").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS contacts(uid INTEGER PRIMARY KEY, mutual INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS pending_read").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS pending_read(uid INTEGER PRIMARY KEY, max_id INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS media").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS media(mid INTEGER PRIMARY KEY, uid INTEGER, date INTEGER, data BLOB)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS media_counts").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS media_counts(uid INTEGER PRIMARY KEY, count INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS randoms").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS randoms(random_id INTEGER PRIMARY KEY, mid INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS enc_tasks").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS enc_tasks_v2(mid INTEGER PRIMARY KEY, date INTEGER)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS params").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS params(id INTEGER PRIMARY KEY, seq INTEGER, pts INTEGER, date INTEGER, qts INTEGER, lsv INTEGER, sg INTEGER, pbytes BLOB)").stepThis().dispose();
+                    database.executeFastCache("INSERT INTO params VALUES(1, 0, 0, 0, 0, 0, 0, NULL)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS user_photos").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS user_photos(uid INTEGER, id INTEGER, data BLOB, PRIMARY KEY (uid, id))").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS download_queue(uid INTEGER, type INTEGER, date INTEGER, data BLOB, PRIMARY KEY (uid, type));").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS dialog_settings").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS dialog_settings(did INTEGER PRIMARY KEY, flags INTEGER);").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE IF NOT EXISTS messages_seq(mid INTEGER PRIMARY KEY, seq_in INTEGER, seq_out INTEGER);").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS user_contacts_v6").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE user_contacts_v6(uid INTEGER PRIMARY KEY, fname TEXT, sname TEXT)").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS user_phones_v6").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE user_phones_v6(uid INTEGER, phone TEXT, sphone TEXT, deleted INTEGER, PRIMARY KEY (uid, phone))").stepThis().dispose();
+                    database.executeFastCache("DROP TABLE IF EXISTS sent_files_v2").stepThis().dispose();
+                    database.executeFastCache("CREATE TABLE sent_files_v2(uid TEXT, type INTEGER, data BLOB, PRIMARY KEY (uid, type))").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS type_date_idx_download_queue ON download_queue(type, date);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_idx_randoms ON randoms(mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS sphone_deleted_idx_user_phones ON user_phones_v6(sphone, deleted);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS date_idx_dialogs ON dialogs(date);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS date_idx_enc_tasks_v2 ON enc_tasks_v2(date);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS last_mid_idx_dialogs ON dialogs(last_mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS unread_count_idx_dialogs ON dialogs(unread_count);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_mid_idx_media ON media(uid, mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_idx_media ON media(mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_date_mid_idx_media ON media(uid, date, mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_mid_idx_messages ON messages(uid, mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS uid_date_mid_idx_messages ON messages(uid, date, mid);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS mid_out_idx_messages ON messages(mid, out);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS task_idx_messages ON messages(uid, out, read_state, ttl, date, send_state);").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS send_state_idx_messages ON messages(mid, send_state, date) WHERE mid < 0 AND send_state = 1;").stepThis().dispose();
+                    database.executeFastCache("CREATE INDEX IF NOT EXISTS seq_idx_messages_seq ON messages_seq(seq_in, seq_out);").stepThis().dispose();
+                    database.executeFastCache("PRAGMA user_version = 8").stepThis().dispose();
+                } catch (Exception e) {
+                    FileLog.e("tsupportStorage", "Updating to 8 error");
+                    FileLog.e("tsupportStorage", e);
+                }
+                try {
+                    int version = currentVersion;
                         database.executeFastInternal("CREATE TABLE IF NOT EXISTS blocked_users(uid INTEGER PRIMARY KEY)").stepThis().dispose();
                         database.executeFastInternal("DROP TABLE IF EXISTS users").stepThis().dispose();
                         database.executeFastInternal("CREATE TABLE IF NOT EXISTS users(uid INTEGER PRIMARY KEY, name TEXT, status INTEGER, data BLOB)").stepThis().dispose();
@@ -294,8 +308,6 @@ public class MessagesStorage {
                         database.executeFastInternal("INSERT INTO params VALUES(1, 0, 0, 0, 0, 0, 0, NULL)").stepThis().dispose();
                         database.executeFastInternal("CREATE TABLE IF NOT EXISTS template(key TEXT, value TEXT, PRIMARY KEY(key))").stepThis().dispose();
                         database.executeFastInternal("PRAGMA user_version = 8").stepThis().dispose();
-                        version = 8;
-                    }
                 } catch (Exception e) {
                     FileLog.e("tsupportStorage", "Updating to 8 error");
                     FileLog.e("tsupportStorage", e);

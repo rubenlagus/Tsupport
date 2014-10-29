@@ -24,6 +24,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.GestureDetector;
@@ -46,7 +47,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Scroller;
 import android.widget.TextView;
-
+/*
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
 import org.tsupport.android.ImageReceiver;
@@ -67,7 +68,30 @@ import org.tsupport.ui.Views.ActionBar.ActionBar;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
+import org.tsupport.ui.Views.ClippingImageView;*/
+
+import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.ContactsController;
+import org.tsupport.android.MessagesStorage;
+import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.messenger.FileLoader;
+import org.tsupport.messenger.FileLog;
+import org.tsupport.android.LocaleController;
+import org.tsupport.android.MediaController;
+import org.tsupport.android.MessagesController;
+import org.tsupport.android.NotificationCenter;
+import org.tsupport.messenger.R;
+import org.tsupport.messenger.TLRPC;
+import org.tsupport.messenger.UserConfig;
+import org.tsupport.messenger.Utilities;
+import org.tsupport.android.MessageObject;
+import org.tsupport.ui.Views.ActionBar.ActionBar;
+import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
+import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
+import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
 import org.tsupport.ui.Views.ClippingImageView;
+import org.tsupport.android.ImageReceiver;
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -471,10 +495,17 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         if (progressDrawables == null) {
             progressDrawables = new Drawable[4];
-            progressDrawables[0] = parentActivity.getDrawable(R.drawable.cancel_big);
-            progressDrawables[1] = parentActivity.getDrawable(R.drawable.circle_big);
-            progressDrawables[2] = parentActivity.getDrawable(R.drawable.load_big);
-            progressDrawables[3] = parentActivity.getDrawable(R.drawable.play_big);
+            if(android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                progressDrawables[0] = parentActivity.getResources().getDrawable(R.drawable.cancel_big);
+                progressDrawables[1] = parentActivity.getResources().getDrawable(R.drawable.circle_big);
+                progressDrawables[2] = parentActivity.getResources().getDrawable(R.drawable.load_big);
+                progressDrawables[3] = parentActivity.getResources().getDrawable(R.drawable.play_big);
+            } else {
+                progressDrawables[0] = parentActivity.getDrawable(R.drawable.cancel_big);
+                progressDrawables[1] = parentActivity.getDrawable(R.drawable.circle_big);
+                progressDrawables[2] = parentActivity.getDrawable(R.drawable.load_big);
+                progressDrawables[3] = parentActivity.getDrawable(R.drawable.play_big);
+            }
         }
 
         scroller = new Scroller(activity);

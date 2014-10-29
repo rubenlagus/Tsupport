@@ -135,6 +135,7 @@ public class ImageReceiver {
         last_placeholder = placeholder;
         last_size = size;
         lastCacheOnly = cacheOnly;
+        bitmapShader = null;
         if (img == null) {
             isPlaceholder = true;
             ImageLoader.getInstance().loadImage(fileLocation, httpUrl, this, size, cacheOnly);
@@ -275,6 +276,7 @@ public class ImageReceiver {
                         if (Math.abs(scaleW - scaleH) > 0.00001f) {
                             canvas.save();
                             canvas.clipRect(imageX, imageY, imageX + imageW, imageY + imageH);
+
                             if (bitmapW / scaleH > imageW) {
                                 bitmapW /= scaleH;
                                 drawRegion.set(imageX - (bitmapW - imageW) / 2, imageY, imageX + (bitmapW + imageW) / 2, imageY + imageH);

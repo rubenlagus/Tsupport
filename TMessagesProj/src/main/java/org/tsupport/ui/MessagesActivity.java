@@ -985,10 +985,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public boolean isEnabled(int i) {
             if (searchType == 1) {
-                FileLog.d("tsupportSearch", "IsEnabled: " + (!(searching && searchWas) || i != MessagesController.getInstance().usersFromSearch.size()));
                 return !(searching && searchWas) || i != MessagesController.getInstance().usersFromSearch.size();
             } else {
-                FileLog.d("tsupportSearch", "IsEnabled: " + (!(searching && searchWas) || i != MessagesController.getInstance().usersSearched.size()));
                 return !(searching && searchWas) || i != MessagesController.getInstance().usersSearched.size();
             }
         }
@@ -998,18 +996,13 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             if (searching && searchWas) {
                 if (searchType == 1) {
                     if (MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0) {
-                        FileLog.d("tsupportSearch", "Get count 0");
                         return 0;
                     }
-                    FileLog.d("tsupportSearch", "1Get count " + MessagesController.getInstance().usersFromSearch.size());
                     return MessagesController.getInstance().usersFromSearch.size();
                 } else if (searchType == 2) {
-                    FileLog.d("tsupportSearch", "2Get count " + (MessagesController.getInstance().usersSearched == null ? 0 : MessagesController.getInstance().usersSearched.size()) +
-                            (MessagesController.getInstance().globalSearched == null ? 0 : MessagesController.getInstance().globalSearched.size()+1));
                     return (MessagesController.getInstance().usersSearched == null ? 0 : MessagesController.getInstance().usersSearched.size()) +
                             (MessagesController.getInstance().globalSearched == null ? 0 : MessagesController.getInstance().globalSearched.size()+1);
                 } else {
-                    FileLog.d("tsupportSearch", "3Get count 0");
                     return 0;
                 }
             }
@@ -1033,26 +1026,21 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
             if (searching && searchWas) {
                 if (searchType == 1) {
                     if (i > MessagesController.getInstance().usersFromSearch.size()) {
-                        FileLog.d("tsupportSearch", "Get Item null");
                         return null;
                     }
-                    FileLog.d("tsupportSearch", "0Get item " + MessagesController.getInstance().usersFromSearch.get(i));
                     return MessagesController.getInstance().usersFromSearch.get(i);
                 } else if (searchType == 2) {
                     if (i >= MessagesController.getInstance().usersSearched.size()) {
                         int globalSearchIndex = i - MessagesController.getInstance().usersSearched.size();
                         if (globalSearchIndex < MessagesController.getInstance().globalSearched.size()) {
-                            FileLog.d("tsupportSearch", "1Get item " + MessagesController.getInstance().globalSearched.get(globalSearchIndex));
                             return MessagesController.getInstance().globalSearched.get(globalSearchIndex);
                         } else {
                             return null;
                         }
                     } else {
-                        FileLog.d("tsupportSearch", "2Get item " + MessagesController.getInstance().usersSearched.get(i));
                         return MessagesController.getInstance().usersSearched.get(i);
                     }
                 }
-                FileLog.d("tsupportSearch", "3Get item  null");
                 return null;
             }
             if (serverOnly) {
@@ -1070,7 +1058,6 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
         @Override
         public long getItemId(int i) {
-            FileLog.d("tsupportSearch", "Get itemId " + i);
             return i;
         }
 
@@ -1082,10 +1069,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             int type = getItemViewType(i);
-            FileLog.d("tsupportSearch", "Get viewType " + type);
             if (type == 3) {
                 if (view == null) {
-                    FileLog.d("tsupportSearch", "Get viewType Global");
                     view = new SettingsSectionLayout(mContext);
                     ((SettingsSectionLayout) view).setText(LocaleController.getString("GlobalSearch", R.string.GlobalSearch));
                     view.setPadding(AndroidUtilities.dp(11), 0, AndroidUtilities.dp(11), 0);
@@ -1103,26 +1088,17 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
 
                     TLObject obj = getItem(i);
                     if (obj instanceof TLRPC.User) {
-                        //user = MessagesController.getInstance().getUser(((TLRPC.User) obj).id);
                         if (user == null) {
                             user = (TLRPC.User) obj;
-                            FileLog.d("tsupportSearch", "Get view 0");
                         }
-                    } else {
-                        FileLog.d("tsupportSearch", "Get view 1");
                     }
 
                     if (searchType == 1 && user != null) {
-                        FileLog.d("tsupportSearch", "Get view 2");
                         ((ChatOrUserCell) view).useSeparator = (i != getCount() - 1 && i != MessagesController.getInstance().usersFromSearch.size() - 1);
                         if (i < MessagesController.getInstance().usersFromSearch.size()) {
-                            FileLog.d("tsupportSearch", "Get view 3");
                             name = Utilities.generateSearchName(user.first_name, user.last_name, searchQuery);
-                            FileLog.d("tsupportSearch", "Get view 3.1");
                             if (name != null && user != null && user.username != null && user.username.length() > 0) {
-                                FileLog.d("tsupportSearch", "Get view 4");
                                 if (name.toString().startsWith("@" + user.username)) {
-                                    FileLog.d("tsupportSearch", "Get view 5");
                                     username = name;
                                     name = null;
                                 }
@@ -1188,10 +1164,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     }
                 } else if (searchType == 2) {
                     if (i == MessagesController.getInstance().usersSearched.size()) {
-                        FileLog.d("tsupportSearch", "Get viewType Item 3");
                         return 3;
                     }
-                    FileLog.d("tsupportSearch", "Get viewType Item 2");
                     return 2;
                 }
             }
@@ -1210,11 +1184,8 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         public boolean isEmpty() {
             if (searching && searchWas) {
                 if (searchType == 1) {
-                    FileLog.d("tsupportSearch", "isEmpty " + (MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0));
                     return MessagesController.getInstance().usersFromSearch == null || MessagesController.getInstance().usersFromSearch.size() <= 0;
                 } else if (searchType == 2) {
-                    FileLog.d("tsupportSearch", "isEmpty " + ((MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0) &&
-                            (MessagesController.getInstance().globalSearched == null || MessagesController.getInstance().globalSearched.size() <= 0)));
                     return (MessagesController.getInstance().usersSearched == null || MessagesController.getInstance().usersSearched.size() <= 0) &&
                             (MessagesController.getInstance().globalSearched == null || MessagesController.getInstance().globalSearched.size() <= 0);
                 } else {

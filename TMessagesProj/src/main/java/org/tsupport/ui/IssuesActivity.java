@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -270,8 +271,10 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     FileLog.d("tsupportTrello", "Key to draw: " + TrelloSupport.getInstance().openIssuesList.get(i).getKey());
                     if (TrelloSupport.getInstance().openIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 20);
-                        textView.setHeight(22);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        textView.setEllipsize(TextUtils.TruncateAt.END);
+                        textView.setMaxLines(2);
                         if (textView != null) {
                             try {
                                 FileLog.d("tsupportTrello", "Content to draw: " + TrelloSupport.getInstance().openIssuesList.get(i).getValue());
@@ -285,8 +288,10 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     FileLog.d("tsupportTrello", "Key to draw: " + TrelloSupport.getInstance().closedIssuesList.get(i).getKey());
                     if (TrelloSupport.getInstance().closedIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, 20);
-                        textView.setHeight(22);
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        textView.setEllipsize(TextUtils.TruncateAt.END);
+                        textView.setMaxLines(2);
                         if (textView != null) {
                             try {
                                 FileLog.d("tsupportTrello", "Content to draw: " + TrelloSupport.getInstance().closedIssuesList.get(i).getValue());

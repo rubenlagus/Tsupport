@@ -88,7 +88,6 @@ public class PasswordView extends BaseFragment {
             fragmentView = inflater.inflate(R.layout.password_layout, container, false);
 
             passwordField = (EditText) fragmentView.findViewById(R.id.password_field);
-
             passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

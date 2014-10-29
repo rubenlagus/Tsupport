@@ -33,7 +33,7 @@ public class TemplateSupport {
     /**
      * Static Map to keep pairs kay-values with the templates.
      */
-    private static TreeMap<String,String> templates = new TreeMap<String, String>();;
+    private static TreeMap<String,String> templates = new TreeMap<String, String>();
 
     /**
      * Singleton Instance
@@ -112,6 +112,7 @@ public class TemplateSupport {
     public static void loadDefaults() {
         InputStream is = null;
         String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".txt";
+        FileLog.d("tsupportTemplates", "Loading: " + fileName);
         loadFile(fileName, true);
     }
 

@@ -323,7 +323,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     Intent trelloBrowser = new Intent(getParentActivity(), TrelloTokenActivity.class);
                                     startActivityForResult(trelloBrowser, requestCodeTrello);
-                                    // TODO
                                 }
                             });
                             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -720,7 +719,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 FileLog.d("tsupportTrello", "Request saved");
                 TrelloSupport.getInstance();
                 Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("tokenFetched", R.string.tokenFetched) , Toast.LENGTH_SHORT).show();
-                // TODO
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("tokenNotFetched", R.string.tokenNotFetched) , Toast.LENGTH_SHORT).show();
             }
@@ -804,7 +802,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             return i == textSizeRow || i == enableAnimationsRow || i == blockedRow || i == notificationRow /*|| i == backgroundRow*/ ||
                     i == mobileDownloadRow || i == wifiDownloadRow || i == roamingDownloadRow ||
                     i == downloadUserPhotos || i == sendLogsRow || i == sendByEnterRow || i == clearCacheRow ||/* i == photoDownloadPrivateRow ||*/
-                    /* i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow || i == usernameRow || trelloLink == i ||
+                    i == clearLogsRow || /*i == audioDownloadChatRow ||*/ /*i == audioDownloadPrivateRow ||*/ i == languageRow || i == usernameRow || trelloLink == i ||
                     i == switchBackendButtonRow /*|| i == telegramFaqRow || i == contactsSortRow || i == contactsReimportRow*/ || i == templatesRow || passwordRow == i;
         }
 
@@ -946,7 +944,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     }
                 } else if (i == sendByEnterRow) {
                     textView.setText(LocaleController.getString("SendByEnter", R.string.SendByEnter));
-                    divider.setVisibility(View.INVISIBLE);
+                    divider.setVisibility(View.VISIBLE);
                     boolean enabled = preferences.getBoolean("send_by_enter", false);
                     if (enabled) {
                         checkButton.setImageResource(R.drawable.btn_check_on);
