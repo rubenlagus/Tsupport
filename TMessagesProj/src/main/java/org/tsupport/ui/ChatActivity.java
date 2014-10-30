@@ -1759,8 +1759,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         minMessageId = Math.min(obj.messageOwner.id, minMessageId);
                     }
                     maxDate = Math.max(maxDate, obj.messageOwner.date);
-                    if (minDate == 0 || obj.messageOwner.date < minDate) {
-                        minDate = obj.messageOwner.date;
+                    if (obj.messageOwner.date != 0) {
+                        maxDate = Math.max(maxDate, obj.messageOwner.date);
+                        if (minDate == 0 || obj.messageOwner.date < minDate) {
+                            minDate = obj.messageOwner.date;
+                        }
                     }
 
                     if (obj.type < 0) {
@@ -1932,11 +1935,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     FileLog.d("tsupportRead", "Receivd notifiction");
                     TLRPC.TL_dialog dialog =  MessagesController.getInstance().dialogs_dict.get(did);
 
-                    //MessagesController.getInstance().markDialogAsRead(dialog_id, dialog.top_message, dialog.top_message, 0, dialog.last_message_date , true, false);
-                    //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
-
-                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
-                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true, false);
+                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, dialog.top_message , 0, dialog.last_message_date, true, false);
+                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, 0, 0, dialog.last_message_date, true, false);
                 }
             }
         } else if (id == NotificationCenter.emojiDidLoaded) {

@@ -11,7 +11,7 @@ package org.tsupport.messenger;
 import android.net.Uri;
 import android.util.Log;
 
-import org.tsupport.android.FastDateFormat;
+import org.tsupport.android.time.FastDateFormat;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.File;

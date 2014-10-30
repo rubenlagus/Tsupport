@@ -124,6 +124,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.reloadSearchChatResults);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.reloadSearchUserResults);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.messagesRead);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.readChatNotification);
 
         if (getArguments() != null) {
             if (arguments.containsKey("query")) {
@@ -161,6 +162,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.reloadSearchChatResults);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.reloadSearchUserResults);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messagesRead);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.readChatNotification);
         delegate = null;
     }
 
@@ -773,6 +775,16 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
                     }
                 });
             }
+        } else if (id == NotificationCenter.readChatNotification) {
+
+            AndroidUtilities.RunOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (messagesListViewAdapter != null) {
+                        messagesListViewAdapter.notifyDataSetChanged();
+                    }
+                }
+            });
         }
     }
 
