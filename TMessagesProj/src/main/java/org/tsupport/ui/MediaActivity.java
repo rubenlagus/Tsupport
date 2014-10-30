@@ -13,6 +13,7 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,16 +26,16 @@ import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessageObject;
+import org.tsupport.android.MessagesController;
+import org.tsupport.android.NotificationCenter;
+import org.tsupport.messenger.FileLoader;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.objects.MessageObject;
-import org.tsupport.android.MessagesController;
-import org.tsupport.messenger.NotificationCenter;
-import org.tsupport.objects.PhotoObject;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
-import org.tsupport.ui.Views.BackupImageView;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
+import org.tsupport.ui.Views.BackupImageView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,10 +62,10 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getInstance().addObserver(this, MessagesController.mediaDidLoaded);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.messagesDeleted);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.didReceivedNewMessages);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.messageReceivedByServer);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.mediaDidLoaded);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.messagesDeleted);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.didReceivedNewMessages);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.messageReceivedByServer);
         dialog_id = getArguments().getLong("dialog_id", 0);
         if (((int)dialog_id) == 0) {
             max_id = Integer.MIN_VALUE;
@@ -77,10 +78,10 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.mediaDidLoaded);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.didReceivedNewMessages);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.messagesDeleted);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.messageReceivedByServer);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.mediaDidLoaded);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didReceivedNewMessages);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messagesDeleted);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messageReceivedByServer);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 public void onItemClick(int id) {
                     if (id == -1) {
-                        if (Build.VERSION.SDK_INT < 11) {
+                        if (Build.VERSION.SDK_INT < 11 && listView != null) {
                             listView.setAdapter(null);
                             listView = null;
                             listAdapter = null;
@@ -107,6 +108,12 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
 
             emptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
             emptyView.setText(LocaleController.getString("NoMedia", R.string.NoMedia));
+            emptyView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             listView = (GridView)fragmentView.findViewById(R.id.media_grid);
             progressView = fragmentView.findViewById(R.id.progressLayout);
 
@@ -152,7 +159,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
     @SuppressWarnings("unchecked")
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == MessagesController.mediaDidLoaded) {
+        if (id == NotificationCenter.mediaDidLoaded) {
             long uid = (Long)args[0];
             int guid = (Integer)args[4];
             if (uid == dialog_id && guid == classGuid) {
@@ -192,7 +199,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     listAdapter.notifyDataSetChanged();
                 }
             }
-        } else if (id == MessagesController.messagesDeleted) {
+        } else if (id == NotificationCenter.messagesDeleted) {
             @SuppressWarnings("unchecked")
             ArrayList<Integer> markAsDeletedMessages = (ArrayList<Integer>)args[0];
             boolean updated = false;
@@ -208,7 +215,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
             if (updated && listAdapter != null) {
                 listAdapter.notifyDataSetChanged();
             }
-        } else if (id == MessagesController.didReceivedNewMessages) {
+        } else if (id == NotificationCenter.didReceivedNewMessages) {
             long uid = (Long)args[0];
             if (uid == dialog_id) {
                 boolean markAsRead = false;
@@ -237,7 +244,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     listAdapter.notifyDataSetChanged();
                 }
             }
-        } else if (id == MessagesController.messageReceivedByServer) {
+        } else if (id == NotificationCenter.messageReceivedByServer) {
             Integer msgId = (Integer)args[0];
             MessageObject obj = messagesDict.get(msgId);
             if (obj != null) {
@@ -266,7 +273,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index) {
-        if (messageObject == null) {
+        if (messageObject == null || listView == null) {
             return null;
         }
         int count = listView.getChildCount();
@@ -326,14 +333,20 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     WindowManager manager = (WindowManager)ApplicationLoader.applicationContext.getSystemService(Activity.WINDOW_SERVICE);
                     int rotation = manager.getDefaultDisplay().getRotation();
 
-                    if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
-                        listView.setNumColumns(6);
-                        itemWidth = getParentActivity().getResources().getDisplayMetrics().widthPixels / 6 - AndroidUtilities.dp(2) * 5;
+                    if (AndroidUtilities.isTablet()) {
+                        listView.setNumColumns(4);
+                        itemWidth = AndroidUtilities.dp(490) / 4 - AndroidUtilities.dp(2) * 3;
                         listView.setColumnWidth(itemWidth);
                     } else {
-                        listView.setNumColumns(4);
-                        itemWidth = getParentActivity().getResources().getDisplayMetrics().widthPixels / 4 - AndroidUtilities.dp(2) * 3;
-                        listView.setColumnWidth(itemWidth);
+                        if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
+                            listView.setNumColumns(6);
+                            itemWidth = AndroidUtilities.displaySize.x / 6 - AndroidUtilities.dp(2) * 5;
+                            listView.setColumnWidth(itemWidth);
+                        } else {
+                            listView.setNumColumns(4);
+                            itemWidth = AndroidUtilities.displaySize.x / 4 - AndroidUtilities.dp(2) * 3;
+                            listView.setColumnWidth(itemWidth);
+                        }
                     }
                     listView.setPadding(listView.getPaddingLeft(), AndroidUtilities.dp(4), listView.getPaddingRight(), listView.getPaddingBottom());
                     listAdapter.notifyDataSetChanged();
@@ -407,7 +420,7 @@ public class MediaActivity extends BaseFragment implements NotificationCenter.No
                     if (message.imagePreview != null) {
                         imageView.setImageBitmap(message.imagePreview);
                     } else {
-                        TLRPC.PhotoSize photoSize = PhotoObject.getClosestPhotoSizeWithSize(message.messageOwner.media.photo.sizes, 80, 80);
+                        TLRPC.PhotoSize photoSize = FileLoader.getClosestPhotoSizeWithSize(message.messageOwner.media.photo.sizes, 80);
                         imageView.setImage(photoSize.location, null, R.drawable.photo_placeholder_in);
                     }
                 } else {

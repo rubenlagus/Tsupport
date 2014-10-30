@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import org.tsupport.android.ImageReceiver;
 import org.tsupport.messenger.TLRPC;
 
 public class BackupImageView extends View {
@@ -38,12 +39,19 @@ public class BackupImageView extends View {
     }
 
     private void init() {
-        imageReceiver = new ImageReceiver();
-        imageReceiver.parentView = this;
+        imageReceiver = new ImageReceiver(this);
     }
 
     public void setImage(TLRPC.FileLocation path, String filter, int placeholder) {
         setImage(path, null, filter, placeholder, null, 0);
+    }
+
+    public void setImage(int placeholder) {
+        Drawable placeholderDrawable = null;
+        if (placeholder != 0) {
+            placeholderDrawable = getResources().getDrawable(placeholder);
+        }
+        imageReceiver.setImage(placeholderDrawable);
     }
 
     public void setImage(TLRPC.FileLocation path, String filter, Bitmap placeholderBitmap) {
@@ -69,7 +77,7 @@ public class BackupImageView extends View {
         } else if (placeholder != 0) {
             placeholderDrawable = getResources().getDrawable(placeholder);
         }
-        imageReceiver.setImage(path, httpUrl, filter, placeholderDrawable, size);
+        imageReceiver.setImage(path, httpUrl, filter, placeholderDrawable, size, false);
     }
 
     public void setImageBitmap(Bitmap bitmap) {
@@ -90,10 +98,7 @@ public class BackupImageView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        imageReceiver.imageX = 0;
-        imageReceiver.imageY = 0;
-        imageReceiver.imageW = getWidth();
-        imageReceiver.imageH = getHeight();
-        imageReceiver.draw(canvas, 0, 0, imageReceiver.imageW, imageReceiver.imageH);
+        imageReceiver.setImageCoords(0, 0, getWidth(), getHeight());
+        imageReceiver.draw(canvas);
     }
 }

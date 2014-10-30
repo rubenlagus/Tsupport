@@ -10,7 +10,7 @@
                       android:resizeable="true"
                       android:xlargeScreens="true"/>
 
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+    <uses-feature android:glEsVersion="0x00020000" android:required="false"/>
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <uses-feature android:name="android.hardware.camera" android:required="false" />
@@ -98,6 +98,10 @@
             android:screenOrientation="portrait">
         </activity>
         <activity
+            android:name="org.tsupport.ui.TrelloTokenActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
+        </activity>
+        <activity
             android:name="org.tsupport.ui.PopupNotificationActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:excludeFromRecents="true"
@@ -117,6 +121,9 @@
         </service>
 
         <service android:name="org.tsupport.android.NotificationsService" android:enabled="true"/>
+        <service android:name="org.tsupport.android.NotificationRepeat" android:exported="false"/>
+        <service android:name="org.tsupport.android.VideoEncodingService" android:enabled="true"/>
+        <receiver android:name="org.tsupport.android.WearReplyReceiver" android:enabled="true"/>
 
         <uses-library android:name="com.sec.android.app.multiwindow" android:required="false" />
         <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />

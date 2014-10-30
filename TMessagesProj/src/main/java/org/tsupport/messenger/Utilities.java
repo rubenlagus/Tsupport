@@ -9,12 +9,10 @@
 package org.tsupport.messenger;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -29,7 +27,6 @@ import net.hockeyapp.android.CrashManager;
 import net.hockeyapp.android.CrashManagerListener;
 import net.hockeyapp.android.UpdateManager;
 
-import org.tsupport.android.LocaleController;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.io.ByteArrayInputStream;
@@ -51,7 +48,6 @@ import java.security.spec.RSAPublicKeySpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -62,7 +58,6 @@ import javax.crypto.Cipher;
 public class Utilities {
     public static Pattern pattern = Pattern.compile("[0-9]+");
     public static SecureRandom random = new SecureRandom();
-    private final static Integer lock = 1;
 
     public static ArrayList<String> goodPrimes = new ArrayList<String>();
 
@@ -75,26 +70,7 @@ public class Utilities {
     public static volatile DispatchQueue searchQueue = new DispatchQueue("searchQueue");
     public static volatile DispatchQueue photoBookQueue = new DispatchQueue("photoBookQueue");
 
-    public static int[] arrColors = {0xffee4928, 0xff41a903, 0xffe09602, 0xff0f94ed, 0xff8f3bf7, 0xfffc4380, 0xff00a1c4, 0xffeb7002};
-    public static int[] arrUsersAvatars = {
-            R.drawable.user_red,
-            R.drawable.user_green,
-            R.drawable.user_yellow,
-            R.drawable.user_blue,
-            R.drawable.user_violet,
-            R.drawable.user_pink,
-            R.drawable.user_aqua,
-            R.drawable.user_orange};
-
-    public static int[] arrGroupsAvatars = {
-            R.drawable.group_green,
-            R.drawable.group_red,
-            R.drawable.group_blue,
-            R.drawable.group_yellow};
-
     final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
-
-    public static ProgressDialog progressDialog;
 
     static {
         try {
@@ -132,7 +108,8 @@ public class Utilities {
 
     public native static long doPQNative(long _what);
     public native static void loadBitmap(String path, int[] bitmap, int scale, int format, int width, int height);
-    public native static void blurBitmap(Object bitmap, int width, int height, int stride);
+    public native static void blurBitmap(Object bitmap, int radius);
+    public native static int convertVideoFrame(ByteBuffer src, ByteBuffer dest, int destFormat, int width, int height, int padding, int swap);
     private native static void aesIgeEncryption(ByteBuffer buffer, byte[] key, byte[] iv, boolean encrypt, int offset, int length);
 
     public static void aesIgeEncryption(ByteBuffer buffer, byte[] key, byte[] iv, boolean encrypt, boolean changeIv, int offset, int length) {
@@ -167,12 +144,21 @@ public class Utilities {
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         int v;
-        for ( int j = 0; j < bytes.length; j++ ) {
+        for (int j = 0; j < bytes.length; j++) {
             v = bytes[j] & 0xFF;
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public static byte[] hexToBytes(String hex) {
+        int len = hex.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4) + Character.digit(hex.charAt(i + 1), 16));
+        }
+        return data;
     }
 
     public static boolean isGoodPrime(byte[] prime, int g) {
@@ -437,34 +423,6 @@ public class Utilities {
         return packedData;
     }
 
-    public static void ShowProgressDialog(final Activity activity, final String message) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if(!activity.isFinishing()) {
-                    progressDialog = new ProgressDialog(activity);
-                    if (message != null) {
-                        progressDialog.setMessage(message);
-                    }
-                    progressDialog.setCanceledOnTouchOutside(false);
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                }
-            }
-        });
-    }
-
-    public static void HideProgressDialog(Activity activity) {
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (progressDialog != null) {
-                    progressDialog.dismiss();
-                }
-            }
-        });
-    }
-
     public static boolean copyFile(InputStream sourceFile, File destFile) throws IOException {
         OutputStream out = new FileOutputStream(destFile);
         byte[] buf = new byte[4096];
@@ -499,60 +457,6 @@ public class Utilities {
             }
         }
         return true;
-    }
-
-    public static void RunOnUIThread(Runnable runnable) {
-        synchronized (lock) {
-            ApplicationLoader.applicationHandler.post(runnable);
-        }
-    }
-
-    public static int getColorIndex(int id) {
-        int[] arr;
-        if (id >= 0) {
-            arr = arrUsersAvatars;
-        } else {
-            arr = arrGroupsAvatars;
-        }
-        try {
-            String str;
-            if (id >= 0) {
-                str = String.format(Locale.US, "%d%d", id, UserConfig.getClientUserId());
-            } else {
-                str = String.format(Locale.US, "%d", id);
-            }
-            if (str.length() > 15) {
-                str = str.substring(0, 15);
-            }
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(str.getBytes());
-            int b = digest[Math.abs(id % 16)];
-            if (b < 0) {
-                b += 256;
-            }
-            return Math.abs(b) % arr.length;
-        } catch (Exception e) {
-            FileLog.e("tsupport", e);
-        }
-        return id % arr.length;
-    }
-
-    public static int getColorForId(int id) {
-        if (id / 1000 == 333) {
-            return 0xff0f94ed;
-        }
-        return arrColors[getColorIndex(id)];
-    }
-
-    public static int getUserAvatarForId(int id) {
-        if (id / 1000 == 333) {
-            return R.drawable.telegram_avatar;
-        }
-        return arrUsersAvatars[getColorIndex(id)];
-    }
-
-    public static int getGroupAvatarForId(int id) {
-        return arrGroupsAvatars[getColorIndex(-Math.abs(id))];
     }
 
     public static String MD5(String md5) {
@@ -594,10 +498,10 @@ public class Utilities {
     private static File getAlbumDir() {
         File storageDir = null;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), LocaleController.getString("AppName", R.string.AppName));
+            storageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Telegram");
             if (storageDir != null) {
-                if (! storageDir.mkdirs()) {
-                    if (! storageDir.exists()){
+                if (!storageDir.mkdirs()) {
+                    if (!storageDir.exists()){
                         FileLog.d("tsupport", "failed to create directory");
                         return null;
                     }
@@ -697,8 +601,7 @@ public class Utilities {
         try {
             File storageDir = getAlbumDir();
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "IMG_" + timeStamp + "_";
-            return File.createTempFile(imageFileName, ".jpg", storageDir);
+            return new File(storageDir, "IMG_" + timeStamp + ".jpg");
         } catch (Exception e) {
             FileLog.e("tsupport", e);
         }
@@ -709,7 +612,6 @@ public class Utilities {
         if (name == null && name2 == null) {
             return "";
         }
-        int index;
         SpannableStringBuilder builder = new SpannableStringBuilder();
         String wholeString = name;
         if (wholeString == null || wholeString.length() == 0) {
@@ -718,28 +620,34 @@ public class Utilities {
             wholeString += " " + name2;
         }
         wholeString = wholeString.trim();
-        String[] args = wholeString.split(" ");
+        String lower = " " + wholeString.toLowerCase();
 
-        for (String arg : args) {
-            String str = arg;
-            if (str != null) {
-                String lower = str.toLowerCase();
-                if (lower.startsWith(q)) {
-                    if (builder.length() != 0) {
-                        builder.append(" ");
-                    }
-                    String query = str.substring(0, q.length());
-                    builder.append(Html.fromHtml("<font color=\"#357aa8\">" + query + "</font>"));
-                    str = str.substring(q.length());
-                    builder.append(str);
-                } else {
-                    if (builder.length() != 0) {
-                        builder.append(" ");
-                    }
-                    builder.append(str);
-                }
+        int index = -1;
+        int lastIndex = 0;
+        while ((index = lower.indexOf(" " + q, lastIndex)) != -1) {
+            int idx = index - (index == 0 ? 0 : 1);
+            int end = q.length() + (index == 0 ? 0 : 1) + idx;
+
+            if (lastIndex != 0 && lastIndex != idx + 1) {
+                builder.append(wholeString.substring(lastIndex, idx));
+            } else if (lastIndex == 0 && idx != 0) {
+                builder.append(wholeString.substring(0, idx));
             }
+
+            String query = wholeString.substring(idx, end);
+            if (query.startsWith(" ")) {
+                builder.append(" ");
+            }
+            query.trim();
+            builder.append(Html.fromHtml("<font color=\"#357aa8\">" + query + "</font>"));
+
+            lastIndex = end;
         }
+
+        if (lastIndex != -1 && lastIndex != wholeString.length()) {
+            builder.append(wholeString.substring(lastIndex, wholeString.length()));
+        }
+
         return builder;
     }
 
@@ -747,22 +655,11 @@ public class Utilities {
         try {
             File storageDir = getAlbumDir();
             String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            String imageFileName = "VID_" + timeStamp + "_";
-            return File.createTempFile(imageFileName, ".mp4", storageDir);
+            return new File(storageDir, "VID_" + timeStamp + ".mp4");
         } catch (Exception e) {
             FileLog.e("tsupport", e);
         }
         return null;
-    }
-
-    public static String formatName(String firstName, String lastName) {
-        String result = firstName;
-        if (result == null || result.length() == 0) {
-            result = lastName;
-        } else if (result.length() != 0 && lastName.length() != 0) {
-            result += " " + lastName;
-        }
-        return result.trim();
     }
 
     public static String formatFileSize(long size) {
@@ -802,7 +699,14 @@ public class Utilities {
 
     public static void checkForCrashes(Activity context) {
         if (BuildVars.DEBUG_VERSION) {
-            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_BETA, new CrashManagerListener() {
+            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_DEBUG, new CrashManagerListener() {
+                @Override
+                public boolean includeDeviceData() {
+                    return true;
+                }
+            });
+        } else {
+            CrashManager.register(context, BuildVars.HOCKEY_APP_HASH_RELEASE, new CrashManagerListener() {
                 @Override
                 public boolean includeDeviceData() {
                     return true;
@@ -813,13 +717,9 @@ public class Utilities {
 
     public static void checkForUpdates(Activity context) {
         if (BuildVars.DEBUG_VERSION) {
-            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_BETA);
+            UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_DEBUG);
         } else {
             UpdateManager.register(context, BuildVars.HOCKEY_APP_HASH_RELEASE);
         }
-    }
-
-    public static boolean isTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE;
     }
 }

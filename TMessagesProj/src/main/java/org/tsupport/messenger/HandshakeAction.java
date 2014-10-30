@@ -87,7 +87,7 @@ public class HandshakeAction extends Action implements TcpConnection.TcpConnecti
         reqPQMsgData = sendMessageData(reqPq, generateMessageId());
     }
 
-    final Integer lock = 1;
+    final Object lock = new Object();
     static ArrayList<HashMap<String, Object>> serverPublicKeys = null;
     HashMap<String, Object> selectPublicKey(ArrayList<Long> fingerprints) {
         synchronized (lock) {
@@ -558,19 +558,19 @@ public class HandshakeAction extends Action implements TcpConnection.TcpConnecti
                     beginHandshake(false);
                     return;
                 }
-                FileLog.d("tmessages", "***** Retry DH");
+                FileLog.d("tsupport", "***** Retry DH");
                 beginHandshake(false);
             } else if (message instanceof TLRPC.TL_dh_gen_fail) {
                 TLRPC.TL_dh_gen_fail dhFail = (TLRPC.TL_dh_gen_fail)message;
                 if (!Utilities.arraysEquals(newNonceHash3, 0, dhFail.new_nonce_hash3, 0)) {
-                    FileLog.e("tmessages", "***** Invalid DH answer nonce hash 3");
+                    FileLog.e("tsupport", "***** Invalid DH answer nonce hash 3");
                     beginHandshake(false);
                     return;
                 }
-                FileLog.d("tmessages", "***** Server declined DH params");
+                FileLog.d("tsupport", "***** Server declined DH params");
                 beginHandshake(false);
             } else {
-                FileLog.e("tmessages", "***** Unknown DH params response");
+                FileLog.e("tsupport", "***** Unknown DH params response");
                 beginHandshake(false);
             }
         } else {
@@ -617,7 +617,7 @@ public class HandshakeAction extends Action implements TcpConnection.TcpConnecti
         if (keyId == 0) {
             long messageId = data.readInt64();
             if (processedMessageIds.contains(messageId)) {
-                FileLog.d("tmessages", String.format("===== Duplicate message id %d received, ignoring", messageId));
+                FileLog.d("tsupport", String.format("===== Duplicate message id %d received, ignoring", messageId));
                 return;
             }
             int messageLength = data.readInt32();
@@ -630,7 +630,7 @@ public class HandshakeAction extends Action implements TcpConnection.TcpConnecti
             }
             processMessage(object, messageId);
         } else {
-            FileLog.d("tmessages", "***** Received encrypted message while in handshake, restarting");
+            FileLog.d("tsupport", "***** Received encrypted message while in handshake, restarting");
             beginHandshake(true);
         }
     }

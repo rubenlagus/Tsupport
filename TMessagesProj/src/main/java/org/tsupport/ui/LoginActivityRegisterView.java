@@ -17,17 +17,17 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.tsupport.android.LocaleController;
-import org.tsupport.messenger.R;
-import org.tsupport.messenger.TLObject;
-import org.tsupport.messenger.TLRPC;
-import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.ContactsController;
+import org.tsupport.android.LocaleController;
 import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.messenger.R;
 import org.tsupport.messenger.RPCRequest;
+import org.tsupport.messenger.TLObject;
+import org.tsupport.messenger.TLRPC;
 import org.tsupport.messenger.UserConfig;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Views.SlideView;
 
 import java.util.ArrayList;
@@ -139,7 +139,7 @@ public class LoginActivityRegisterView extends SlideView {
         ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
             @Override
             public void run(final TLObject response, final TLRPC.TL_error error) {
-                Utilities.RunOnUIThread(new Runnable() {
+                AndroidUtilities.RunOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         nextPressed = false;
@@ -147,8 +147,8 @@ public class LoginActivityRegisterView extends SlideView {
                             delegate.needHideProgress();
                         }
                         if (error == null) {
-                            final TLRPC.TL_auth_authorization res = (TLRPC.TL_auth_authorization)response;
-                            TLRPC.TL_userSelf user = (TLRPC.TL_userSelf)res.user;
+                            final TLRPC.TL_auth_authorization res = (TLRPC.TL_auth_authorization) response;
+                            TLRPC.TL_userSelf user = (TLRPC.TL_userSelf) res.user;
                             UserConfig.clearConfig();
                             MessagesController.getInstance().cleanUp();
                             UserConfig.setCurrentUser(user);
@@ -158,8 +158,9 @@ public class LoginActivityRegisterView extends SlideView {
                             users.add(user);
                             MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                             //MessagesController.getInstance().uploadAndApplyUserAvatar(avatarPhotoBig);
-                            MessagesController.getInstance().users.put(res.user.id, res.user);
+                            MessagesController.getInstance().putUser(res.user, false);
                             ContactsController.getInstance().checkAppAccount();
+                            MessagesController.getInstance().getBlockedUsers(false);
                             if (delegate != null) {
                                 delegate.needFinishActivity();
                             }

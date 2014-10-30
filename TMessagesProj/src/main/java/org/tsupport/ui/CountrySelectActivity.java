@@ -10,6 +10,7 @@ package org.tsupport.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,8 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
-import org.tsupport.messenger.FileLog;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
@@ -30,6 +31,7 @@ import org.tsupport.ui.Views.ActionBar.ActionBarMenuItem;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.PinnedHeaderListView;
 import org.tsupport.ui.Views.SectionedBaseAdapter;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -193,14 +195,23 @@ public class CountrySelectActivity extends BaseFragment {
 
             listView = (PinnedHeaderListView)fragmentView.findViewById(R.id.listView);
             listView.setEmptyView(emptyTextView);
+            emptyTextView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             listView.setVerticalScrollBarEnabled(false);
 
             listView.setAdapter(listViewAdapter = new ListAdapter(getParentActivity()));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    if (i < 0) {
+                        return;
+                    }
                     if (searching && searchWas) {
-                        if (i < searchResult.size()) {
+                        if (i >= 0 && i < searchResult.size()) {
                             Country c = searchResult.get(i);
                             if (delegate != null) {
                                 delegate.didSelectCountry(c.name);
@@ -210,10 +221,10 @@ public class CountrySelectActivity extends BaseFragment {
                     } else {
                         int section = listViewAdapter.getSectionForPosition(i);
                         int row = listViewAdapter.getPositionInSectionForPosition(i);
-                        if (section < sortedCountries.size()) {
+                        if (section >= 0 && section < sortedCountries.size()) {
                             String n = sortedCountries.get(section);
                             ArrayList<Country> arr = countries.get(n);
-                            if (row < arr.size()) {
+                            if (row >= 0 && row < arr.size()) {
                                 Country c = arr.get(row);
                                 if (delegate != null) {
                                     delegate.didSelectCountry(c.name);
@@ -314,7 +325,7 @@ public class CountrySelectActivity extends BaseFragment {
     }
 
     private void updateSearchResults(final ArrayList<Country> arrCounties) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 searchResult = arrCounties;
@@ -477,12 +488,10 @@ public class CountrySelectActivity extends BaseFragment {
         @Override
         public View getSectionHeaderView(int section, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.settings_section_layout, parent, false);
+                convertView = new SettingsSectionLayout(mContext);
                 convertView.setBackgroundColor(0xfffafafa);
             }
-            TextView textView = (TextView)convertView.findViewById(R.id.settings_section_text);
-            textView.setText(sortedCountries.get(section).toUpperCase());
+            ((SettingsSectionLayout) convertView).setText(sortedCountries.get(section).toUpperCase());
             return convertView;
         }
     }

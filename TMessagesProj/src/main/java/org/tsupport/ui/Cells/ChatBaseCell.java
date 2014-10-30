@@ -23,13 +23,13 @@ import android.view.SoundEffectConstants;
 import android.view.ViewConfiguration;
 
 import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.ContactsController;
+import org.tsupport.android.ImageReceiver;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessageObject;
+import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.android.MessagesController;
-import org.tsupport.messenger.Utilities;
-import org.tsupport.objects.MessageObject;
-import org.tsupport.ui.Views.ImageReceiver;
 
 public class ChatBaseCell extends BaseCell {
 
@@ -96,7 +96,7 @@ public class ChatBaseCell extends BaseCell {
 
     private StaticLayout timeLayout;
     protected int timeWidth;
-    protected int timeX;
+    private int timeX;
     private TextPaint currentTimePaint;
     private String currentTimeString;
     protected boolean drawTime = true;
@@ -108,60 +108,15 @@ public class ChatBaseCell extends BaseCell {
     private TLRPC.User currentForwardUser;
     private String currentForwardNameString;
 
-    public ChatBaseCellDelegate delegate;
+    protected ChatBaseCellDelegate delegate;
 
     protected int namesOffset = 0;
 
-    private boolean checkingForLongPress = false;
-    private int pressCount = 0;
-    private CheckForLongPress pendingCheckForLongPress = null;
-    private CheckForTap pendingCheckForTap = null;
-
     private int last_send_state = 0;
+    private int last_delete_date = 0;
 
-    private final class CheckForTap implements Runnable {
-        public void run() {
-            if (pendingCheckForLongPress == null) {
-                pendingCheckForLongPress = new CheckForLongPress();
-            }
-            pendingCheckForLongPress.currentPressCount = ++pressCount;
-            postDelayed(pendingCheckForLongPress, ViewConfiguration.getLongPressTimeout() - ViewConfiguration.getTapTimeout());
-        }
-    }
-
-    class CheckForLongPress implements Runnable {
-        public int currentPressCount;
-
-        public void run() {
-            if (checkingForLongPress && getParent() != null && currentPressCount == pressCount) {
-                if (delegate != null) {
-                    checkingForLongPress = false;
-                    MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
-                    onTouchEvent(event);
-                    event.recycle();
-                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                    delegate.didLongPressed(ChatBaseCell.this);
-                }
-            }
-        }
-    }
-
-    public ChatBaseCell(Context context, boolean isMedia) {
+    public ChatBaseCell(Context context) {
         super(context);
-        init();
-        media = isMedia;
-        avatarImage = new ImageReceiver();
-        avatarImage.parentView = this;
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        avatarImage.clearImage();
-        currentPhoto = null;
-    }
-
-    private void init() {
         if (backgroundDrawableIn == null) {
             backgroundDrawableIn = getResources().getDrawable(R.drawable.msg_in);
             backgroundDrawableInSelected = getResources().getDrawable(R.drawable.msg_in_selected);
@@ -200,12 +155,24 @@ public class ChatBaseCell extends BaseCell {
             forwardNamePaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
             forwardNamePaint.setTextSize(AndroidUtilities.dp(14));
         }
+        avatarImage = new ImageReceiver(this);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        avatarImage.clearImage();
+        currentPhoto = null;
     }
 
     @Override
     public void setPressed(boolean pressed) {
         super.setPressed(pressed);
         invalidate();
+    }
+
+    public void setDelegate(ChatBaseCellDelegate delegate) {
+        this.delegate = delegate;
     }
 
     public void setCheckPressed(boolean value, boolean pressed) {
@@ -221,8 +188,11 @@ public class ChatBaseCell extends BaseCell {
         if (last_send_state != currentMessageObject.messageOwner.send_state) {
             return true;
         }
+        if (last_delete_date != currentMessageObject.messageOwner.destroyTime) {
+            return true;
+        }
 
-        TLRPC.User newUser = MessagesController.getInstance().users.get(currentMessageObject.messageOwner.from_id);
+        TLRPC.User newUser = MessagesController.getInstance().getUser(currentMessageObject.messageOwner.from_id);
         TLRPC.FileLocation newPhoto = null;
 
         if (isAvatarVisible && newUser != null && newUser.photo != null) {
@@ -235,17 +205,17 @@ public class ChatBaseCell extends BaseCell {
 
         String newNameString = null;
         if (drawName && isChat && newUser != null && !currentMessageObject.isOut()) {
-            newNameString = Utilities.formatName(newUser.first_name, newUser.last_name);
+            newNameString = ContactsController.formatName(newUser.first_name, newUser.last_name);
         }
 
         if (currentNameString == null && newNameString != null || currentNameString != null && newNameString == null || currentNameString != null && newNameString != null && !currentNameString.equals(newNameString)) {
             return true;
         }
 
-        newUser = MessagesController.getInstance().users.get(currentMessageObject.messageOwner.fwd_from_id);
+        newUser = MessagesController.getInstance().getUser(currentMessageObject.messageOwner.fwd_from_id);
         newNameString = null;
         if (newUser != null && drawForwardedName && currentMessageObject.messageOwner instanceof TLRPC.TL_messageForwarded) {
-            newNameString = Utilities.formatName(newUser.first_name, newUser.last_name);
+            newNameString = ContactsController.formatName(newUser.first_name, newUser.last_name);
         }
         return currentForwardNameString == null && newNameString != null || currentForwardNameString != null && newNameString == null || currentForwardNameString != null && newNameString != null && !currentForwardNameString.equals(newNameString);
     }
@@ -253,18 +223,13 @@ public class ChatBaseCell extends BaseCell {
     public void setMessageObject(MessageObject messageObject) {
         currentMessageObject = messageObject;
         last_send_state = messageObject.messageOwner.send_state;
+        last_delete_date = messageObject.messageOwner.destroyTime;
         isPressed = false;
         isCheckPressed = true;
         isAvatarVisible = false;
         wasLayout = false;
 
-        if (currentMessageObject.messageOwner.id < 0 && currentMessageObject.messageOwner.send_state != MessagesController.MESSAGE_SEND_STATE_SEND_ERROR && currentMessageObject.messageOwner.send_state != MessagesController.MESSAGE_SEND_STATE_SENT) {
-            if (MessagesController.getInstance().sendingMessages.get(currentMessageObject.messageOwner.id) == null) {
-                currentMessageObject.messageOwner.send_state = MessagesController.MESSAGE_SEND_STATE_SEND_ERROR;
-            }
-        }
-
-        currentUser = MessagesController.getInstance().users.get(messageObject.messageOwner.from_id);
+        currentUser = MessagesController.getInstance().getUser(messageObject.messageOwner.from_id);
         if (isChat && !messageObject.isOut()) {
             isAvatarVisible = true;
             if (currentUser != null) {
@@ -273,9 +238,9 @@ public class ChatBaseCell extends BaseCell {
                 } else {
                     currentPhoto = null;
                 }
-                avatarImage.setImage(currentPhoto, "50_50", getResources().getDrawable(Utilities.getUserAvatarForId(currentUser.id)));
+                avatarImage.setImage(currentPhoto, "50_50", getResources().getDrawable(AndroidUtilities.getUserAvatarForId(currentUser.id)), false);
             } else {
-                avatarImage.setImage((TLRPC.FileLocation)null, "50_50", null);
+                avatarImage.setImage(null, "50_50", null, false);
             }
         }
 
@@ -295,7 +260,7 @@ public class ChatBaseCell extends BaseCell {
         namesOffset = 0;
 
         if (drawName && isChat && currentUser != null && !currentMessageObject.isOut()) {
-            currentNameString = Utilities.formatName(currentUser.first_name, currentUser.last_name);
+            currentNameString = ContactsController.formatName(currentUser.first_name, currentUser.last_name);
             nameWidth = getMaxNameWidth();
 
             CharSequence nameStringFinal = TextUtils.ellipsize(currentNameString.replace("\n", " "), namePaint, nameWidth - AndroidUtilities.dp(12), TextUtils.TruncateAt.END);
@@ -314,9 +279,9 @@ public class ChatBaseCell extends BaseCell {
         }
 
         if (drawForwardedName && messageObject.messageOwner instanceof TLRPC.TL_messageForwarded) {
-            currentForwardUser = MessagesController.getInstance().users.get(messageObject.messageOwner.fwd_from_id);
+            currentForwardUser = MessagesController.getInstance().getUser(messageObject.messageOwner.fwd_from_id);
             if (currentForwardUser != null) {
-                currentForwardNameString = Utilities.formatName(currentForwardUser.first_name, currentForwardUser.last_name);
+                currentForwardNameString = ContactsController.formatName(currentForwardUser.first_name, currentForwardUser.last_name);
 
                 forwardedNameWidth = getMaxNameWidth();
 
@@ -352,27 +317,6 @@ public class ChatBaseCell extends BaseCell {
         return backgroundWidth - AndroidUtilities.dp(8);
     }
 
-    protected void startCheckLongPress() {
-        if (checkingForLongPress) {
-            return;
-        }
-        checkingForLongPress = true;
-        if (pendingCheckForTap == null) {
-            pendingCheckForTap = new CheckForTap();
-        }
-        postDelayed(pendingCheckForTap, ViewConfiguration.getTapTimeout());
-    }
-
-    protected void cancelCheckLongPress() {
-        checkingForLongPress = false;
-        if (pendingCheckForLongPress != null) {
-            removeCallbacks(pendingCheckForLongPress);
-        }
-        if (pendingCheckForTap != null) {
-            removeCallbacks(pendingCheckForTap);
-        }
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean result = false;
@@ -380,7 +324,7 @@ public class ChatBaseCell extends BaseCell {
         float y = event.getY();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (delegate == null || delegate.canPerformActions()) {
-                if (isAvatarVisible && x >= avatarImage.imageX && x <= avatarImage.imageX + avatarImage.imageW && y >= avatarImage.imageY && y <= avatarImage.imageY + avatarImage.imageH) {
+                if (isAvatarVisible && avatarImage.isInsideImage(x, y)) {
                     avatarPressed = true;
                     result = true;
                 } else if (drawForwardedName && forwardedNameLayout != null) {
@@ -407,7 +351,7 @@ public class ChatBaseCell extends BaseCell {
                 } else if (event.getAction() == MotionEvent.ACTION_CANCEL) {
                     avatarPressed = false;
                 } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    if (isAvatarVisible && !(x >= avatarImage.imageX && x <= avatarImage.imageX + avatarImage.imageW && y >= avatarImage.imageY && y <= avatarImage.imageY + avatarImage.imageH)) {
+                    if (isAvatarVisible && !avatarImage.isInsideImage(x, y)) {
                         avatarPressed = false;
                     }
                 }
@@ -458,10 +402,7 @@ public class ChatBaseCell extends BaseCell {
             }
 
             if (isAvatarVisible) {
-                avatarImage.imageX = AndroidUtilities.dp(6);
-                avatarImage.imageY = layoutHeight - AndroidUtilities.dp(45);
-                avatarImage.imageW = AndroidUtilities.dp(42);
-                avatarImage.imageH = AndroidUtilities.dp(42);
+                avatarImage.setImageCoords(AndroidUtilities.dp(6), layoutHeight - AndroidUtilities.dp(45), AndroidUtilities.dp(42), AndroidUtilities.dp(42));
             }
 
             wasLayout = true;
@@ -472,6 +413,12 @@ public class ChatBaseCell extends BaseCell {
 
     }
 
+    @Override
+    protected void onLongPress() {
+        if (delegate != null) {
+            delegate.didLongPressed(this);
+        }
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -485,7 +432,7 @@ public class ChatBaseCell extends BaseCell {
         }
 
         if (isAvatarVisible) {
-            avatarImage.draw(canvas, AndroidUtilities.dp(6), layoutHeight - AndroidUtilities.dp(45), AndroidUtilities.dp(42), AndroidUtilities.dp(42));
+            avatarImage.draw(canvas);
         }
 
         Drawable currentBackgroundDrawable = null;
@@ -531,7 +478,7 @@ public class ChatBaseCell extends BaseCell {
         if (drawName && nameLayout != null) {
             canvas.save();
             canvas.translate(currentBackgroundDrawable.getBounds().left + AndroidUtilities.dp(19) - nameOffsetX, AndroidUtilities.dp(10));
-            namePaint.setColor(Utilities.getColorForId(currentUser.id));
+            namePaint.setColor(AndroidUtilities.getColorForId(currentUser.id));
             nameLayout.draw(canvas);
             canvas.restore();
         }
@@ -575,18 +522,18 @@ public class ChatBaseCell extends BaseCell {
                 boolean drawError = false;
                 boolean isBroadcast = (int)(currentMessageObject.getDialogId() >> 32) == 1;
 
-                if (currentMessageObject.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SENDING) {
+                if (currentMessageObject.isSending()) {
                     drawCheck1 = false;
                     drawCheck2 = false;
                     drawClock = true;
                     drawError = false;
-                } else if (currentMessageObject.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SEND_ERROR) {
+                } else if (currentMessageObject.isSendError()) {
                     drawCheck1 = false;
                     drawCheck2 = false;
                     drawClock = false;
                     drawError = true;
-                } else if (currentMessageObject.messageOwner.send_state == MessagesController.MESSAGE_SEND_STATE_SENT) {
-                    if (!currentMessageObject.messageOwner.unread) {
+                } else if (currentMessageObject.isSent()) {
+                    if (!currentMessageObject.isUnread()) {
                         drawCheck1 = true;
                         drawCheck2 = true;
                     } else {

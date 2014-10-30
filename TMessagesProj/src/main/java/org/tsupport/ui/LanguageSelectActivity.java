@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -22,9 +23,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.LocaleController;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.android.LocaleController;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
@@ -110,6 +111,12 @@ public class LanguageSelectActivity extends BaseFragment {
             listView.setAdapter(listAdapter);
             emptyTextView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
             listView.setEmptyView(emptyTextView);
+            emptyTextView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             searchListViewAdapter = new SearchAdapter(getParentActivity());
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -129,7 +136,7 @@ public class LanguageSelectActivity extends BaseFragment {
                         TemplateSupport.removeAll();
                         Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesRemoved", R.string.templatesRemoved), Toast.LENGTH_SHORT).show();
                         LocaleController.getInstance().applyLanguage(localeInfo, true);
-                        getParentActivity().rebuildAllFragmentViews();
+                        parentLayout.rebuildAllFragmentViews(false);
                     }
                     finishFragment();
                 }
@@ -261,7 +268,7 @@ public class LanguageSelectActivity extends BaseFragment {
     }
 
     private void updateSearchResults(final ArrayList<LocaleController.LocaleInfo> arrCounties) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 searchResult = arrCounties;

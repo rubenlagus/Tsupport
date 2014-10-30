@@ -22,9 +22,9 @@ import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.android.MessagesController;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.IdenticonView;
@@ -62,10 +62,10 @@ public class IdenticonActivity extends BaseFragment {
             fragmentView = inflater.inflate(R.layout.identicon_layout, container, false);
             IdenticonView identiconView = (IdenticonView) fragmentView.findViewById(R.id.identicon_view);
             TextView textView = (TextView)fragmentView.findViewById(R.id.identicon_text);
-            TLRPC.EncryptedChat encryptedChat = MessagesController.getInstance().encryptedChats.get(chat_id);
+            TLRPC.EncryptedChat encryptedChat = MessagesController.getInstance().getEncryptedChat(chat_id);
             if (encryptedChat != null) {
                 identiconView.setBytes(encryptedChat.auth_key);
-                TLRPC.User user = MessagesController.getInstance().users.get(encryptedChat.user_id);
+                TLRPC.User user = MessagesController.getInstance().getUser(encryptedChat.user_id);
                 textView.setText(Html.fromHtml(LocaleController.formatString("EncryptionKeyDescription", R.string.EncryptionKeyDescription, user.first_name, user.first_name)));
             }
         } else {
@@ -97,7 +97,7 @@ public class IdenticonActivity extends BaseFragment {
                 if (fragmentView != null) {
                     fragmentView.getViewTreeObserver().removeOnPreDrawListener(this);
                 }
-                if (getParentActivity() == null) {
+                if (getParentActivity() == null || fragmentView == null) {
                     return true;
                 }
                 LinearLayout layout = (LinearLayout)fragmentView;

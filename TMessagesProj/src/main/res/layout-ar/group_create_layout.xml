@@ -36,7 +36,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <org.tsupport.ui.Views.PinnedHeaderListView
+        <org.telegram.ui.Views.PinnedHeaderListView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:id="@+id/listView"

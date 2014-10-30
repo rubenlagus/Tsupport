@@ -8,7 +8,9 @@
 
 package org.tsupport.ui.Cells;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -17,16 +19,17 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
-import org.tsupport.android.AndroidUtilities;
 import org.tsupport.PhoneFormat.PhoneFormat;
+import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.ContactsController;
+import org.tsupport.android.ImageReceiver;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
+import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.messenger.ConnectionsManager;
-import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.UserConfig;
-import org.tsupport.messenger.Utilities;
-import org.tsupport.ui.Views.ImageReceiver;
+import org.tsupport.ui.ApplicationLoader;
 
 public class ChatOrUserCell extends BaseCell {
     private static TextPaint namePaint;
@@ -41,7 +44,7 @@ public class ChatOrUserCell extends BaseCell {
 
     private CharSequence currentName;
     private ImageReceiver avatarImage;
-    private String subLabel;
+    private CharSequence subLabel;
 
     private ChatOrUserCellLayout cellLayout;
     private TLRPC.User user = null;
@@ -104,8 +107,7 @@ public class ChatOrUserCell extends BaseCell {
         }
 
         if (avatarImage == null) {
-            avatarImage = new ImageReceiver();
-            avatarImage.parentView = this;
+            avatarImage = new ImageReceiver(this);
         }
 
         if (cellLayout == null) {
@@ -113,7 +115,7 @@ public class ChatOrUserCell extends BaseCell {
         }
     }
 
-    public void setData(TLRPC.User u, TLRPC.Chat c, TLRPC.EncryptedChat ec, CharSequence n, String s) {
+    public void setData(TLRPC.User u, TLRPC.Chat c, TLRPC.EncryptedChat ec, CharSequence n, CharSequence s) {
         currentName = n;
         user = u;
         chat = c;
@@ -158,12 +160,16 @@ public class ChatOrUserCell extends BaseCell {
             if (user.photo != null) {
                 photo = user.photo.photo_small;
             }
-            placeHolderId = Utilities.getUserAvatarForId(user.id);
+            placeHolderId = AndroidUtilities.getUserAvatarForId(user.id);
         } else if (chat != null) {
             if (chat.photo != null) {
                 photo = chat.photo.photo_small;
             }
-            placeHolderId = Utilities.getGroupAvatarForId(chat.id);
+            if (chat.id > 0) {
+                placeHolderId = AndroidUtilities.getGroupAvatarForId(chat.id);
+            } else {
+                placeHolderId = AndroidUtilities.getBroadcastAvatarForId(chat.id);
+            }
         }
 
         if (mask != 0) {
@@ -212,7 +218,12 @@ public class ChatOrUserCell extends BaseCell {
 
 
         lastAvatar = photo;
-        avatarImage.setImage(photo, "50_50", placeHolderId == 0 ? null : getResources().getDrawable(placeHolderId));
+        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
+        if (userImagesPreferences.getBoolean("loadUserImages", true)) {
+            avatarImage.setImage(photo, "50_50", placeHolderId == 0 ? null : getResources().getDrawable(placeHolderId), false);
+        } else {
+            avatarImage.setImage(placeHolderId == 0 ? null : getResources().getDrawable(placeHolderId));
+        }
 
         if (getMeasuredWidth() != 0 || getMeasuredHeight() != 0) {
             buildLayout();
@@ -232,6 +243,16 @@ public class ChatOrUserCell extends BaseCell {
             requestLayout();
             return;
         }
+
+        if (useSeparator) {
+            int h = getMeasuredHeight();
+            if (!usePadding) {
+                canvas.drawLine(0, h - 1, getMeasuredWidth(), h - 1, linePaint);
+            } else {
+                canvas.drawLine(AndroidUtilities.dp(11), h - 1, getMeasuredWidth() - AndroidUtilities.dp(11), h - 1, linePaint);
+            }
+        }
+
 
         if (drawAlpha != 1) {
             canvas.saveLayerAlpha(0, 0, canvas.getWidth(), canvas.getHeight(), (int)(255 * drawAlpha), Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
@@ -260,16 +281,7 @@ public class ChatOrUserCell extends BaseCell {
             canvas.restore();
         }
 
-        avatarImage.draw(canvas, cellLayout.avatarLeft, cellLayout.avatarTop, AndroidUtilities.dp(50), AndroidUtilities.dp(50));
-
-        if (useSeparator) {
-            int h = getMeasuredHeight();
-            if (!usePadding) {
-                canvas.drawLine(0, h - 1, getMeasuredWidth(), h, linePaint);
-            } else {
-                canvas.drawLine(AndroidUtilities.dp(11), h - 1, getMeasuredWidth() - AndroidUtilities.dp(11), h, linePaint);
-            }
-        }
+        avatarImage.draw(canvas);
     }
 
     private class ChatOrUserCellLayout {
@@ -340,7 +352,7 @@ public class ChatOrUserCell extends BaseCell {
                 if (chat != null) {
                     nameString2 = chat.title;
                 } else if (user != null) {
-                    nameString2 = Utilities.formatName(user.first_name, user.last_name);
+                    nameString2 = ContactsController.formatName(user.first_name, user.last_name);
                 }
                 nameString = nameString2.replace("\n", " ");
             }
@@ -378,7 +390,7 @@ public class ChatOrUserCell extends BaseCell {
                     onlineLeft = usePadding ? AndroidUtilities.dp(11) : 0;
                 }
 
-                String onlineString = "";
+                CharSequence onlineString = "";
                 TextPaint currentOnlinePaint = offlinePaint;
 
                 if (subLabel != null) {
@@ -404,10 +416,8 @@ public class ChatOrUserCell extends BaseCell {
             } else {
                 avatarLeft = width - AndroidUtilities.dp(50 + (usePadding ? 11 : 0));
             }
-            avatarImage.imageX = avatarLeft;
-            avatarImage.imageY = avatarTop;
-            avatarImage.imageW = AndroidUtilities.dp(50);
-            avatarImage.imageH = AndroidUtilities.dp(50);
+            avatarImage.setImageCoords(avatarLeft, avatarTop, AndroidUtilities.dp(50), AndroidUtilities.dp(50));
+
 
             double widthpx = 0;
             float left = 0;

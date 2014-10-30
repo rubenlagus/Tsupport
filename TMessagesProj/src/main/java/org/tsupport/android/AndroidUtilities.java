@@ -9,7 +9,9 @@
 package org.tsupport.android;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -21,23 +23,65 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.tsupport.messenger.FileLog;
+import org.tsupport.messenger.R;
+import org.tsupport.messenger.TLRPC;
+import org.tsupport.messenger.UserConfig;
 import org.tsupport.ui.ApplicationLoader;
+import org.tsupport.ui.ApplicationLoader;
+import org.tsupport.ui.Views.NumberPicker;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Hashtable;
+import java.util.Locale;
 
 public class AndroidUtilities {
+
     private static final Hashtable<String, Typeface> typefaceCache = new Hashtable<String, Typeface>();
     private static int prevOrientation = -10;
     private static boolean waitingForSms = false;
-    private static final Integer smsLock = 2;
-    public static int externalCacheNotAvailableState = 0;
+    private static final Object smsLock = new Object();
 
     public static int statusBarHeight = 0;
     public static float density = 1;
     public static Point displaySize = new Point();
+    public static Integer photoSize = null;
+    private static Boolean isTablet = null;
+
+    public static int[] arrColors = {0xffee4928, 0xff41a903, 0xffe09602, 0xff0f94ed, 0xff8f3bf7, 0xfffc4380, 0xff00a1c4, 0xffeb7002};
+    public static int[] arrUsersAvatars = {
+            R.drawable.user_red,
+            R.drawable.user_green,
+            R.drawable.user_yellow,
+            R.drawable.user_blue,
+            R.drawable.user_violet,
+            R.drawable.user_pink,
+            R.drawable.user_aqua,
+            R.drawable.user_orange};
+
+    public static int[] arrGroupsAvatars = {
+            R.drawable.group_red,
+            R.drawable.group_green,
+            R.drawable.group_yellow,
+            R.drawable.group_blue,
+            R.drawable.group_violet,
+            R.drawable.group_pink,
+            R.drawable.group_aqua,
+            R.drawable.group_orange};
+
+    public static int[] arrBroadcastAvatars = {
+            R.drawable.broadcast_red,
+            R.drawable.broadcast_green,
+            R.drawable.broadcast_yellow,
+            R.drawable.broadcast_blue,
+            R.drawable.broadcast_violet,
+            R.drawable.broadcast_pink,
+            R.drawable.broadcast_aqua,
+            R.drawable.broadcast_orange};
 
     static {
         density = ApplicationLoader.applicationContext.getResources().getDisplayMetrics().density;
@@ -45,7 +89,7 @@ public class AndroidUtilities {
     }
 
     public static void lockOrientation(Activity activity) {
-        if (prevOrientation != -10) {
+        if (activity == null || prevOrientation != -10) {
             return;
         }
         try {
@@ -103,9 +147,11 @@ public class AndroidUtilities {
     }
 
     public static void unlockOrientation(Activity activity) {
+        if (activity == null) {
+            return;
+        }
         try {
             if (prevOrientation != -10) {
-                //noinspection ResourceType
                 activity.setRequestedOrientation(prevOrientation);
                 prevOrientation = -10;
             }
@@ -173,8 +219,7 @@ public class AndroidUtilities {
     }
 
     public static File getCacheDir() {
-        if (externalCacheNotAvailableState == 1 || externalCacheNotAvailableState == 0 && Environment.getExternalStorageState().startsWith(Environment.MEDIA_MOUNTED)) {
-            externalCacheNotAvailableState = 1;
+        if (Environment.getExternalStorageState().startsWith(Environment.MEDIA_MOUNTED)) {
             try {
                 File file = ApplicationLoader.applicationContext.getExternalCacheDir();
                 if (file != null) {
@@ -184,7 +229,6 @@ public class AndroidUtilities {
                 FileLog.e("tsupport", e);
             }
         }
-        externalCacheNotAvailableState = 2;
         try {
             File file = ApplicationLoader.applicationContext.getCacheDir();
             if (file != null) {
@@ -202,6 +246,10 @@ public class AndroidUtilities {
 
     public static int dpf(float value) {
         return (int)Math.ceil(density * value);
+    }
+
+    public static float dpf2(float value) {
+        return density * value;
     }
 
     public static void checkDisplaySize() {
@@ -225,5 +273,234 @@ public class AndroidUtilities {
 
     public static long makeBroadcastId(int id) {
         return 0x0000000100000000L | ((long)id & 0x00000000FFFFFFFFL);
+    }
+
+    public static int getMyLayerVersion(int layer) {
+        return layer & 0xffff;
+    }
+
+    public static int getPeerLayerVersion(int layer) {
+        return (layer >> 16) & 0xffff;
+    }
+
+    public static int setMyLayerVersion(int layer, int version) {
+        return layer & 0xffff0000 | version;
+    }
+
+    public static int setPeerLayerVersion(int layer, int version) {
+        return layer & 0x0000ffff | (version << 16);
+    }
+
+    public static void RunOnUIThread(Runnable runnable) {
+        RunOnUIThread(runnable, 0);
+    }
+
+    public static void RunOnUIThread(Runnable runnable, long delay) {
+        if (delay == 0) {
+            ApplicationLoader.applicationHandler.post(runnable);
+        } else {
+            ApplicationLoader.applicationHandler.postDelayed(runnable, delay);
+        }
+    }
+
+    public static void CancelRunOnUIThread(Runnable runnable) {
+        ApplicationLoader.applicationHandler.removeCallbacks(runnable);
+    }
+
+    public static boolean isTablet() {
+        if (isTablet == null) {
+            isTablet = ApplicationLoader.applicationContext.getResources().getBoolean(R.bool.isTablet);
+        }
+        return isTablet;
+    }
+
+    public static boolean isSmallTablet() {
+        float minSide = Math.min(displaySize.x, displaySize.y) / density;
+        return minSide <= 700;
+    }
+
+    public static int getMinTabletSide() {
+        if (!isSmallTablet()) {
+            int smallSide = Math.min(displaySize.x, displaySize.y);
+            int leftSide = smallSide * 35 / 100;
+            if (leftSide < dp(320)) {
+                leftSide = dp(320);
+            }
+            return smallSide - leftSide;
+        } else {
+            int smallSide = Math.min(displaySize.x, displaySize.y);
+            int maxSide = Math.max(displaySize.x, displaySize.y);
+            int leftSide = maxSide * 35 / 100;
+            if (leftSide < dp(320)) {
+                leftSide = dp(320);
+            }
+            return Math.min(smallSide, maxSide - leftSide);
+        }
+    }
+
+    public static int getColorIndex(int id) {
+        int[] arr;
+        if (id >= 0) {
+            arr = arrUsersAvatars;
+        } else {
+            arr = arrGroupsAvatars;
+        }
+        try {
+            String str;
+            if (id >= 0) {
+                str = String.format(Locale.US, "%d%d", id, UserConfig.getClientUserId());
+            } else {
+                str = String.format(Locale.US, "%d", id);
+            }
+            if (str.length() > 15) {
+                str = str.substring(0, 15);
+            }
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(str.getBytes());
+            int b = digest[Math.abs(id % 16)];
+            if (b < 0) {
+                b += 256;
+            }
+            return Math.abs(b) % arr.length;
+        } catch (Exception e) {
+            FileLog.e("tsupport", e);
+        }
+        return id % arr.length;
+    }
+
+    public static int getColorForId(int id) {
+        if (id / 1000 == 333) {
+            return 0xff0f94ed;
+        }
+        return arrColors[getColorIndex(id)];
+    }
+
+    public static int getUserAvatarForId(int id) {
+        if (id / 1000 == 333 || id / 1000 == 777) {
+            return R.drawable.telegram_avatar;
+        }
+        return arrUsersAvatars[getColorIndex(id)];
+    }
+
+    public static int getGroupAvatarForId(int id) {
+        return arrGroupsAvatars[getColorIndex(-Math.abs(id))];
+    }
+
+    public static int getBroadcastAvatarForId(int id) {
+        return arrBroadcastAvatars[getColorIndex(-Math.abs(id))];
+    }
+
+    public static int getPhotoSize() {
+        if (photoSize == null) {
+            if (Build.VERSION.SDK_INT >= 16) {
+                photoSize = 1280;
+            } else {
+                photoSize = 800;
+            }
+        }
+        return photoSize;
+    }
+
+    public static String formatTTLString(int ttl) {
+        if (ttl < 60) {
+            return LocaleController.formatPluralString("Seconds", ttl);
+        } else if (ttl < 60 * 60) {
+            return LocaleController.formatPluralString("Minutes", ttl / 60);
+        } else if (ttl < 60 * 60 * 24) {
+            return LocaleController.formatPluralString("Hours", ttl / 60 / 60);
+        } else if (ttl < 60 * 60 * 24 * 7) {
+            return LocaleController.formatPluralString("Days", ttl / 60 / 60 / 24);
+        } else {
+            int days = ttl / 60 / 60 / 24;
+            if (ttl % 7 == 0) {
+                return LocaleController.formatPluralString("Weeks", days / 7);
+            } else {
+                return String.format("%s %s", LocaleController.formatPluralString("Weeks", days / 7), LocaleController.formatPluralString("Days", days % 7));
+            }
+        }
+    }
+
+    public static AlertDialog.Builder buildTTLAlert(final Context context, final TLRPC.EncryptedChat encryptedChat) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(LocaleController.getString("MessageLifetime", R.string.MessageLifetime));
+        final NumberPicker numberPicker = new NumberPicker(context);
+        numberPicker.setMinValue(0);
+        numberPicker.setMaxValue(20);
+        if (encryptedChat.ttl > 0 && encryptedChat.ttl < 16) {
+            numberPicker.setValue(encryptedChat.ttl);
+        } else if (encryptedChat.ttl == 30) {
+            numberPicker.setValue(16);
+        } else if (encryptedChat.ttl == 60) {
+            numberPicker.setValue(17);
+        } else if (encryptedChat.ttl == 60 * 60) {
+            numberPicker.setValue(18);
+        } else if (encryptedChat.ttl == 60 * 60 * 24) {
+            numberPicker.setValue(19);
+        } else if (encryptedChat.ttl == 60 * 60 * 24 * 7) {
+            numberPicker.setValue(20);
+        } else if (encryptedChat.ttl == 0) {
+            numberPicker.setValue(5);
+        }
+        numberPicker.setFormatter(new NumberPicker.Formatter() {
+            @Override
+            public String format(int value) {
+                if (value == 0) {
+                    return LocaleController.getString("ShortMessageLifetimeForever", R.string.ShortMessageLifetimeForever);
+                } else if (value >= 1 && value < 16) {
+                    return AndroidUtilities.formatTTLString(value);
+                } else if (value == 16) {
+                    return AndroidUtilities.formatTTLString(30);
+                } else if (value == 17) {
+                    return AndroidUtilities.formatTTLString(60);
+                } else if (value == 18) {
+                    return AndroidUtilities.formatTTLString(60 * 60);
+                } else if (value == 19) {
+                    return AndroidUtilities.formatTTLString(60 * 60 * 24);
+                } else if (value == 20) {
+                    return AndroidUtilities.formatTTLString(60 * 60 * 24 * 7);
+                }
+                return "";
+            }
+        });
+        builder.setView(numberPicker);
+        builder.setNegativeButton(LocaleController.getString("Done", R.string.Done), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int oldValue = encryptedChat.ttl;
+                which = numberPicker.getValue();
+                if (which >= 0 && which < 16) {
+                    encryptedChat.ttl = which;
+                } else if (which == 16) {
+                    encryptedChat.ttl = 30;
+                } else if (which == 17) {
+                    encryptedChat.ttl = 60;
+                } else if (which == 18) {
+                    encryptedChat.ttl = 60 * 60;
+                } else if (which == 19) {
+                    encryptedChat.ttl = 60 * 60 * 24;
+                } else if (which == 20) {
+                    encryptedChat.ttl = 60 * 60 * 24 * 7;
+                }
+                if (oldValue != encryptedChat.ttl) {
+                    SendMessagesHelper.getInstance().sendTTLMessage(encryptedChat, null);
+                    MessagesStorage.getInstance().updateEncryptedChatTTL(encryptedChat);
+                }
+            }
+        });
+        return builder;
+    }
+
+    public static void clearCursorDrawable(EditText editText) {
+        if (editText == null || Build.VERSION.SDK_INT < 12) {
+            return;
+
+        }
+        try {
+            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+            mCursorDrawableRes.setAccessible(true);
+            mCursorDrawableRes.setInt(editText, 0);
+        } catch (Exception e) {
+            FileLog.e("tmessages", e);
+        }
     }
 }

@@ -15,9 +15,8 @@ import android.text.style.ClickableSpan;
 import android.view.MotionEvent;
 
 import org.tsupport.android.AndroidUtilities;
+import org.tsupport.android.MessageObject;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.objects.MessageObject;
-import org.tsupport.ui.ChatActivity;
 
 public class ChatMessageCell extends ChatBaseCell {
 
@@ -30,7 +29,7 @@ public class ChatMessageCell extends ChatBaseCell {
     private int totalVisibleBlocksCount = 0;
 
     public ChatMessageCell(Context context) {
-        super(context, false);
+        super(context);
         drawForwardedName = true;
     }
 
@@ -44,36 +43,41 @@ public class ChatMessageCell extends ChatBaseCell {
                     y -= textY;
                     int blockNum = Math.max(0, y / currentMessageObject.blockHeight);
                     if (blockNum < currentMessageObject.textLayoutBlocks.size()) {
-                        MessageObject.TextLayoutBlock block = currentMessageObject.textLayoutBlocks.get(blockNum);
-                        x -= textX - (int)Math.ceil(block.textXOffset);
-                        y -= block.textYOffset;
-                        final int line = block.textLayout.getLineForVertical(y);
-                        final int off = block.textLayout.getOffsetForHorizontal(line, x) + block.charactersOffset;
+                        try {
+                            MessageObject.TextLayoutBlock block = currentMessageObject.textLayoutBlocks.get(blockNum);
+                            x -= textX - (int)Math.ceil(block.textXOffset);
+                            y -= block.textYOffset;
+                            final int line = block.textLayout.getLineForVertical(y);
+                            final int off = block.textLayout.getOffsetForHorizontal(line, x) + block.charactersOffset;
 
-                        final float left = block.textLayout.getLineLeft(line);
-                        if (left <= x && left + block.textLayout.getLineWidth(line) >= x) {
-                            Spannable buffer = (Spannable)currentMessageObject.messageText;
-                            ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+                            final float left = block.textLayout.getLineLeft(line);
+                            if (left <= x && left + block.textLayout.getLineWidth(line) >= x) {
+                                Spannable buffer = (Spannable)currentMessageObject.messageText;
+                                ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
 
-                            if (link.length != 0) {
-                                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                                    pressedLink = link[0];
-                                    return true;
-                                } else {
-                                    if (link[0] == pressedLink) {
-                                        try {
-                                            pressedLink.onClick(this);
-                                        } catch (Exception e) {
-                                            FileLog.e("tsupport", e);
-                                        }
+                                if (link.length != 0) {
+                                    if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                                        pressedLink = link[0];
                                         return true;
+                                    } else {
+                                        if (link[0] == pressedLink) {
+                                            try {
+                                                pressedLink.onClick(this);
+                                            } catch (Exception e) {
+                                                FileLog.e("tsupport", e);
+                                            }
+                                            return true;
+                                        }
                                     }
+                                } else {
+                                    pressedLink = null;
                                 }
                             } else {
                                 pressedLink = null;
                             }
-                        } else {
+                        } catch (Exception e) {
                             pressedLink = null;
+                            FileLog.e("tsupport", e);
                         }
                     } else {
                         pressedLink = null;
@@ -132,12 +136,23 @@ public class ChatMessageCell extends ChatBaseCell {
             }
             pressedLink = null;
             int maxWidth;
-            if (isChat && !messageObject.isOut()) {
-                maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(122);
-                drawName = true;
+
+            if (AndroidUtilities.isTablet()) {
+                if (isChat && !messageObject.isOut()) {
+                    maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(122);
+                    drawName = true;
+                } else {
+                    maxWidth = AndroidUtilities.getMinTabletSide() - AndroidUtilities.dp(80);
+                    drawName = false;
+                }
             } else {
-                maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(80);
-                drawName = false;
+                if (isChat && !messageObject.isOut()) {
+                    maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(122);
+                    drawName = true;
+                } else {
+                    maxWidth = AndroidUtilities.displaySize.x - AndroidUtilities.dp(80);
+                    drawName = false;
+                }
             }
 
             backgroundWidth = maxWidth;
@@ -212,7 +227,7 @@ public class ChatMessageCell extends ChatBaseCell {
             try {
                 block.textLayout.draw(canvas);
             } catch (Exception e) {
-                FileLog.e("tmessages", e);
+                FileLog.e("tsupport", e);
             }
             canvas.restore();
         }

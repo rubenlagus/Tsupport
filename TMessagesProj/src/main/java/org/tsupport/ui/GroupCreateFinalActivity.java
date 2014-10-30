@@ -21,23 +21,24 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
+import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.android.NotificationCenter;
+import org.tsupport.messenger.ConnectionsManager;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.messenger.FileLog;
-import org.tsupport.android.MessagesController;
-import org.tsupport.messenger.NotificationCenter;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Cells.ChatOrUserCell;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
+import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.AvatarUpdater;
 import org.tsupport.ui.Views.BackupImageView;
-import org.tsupport.ui.Views.ActionBar.BaseFragment;
 import org.tsupport.ui.Views.PinnedHeaderListView;
 import org.tsupport.ui.Views.SectionedBaseAdapter;
+import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
@@ -66,15 +67,15 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
     @SuppressWarnings("unchecked")
     @Override
     public boolean onFragmentCreate() {
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.chatDidCreated);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.chatDidFailCreate);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.chatDidCreated);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.chatDidFailCreate);
         avatarUpdater.parentFragment = this;
         avatarUpdater.delegate = this;
         selectedContacts = getArguments().getIntegerArrayList("result");
         final ArrayList<Integer> usersToLoad = new ArrayList<Integer>();
         for (Integer uid : selectedContacts) {
-            if (MessagesController.getInstance().users.get(uid) == null) {
+            if (MessagesController.getInstance().getUser(uid) == null) {
                 usersToLoad.add(uid);
             }
         }
@@ -99,7 +100,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             }
             if (!users.isEmpty()) {
                 for (TLRPC.User user : users) {
-                    MessagesController.getInstance().users.putIfAbsent(user.id, user);
+                    MessagesController.getInstance().putUser(user, true);
                 }
             } else {
                 return false;
@@ -111,9 +112,9 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.chatDidCreated);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.chatDidFailCreate);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.chatDidCreated);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.chatDidFailCreate);
         avatarUpdater.clear();
     }
 
@@ -145,7 +146,6 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                         if (isBroadcast) {
                             MessagesController.getInstance().createChat(nameTextView.getText().toString(), selectedContacts, uploadedAvatar, isBroadcast);
                         } else {
-
                             if (avatarUpdater.uploadingAvatar != null) {
                                 createAfterUpload = true;
                             } else {
@@ -184,11 +184,9 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             fragmentView = inflater.inflate(R.layout.group_create_final_layout, container, false);
 
             final ImageButton button2 = (ImageButton)fragmentView.findViewById(R.id.settings_change_avatar_button);
-
             if (isBroadcast) {
                 button2.setVisibility(View.GONE);
             } else {
-
                 button2.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -223,14 +221,14 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                     }
                 });
             }
+
             avatarImage = (BackupImageView)fragmentView.findViewById(R.id.settings_avatar_image);
             avatarImage.setImageResource(R.drawable.group_blue);
 
             nameTextView = (EditText)fragmentView.findViewById(R.id.bubble_input_text);
             if (isBroadcast) {
                 nameTextView.setHint(LocaleController.getString("EnterListName", R.string.EnterListName));
-            }
-            else {
+            } else {
                 nameTextView.setHint(LocaleController.getString("EnterGroupNamePlaceholder", R.string.EnterGroupNamePlaceholder));
             }
             if (nameToSet != null) {
@@ -250,7 +248,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
 
     @Override
     public void didUploadedPhoto(final TLRPC.InputFile file, final TLRPC.PhotoSize small, final TLRPC.PhotoSize big) {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 uploadedAvatar = file;
@@ -299,12 +297,12 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
 
     @Override
     public void didReceivedNotification(int id, final Object... args) {
-        if (id == MessagesController.updateInterfaces) {
+        if (id == NotificationCenter.updateInterfaces) {
             int mask = (Integer)args[0];
             if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 || (mask & MessagesController.UPDATE_MASK_NAME) != 0 || (mask & MessagesController.UPDATE_MASK_STATUS) != 0) {
                 updateVisibleRows(mask);
             }
-        } else if (id == MessagesController.chatDidFailCreate) {
+        } else if (id == NotificationCenter.chatDidFailCreate) {
             if (progressDialog != null) {
                 try {
                     progressDialog.dismiss();
@@ -313,8 +311,8 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                 }
             }
             donePressed = false;
-        } else if (id == MessagesController.chatDidCreated) {
-            Utilities.RunOnUIThread(new Runnable() {
+        } else if (id == NotificationCenter.chatDidCreated) {
+            AndroidUtilities.RunOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     if (progressDialog != null) {
@@ -325,7 +323,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                         }
                     }
                     Bundle args2 = new Bundle();
-                    args2.putInt("chat_id", (Integer)args[0]);
+                    args2.putInt("chat_id", (Integer) args[0]);
                     presentFragment(new ChatActivity(args2), true);
                 }
             });
@@ -387,7 +385,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
 
         @Override
         public View getItemView(int section, int position, View convertView, ViewGroup parent) {
-            TLRPC.User user = MessagesController.getInstance().users.get(selectedContacts.get(position));
+            TLRPC.User user = MessagesController.getInstance().getUser(selectedContacts.get(position));
 
             if (convertView == null) {
                 convertView = new ChatOrUserCell(mContext);
@@ -423,12 +421,10 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
         @Override
         public View getSectionHeaderView(int section, View convertView, ViewGroup parent) {
             if (convertView == null) {
-                LayoutInflater li = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = li.inflate(R.layout.settings_section_layout, parent, false);
+                convertView = new SettingsSectionLayout(mContext);
                 convertView.setBackgroundColor(0xffffffff);
             }
-            TextView textView = (TextView)convertView.findViewById(R.id.settings_section_text);
-            textView.setText(LocaleController.formatPluralString("Members", selectedContacts.size()).toUpperCase());
+            ((SettingsSectionLayout) convertView).setText(LocaleController.formatPluralString("Members", selectedContacts.size()).toUpperCase());
             return convertView;
         }
     }

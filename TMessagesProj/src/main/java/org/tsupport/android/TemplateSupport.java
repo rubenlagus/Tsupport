@@ -1,11 +1,10 @@
 package org.tsupport.android;
 
-import android.widget.Toast;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.ui.ApplicationLoader;
 
@@ -13,11 +12,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +33,7 @@ public class TemplateSupport {
     /**
      * Static Map to keep pairs kay-values with the templates.
      */
-    private static TreeMap<String,String> templates = new TreeMap<String, String>();;
+    private static TreeMap<String,String> templates = new TreeMap<String, String>();
 
     /**
      * Singleton Instance
@@ -92,26 +91,42 @@ public class TemplateSupport {
         return "";
     }
 
+    /**
+     * Recreate the list of templates from memory
+     */
     public static void rebuildInstance() {
         if (modifing == 0) {
             modifing++;
             if (templates != null) {
                 templates.clear();
                 templates.putAll(MessagesStorage.getInstance().getTemplates());
-                NotificationCenter.getInstance().postNotificationName(MessagesController.updateTemplatesNotification);
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             }
             modifing--;
         }
     }
 
+    /**
+     * Load templates from default file
+     */
     public static void loadDefaults() {
         InputStream is = null;
         String fileName = "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".txt";
+        FileLog.d("tsupportTemplates", "Loading: " + fileName);
         loadFile(fileName, true);
     }
 
+    /**
+     * Load templates from a file
+     * @param fileName Name of the file
+     * @param loadDefault if loading default file
+     */
     public static void loadFile(String fileName, boolean loadDefault) {
+        if (modifing>0) {
+            return;
+        }
         try {
+            modifing++;
             InputStream is;
             if (loadDefault)
                 is = ApplicationLoader.applicationContext.getAssets().open(fileName);
@@ -144,38 +159,98 @@ public class TemplateSupport {
                     String key = keysMatcher.group(0).replace("\n","");
                     if (key.compareToIgnoreCase("") != 0){
                         FileLog.e("TemplateSupport", "Adding" + key);
-                        modifing++;
-                        MessagesStorage.getInstance().putTemplate(key, value);
+                        //modifing++;
+                        //MessagesStorage.getInstance().putTemplate(key, value);
                         templates.put(key, value);
                     }
                 }
             }
+            MessagesStorage.getInstance().putTemplates(templates);
         } catch (FileNotFoundException e) {
             FileLog.e("TemplateSupport", "File not found");
+            modifing--;
         } catch (IOException e) {
+            modifing--;
             FileLog.e("TemplateSupport", "File IO Exception");
         }
         FileLog.e("TemplateSupport", "Step 2");
     }
 
+    /**
+     * Add a template
+     * @param key Key of the template
+     * @param value Value of the template
+     */
     public void putTemplate(String key, String value) {
         modifing++;
         MessagesStorage.getInstance().putTemplate(key, value);
     }
 
+    /**
+     * Remove a template
+     * @param key Key of the template to remove
+     */
     public void removeTemplate(String key) {
         modifing++;
         MessagesStorage.getInstance().deleteTemplate(key);
     }
 
+    /**
+     * Get templates map
+     * @return TreeMap with the templates as <key,value>
+     */
     public TreeMap<String, String> getAll() {
         return templates;
     }
 
+    /**
+     * Remove all templates.
+     */
     public static void removeAll() {
         for (String key: templates.keySet()) {
             modifing++;
             MessagesStorage.getInstance().deleteTemplate(key);
+        }
+    }
+
+    /**
+     * Export templates
+     */
+    public static void exportAll() {
+        File file = null;
+        File root = Environment.getExternalStorageDirectory();
+        if (root.canWrite()) {
+            File dir = new File(root.getAbsolutePath() + "/Tsupport");
+            if (!dir.exists())
+                dir.mkdirs();
+            file = new File(dir, "template_" + LocaleController.getCurrentLanguageCode().toLowerCase() + ".txt");
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                for (String key : templates.keySet()) {
+                    out.write("{KEYS}\n".getBytes());
+                    out.write(key.getBytes());
+                    out.write("\n\n".getBytes());
+                    out.write("{VALUE}\n".getBytes());
+                    out.write(templates.get(key).getBytes());
+                    out.write("\n\n\n".getBytes());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Uri uri = null;
+            uri = Uri.fromFile(file);
+
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.exportTemplates, uri);
         }
     }
 }

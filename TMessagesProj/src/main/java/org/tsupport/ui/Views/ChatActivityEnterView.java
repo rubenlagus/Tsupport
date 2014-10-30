@@ -28,7 +28,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -40,13 +39,13 @@ import org.tsupport.android.Emoji;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MediaController;
 import org.tsupport.android.MessagesController;
+import org.tsupport.android.NotificationCenter;
+import org.tsupport.android.SendMessagesHelper;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.objects.MessageObject;
 import org.tsupport.ui.ApplicationLoader;
 
 import java.util.ArrayList;
@@ -74,13 +73,12 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private View slideText;
     private PowerManager.WakeLock mWakeLock = null;
     private SizeNotifierRelativeLayout sizeNotifierRelativeLayout;
-    private ArrayList<MessageObject> messages = new ArrayList<MessageObject>();
-    private int minMessageId = Integer.MIN_VALUE;
-    private int maxDate = Integer.MIN_VALUE;
-    private static Pattern pattern = Pattern.compile("((?:[^\\s(]+\\()|(?:\\.{2}[^\\s\\.]+\\.{2}))");
-    private static Pattern patternContact = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
-    private static Pattern patternIssue = Pattern.compile("^#issue:([\\w]+)$");
-    private static Pattern patternIssueSolved = Pattern.compile("^^#solved:([\\w]+)$");
+    private Object runningAnimation = null;
+    private int runningAnimationType = 0;
+    private static final Pattern pattern = Pattern.compile("((?:[^\\s(]+\\()|(?:\\.{2}[^\\s\\.]+\\.{2}))");
+    private static final Pattern patternContact = Pattern.compile("^contact:(\\+[0-9]+)\\s*(\\S+)\\s*([^\\n]+)(\\n|$)");
+    private static final Pattern patternIssue = Pattern.compile("^#issue:([\\w]+)$");
+    private static final Pattern patternIssueSolved = Pattern.compile("^#solved:([\\w]+)$");
 
     private int keyboardHeight = 0;
     private int keyboardHeightLand = 0;
@@ -101,28 +99,30 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
     private TreeMap<String, String> templates = new TreeMap<String, String>();
 
     public ChatActivityEnterView() {
-        NotificationCenter.getInstance().addObserver(this, MediaController.recordStarted);
-        NotificationCenter.getInstance().addObserver(this, MediaController.recordStartError);
-        NotificationCenter.getInstance().addObserver(this, MediaController.recordStopped);
-        NotificationCenter.getInstance().addObserver(this, MediaController.recordProgressChanged);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.closeChats);
-        NotificationCenter.getInstance().addObserver(this, MediaController.audioDidSent);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateTemplatesNotification);
-        NotificationCenter.getInstance().addObserver(this, 999);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.recordStarted);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.recordStartError);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.recordStopped);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.recordProgressChanged);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.closeChats);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.audioDidSent);
+	    NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.hideEmojiKeyboard);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         sendByEnter = preferences.getBoolean("send_by_enter", false);
         templates = TemplateSupport.getInstance().getAll();
     }
 
     public void onDestroy() {
-        NotificationCenter.getInstance().removeObserver(this, MediaController.recordStarted);
-        NotificationCenter.getInstance().removeObserver(this, MediaController.recordStartError);
-        NotificationCenter.getInstance().removeObserver(this, MediaController.recordStopped);
-        NotificationCenter.getInstance().removeObserver(this, MediaController.recordProgressChanged);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.closeChats);
-        NotificationCenter.getInstance().removeObserver(this, MediaController.audioDidSent);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateTemplatesNotification);
-        NotificationCenter.getInstance().removeObserver(this, 999);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.recordStarted);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.recordStartError);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.recordStopped);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.recordProgressChanged);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeChats);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.audioDidSent);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.hideEmojiKeyboard);	
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateTemplatesNotification);
         if (mWakeLock != null) {
             try {
                 mWakeLock.release();
@@ -133,7 +133,6 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         }
         if (sizeNotifierRelativeLayout != null) {
             sizeNotifierRelativeLayout.delegate = null;
-            sizeNotifierRelativeLayout = null;
         }
     }
 
@@ -347,7 +346,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     int currentTime = ConnectionsManager.getInstance().getCurrentTime();
                     TLRPC.User currentUser = null;
                     if ((int)dialog_id > 0) {
-                        currentUser = MessagesController.getInstance().users.get((int)dialog_id);
+                        currentUser = MessagesController.getInstance().getUser((int)dialog_id);
                     }
                     if (currentUser != null && currentUser.status != null && currentUser.status.expires < currentTime) {
                         return;
@@ -384,7 +383,18 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
 
     private void sendMessage() {
         if (processSendingText(messsageEditText.getText().toString())) {
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
+			NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+            messsageEditText.setText("");
+            lastTypingTimeSend = 0;
+            if (delegate != null) {
+                delegate.onMessageSend();
+            }
+        }
+    }
+
+    public void sendMessage(String text) {
+        if (processSendingText(text)) {
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
             messsageEditText.setText("");
             lastTypingTimeSend = 0;
             if (delegate != null) {
@@ -404,13 +414,13 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             if (matcher.find()) {
                 String issueId = matcher.group(1);
                 String message = LocaleController.getString("IssueNoted", R.string.IssueNoted).replace("@id",issueId);
-                MessagesController.getInstance().sendMessage(message, dialog_id);
+                SendMessagesHelper.getInstance().sendMessage(message, dialog_id);
             } else {
                 matcher = patternIssueSolved.matcher(text);
                 if (matcher.find()) {
                     String issueId = matcher.group(1);
                     String message = LocaleController.getString("IssueSolved", R.string.IssueSolved).replace("@id", issueId);
-                    MessagesController.getInstance().sendMessage(message, dialog_id);
+                    SendMessagesHelper.getInstance().sendMessage(message, dialog_id);
                 } else {
                     int count = (int) Math.ceil(text.length() / 2048.0f);
                     for (int a = 0; a < count; a++) {
@@ -421,10 +431,10 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                             String name = matcher.group(2);
                             String surname = matcher.group(3);
                             mess = mess.replace(matcher.group(), "");
-                            MessagesController.getInstance().sendMessage(mess, dialog_id);
-                            MessagesController.getInstance().sendMessageSupport(number, name, surname, dialog_id, "");
+                            SendMessagesHelper.getInstance().sendMessage(mess, dialog_id);
+                            SendMessagesHelper.getInstance().sendMessageSupport(number, name, surname, dialog_id, "");
                         } else {
-                            MessagesController.getInstance().sendMessage(mess, dialog_id);
+                            SendMessagesHelper.getInstance().sendMessage(mess, dialog_id);
                         }
                     }
                 }
@@ -432,7 +442,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             return true;
         }
         else { // Mark as read but send nothing
-            NotificationCenter.getInstance().postNotificationName(MessagesController.readChatNotification, dialog_id);
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
             return false;
         }
 
@@ -565,12 +575,16 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                 currentHeight = keyboardHeight;
             }
             emojiPopup.setHeight(View.MeasureSpec.makeMeasureSpec(currentHeight, View.MeasureSpec.EXACTLY));
-            emojiPopup.setWidth(View.MeasureSpec.makeMeasureSpec(sizeNotifierRelativeLayout.getWidth(), View.MeasureSpec.EXACTLY));
+            if (sizeNotifierRelativeLayout != null) {
+                emojiPopup.setWidth(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.x, View.MeasureSpec.EXACTLY));
+            }
 
             emojiPopup.showAtLocation(parentActivity.getWindow().getDecorView(), 83, 0, 0);
             if (!keyboardVisible) {
-                sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
-                emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                if (sizeNotifierRelativeLayout != null) {
+                    sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
+                    emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                }
                 return;
             }
             emojiButton.setImageResource(R.drawable.ic_msg_panel_kb);
@@ -615,15 +629,20 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
             }
             templatePopup.setHeight(View.MeasureSpec.makeMeasureSpec(currentHeight, View.MeasureSpec.EXACTLY));
             templatePopup.setWidth(View.MeasureSpec.makeMeasureSpec(sizeNotifierRelativeLayout.getWidth(), View.MeasureSpec.EXACTLY));
+            if (sizeNotifierRelativeLayout != null) {
+                templatePopup.setWidth(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.x, View.MeasureSpec.EXACTLY));
+            }
 
             templatePopup.showAtLocation(parentActivity.getWindow().getDecorView(), 83, 0, 0);
             if (!keyboardVisible) {
-                sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
-                emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                if (sizeNotifierRelativeLayout != null) {
+                    sizeNotifierRelativeLayout.setPadding(0, 0, 0, currentHeight);
+                    if (emojiButton != null) {
+                        emojiButton.setImageResource(R.drawable.ic_msg_panel_hide);
+                    }
+                }
                 return;
             }
-            emojiButton.setImageResource(R.drawable.ic_msg_panel_kb);
-            return;
         }
         if (emojiButton != null) {
             emojiButton.setImageResource(R.drawable.ic_msg_panel_smiles);
@@ -715,13 +734,6 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         dialog_id = id;
     }
 
-    public void setMarkAsReadParameters(ArrayList<MessageObject> messages, int minMessageId, int maxDate) {
-        this.messages = messages;
-        this.minMessageId = minMessageId;
-        this.maxDate = maxDate;
-
-    }
-
     public void setFieldText(String text) {
         ignoreTextChange = true;
         messsageEditText.setText(text);
@@ -739,7 +751,11 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     @Override
                     public void run() {
                         if (messsageEditText != null) {
-                            messsageEditText.requestFocus();
+                            try {
+                                messsageEditText.requestFocus();
+                            } catch (Exception e) {
+                                FileLog.e("tsupport", e);
+                            }
                         }
                     }
                 }, 600);
@@ -781,7 +797,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         }
         int rotation = manager.getDefaultDisplay().getRotation();
 
-        if (height > AndroidUtilities.dp(50)) {
+        if (height > AndroidUtilities.dp(50) && keyboardVisible) {
             if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
                 keyboardHeightLand = height;
                 ApplicationLoader.applicationContext.getSharedPreferences("emoji", 0).edit().putInt("kbd_height_land3", keyboardHeightLand).commit();
@@ -792,48 +808,55 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         }
 
         if (emojiPopup != null && emojiPopup.isShowing()) {
-            WindowManager wm = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
-            final WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams)emojiPopup.getContentView().getLayoutParams();
-            layoutParams.width = sizeNotifierRelativeLayout.getWidth();
+            int newHeight = 0;
             if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
-                layoutParams.height = keyboardHeightLand;
+                newHeight = keyboardHeightLand;
             } else {
-                layoutParams.height = keyboardHeight;
+                newHeight = keyboardHeight;
             }
-            wm.updateViewLayout(emojiPopup.getContentView(), layoutParams);
-            if (!keyboardVisible) {
-                sizeNotifierRelativeLayout.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sizeNotifierRelativeLayout != null) {
-                            sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
-                            sizeNotifierRelativeLayout.requestLayout();
+            final WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) emojiPopup.getContentView().getLayoutParams();
+            if (layoutParams.width != AndroidUtilities.displaySize.x || layoutParams.height != newHeight) {
+                WindowManager wm = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
+                layoutParams.width = AndroidUtilities.displaySize.x;
+                layoutParams.height = newHeight;
+                wm.updateViewLayout(emojiPopup.getContentView(), layoutParams);
+                if (!keyboardVisible) {
+                    sizeNotifierRelativeLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (sizeNotifierRelativeLayout != null) {
+                                sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
+                                sizeNotifierRelativeLayout.requestLayout();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
-
         if (templatePopup != null && templatePopup.isShowing()) {
-            WindowManager wm = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
-            final WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams)templatePopup.getContentView().getLayoutParams();
-            layoutParams.width = sizeNotifierRelativeLayout.getWidth();
+            int newHeight = 0;
             if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
-                layoutParams.height = keyboardHeightLand;
+                newHeight = keyboardHeightLand;
             } else {
-                layoutParams.height = keyboardHeight;
+                newHeight = keyboardHeight;
             }
-            wm.updateViewLayout(templatePopup.getContentView(), layoutParams);
-            if (!keyboardVisible) {
-                sizeNotifierRelativeLayout.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (sizeNotifierRelativeLayout != null) {
-                            sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
-                            sizeNotifierRelativeLayout.requestLayout();
+            final WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) templatePopup.getContentView().getLayoutParams();
+            if (layoutParams.width != AndroidUtilities.displaySize.x || layoutParams.height != newHeight) {
+                WindowManager wm = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
+                layoutParams.width = AndroidUtilities.displaySize.x;
+                layoutParams.height = newHeight;
+                wm.updateViewLayout(templatePopup.getContentView(), layoutParams);
+                if (!keyboardVisible) {
+                    sizeNotifierRelativeLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (sizeNotifierRelativeLayout != null) {
+                                sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
+                                sizeNotifierRelativeLayout.requestLayout();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
 
@@ -851,11 +874,11 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == 999) {
+        if (id == NotificationCenter.emojiDidLoaded) {
             if (emojiView != null) {
                 emojiView.invalidateViews();
             }
-        } else if (id == MediaController.recordProgressChanged) {
+        } else if (id == NotificationCenter.recordProgressChanged) {
             Long time = (Long)args[0] / 1000;
             String str = String.format("%02d:%02d", time / 60, time % 60);
             if (lastTimeString == null || !lastTimeString.equals(str)) {
@@ -863,29 +886,33 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     recordTimeText.setText(str);
                 }
             }
-        } else if (id == MessagesController.closeChats) {
+        } else if (id == NotificationCenter.closeChats) {
             if (messsageEditText != null && messsageEditText.isFocused()) {
                 AndroidUtilities.hideKeyboard(messsageEditText);
             }
-        } else if (id == MediaController.recordStartError || id == MediaController.recordStopped) {
+        } else if (id == NotificationCenter.recordStartError || id == NotificationCenter.recordStopped) {
             if (recordingAudio) {
                 recordingAudio = false;
                 updateAudioRecordIntefrace();
             }
-        } else if (id == MediaController.recordStarted) {
+        } else if (id == NotificationCenter.recordStarted) {
             if (!recordingAudio) {
                 recordingAudio = true;
                 updateAudioRecordIntefrace();
             }
-        } else if (id == MediaController.audioDidSent) {
+        } else if (id == NotificationCenter.audioDidSent) {
             if (delegate != null) {
                 delegate.onMessageSend();
             }
-        } else if (id == MessagesController.updateTemplatesNotification) {
+        } else if (id == NotificationCenter.updateTemplatesNotification) {
             templates.putAll(TemplateSupport.getInstance().getAll());
             if (templateView != null) {
                 templateView.setTemplates(templates);
             }
+        } else if (id == NotificationCenter.hideEmojiKeyboard) {
+            hideEmojiPopup();
+        } else if (id == NotificationCenter.hideTemplatesKeyboard) {
+            hideTemplatePopup();
         }
     }
 }

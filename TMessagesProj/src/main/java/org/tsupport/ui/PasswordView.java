@@ -23,7 +23,6 @@ import android.widget.TextView;
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
 import org.tsupport.messenger.R;
-import org.tsupport.messenger.UserConfig;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 
 import java.util.Date;
@@ -89,7 +88,6 @@ public class PasswordView extends BaseFragment {
             fragmentView = inflater.inflate(R.layout.password_layout, container, false);
 
             passwordField = (EditText) fragmentView.findViewById(R.id.password_field);
-
             passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {

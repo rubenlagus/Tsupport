@@ -12,25 +12,22 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
-import org.tsupport.messenger.FileLoader;
-import org.tsupport.messenger.FileLog;
+import org.tsupport.android.ImageLoader;
 import org.tsupport.android.LocaleController;
+import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
 import org.tsupport.ui.Views.ActionBar.BaseFragment;
 
@@ -291,6 +288,7 @@ public class PhotoCropActivity extends BaseFragment {
 
     @Override
     public boolean onFragmentCreate() {
+        swipeBackEnabled = false;
         String photoPath = getArguments().getString("photoPath");
         Uri photoUri = getArguments().getParcelable("photoUri");
         if (photoPath == null && photoUri == null) {
@@ -302,15 +300,13 @@ public class PhotoCropActivity extends BaseFragment {
                 return false;
             }
         }
-        Point displaySize = new Point();
-        Display display = ((WindowManager)ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        if(android.os.Build.VERSION.SDK_INT < 13) {
-            displaySize.set(display.getWidth(), display.getHeight());
+        int size;
+        if (AndroidUtilities.isTablet()) {
+            size = AndroidUtilities.dp(520);
         } else {
-            display.getSize(displaySize);
+            size = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
         }
-        int size = Math.max(displaySize.x, displaySize.y);
-        imageToCrop = FileLoader.loadBitmap(photoPath, photoUri, size, size);
+        imageToCrop = ImageLoader.loadBitmap(photoPath, photoUri, size, size);
         if (imageToCrop == null) {
             return false;
         }

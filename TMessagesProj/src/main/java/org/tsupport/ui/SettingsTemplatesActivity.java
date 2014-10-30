@@ -12,6 +12,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,15 +20,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
-import org.tsupport.android.MessagesController;
 import org.tsupport.android.MessagesStorage;
+import org.tsupport.android.NotificationCenter;
 import org.tsupport.android.TemplateSupport;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.NotificationCenter;
 import org.tsupport.messenger.R;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
@@ -51,12 +52,14 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     private final static int add_template = 1;
     private final static int reload_default = 2;
     private final static int attach_document = 3;
+    private final static int export_templates = 4;
 
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.updateTemplatesNotification);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.exportTemplates);
         loadTemplates();
         return true;
     }
@@ -64,8 +67,9 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateInterfaces);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.updateTemplatesNotification);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateTemplatesNotification);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.exportTemplates);
 
     }
 
@@ -77,6 +81,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
             menu.addItem(add_template, R.drawable.addmember);
             menu.addItem(reload_default,R.drawable.ic_refresh);
             menu.addItem(attach_document,R.drawable.ic_ab_doc);
+            menu.addItem(export_templates, R.drawable.ic_external_storage);
             actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
             actionBarLayer.setTitle(LocaleController.getString("templates", R.string.templates));
 
@@ -112,6 +117,20 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
                                 DocumentSelectActivity fragment = new DocumentSelectActivity();
                                 fragment.setDelegate(SettingsTemplatesActivity.this);
                                 presentFragment(fragment);
+                            }
+                        });
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        showAlertDialog(builder);
+                    } else if (id == export_templates) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                        builder.setMessage(LocaleController.getString("exportTemplates", R.string.exportTemplates));
+                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                TemplateSupport.getInstance().exportAll();
+                                Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("exporting", R.string.exporting), Toast.LENGTH_LONG);
+                                toast.show();
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -186,7 +205,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
     }
 
     private void loadTemplatesInternal() {
-        Utilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
                 if (progressView != null) {
@@ -225,8 +244,18 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
 
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == MessagesController.updateTemplatesNotification) {
+        if (id == NotificationCenter.updateTemplatesNotification) {
             loadTemplates();
+        } else if (id == NotificationCenter.exportTemplates) {
+            if (args.length > 0) {
+                Uri uri = (Uri) args[0];
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, LocaleController.getString("templates", R.string.templates));
+                sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                sendIntent.setType("text/plain");
+
+                getParentActivity().startActivity(sendIntent);
+            }
         }
     }
 

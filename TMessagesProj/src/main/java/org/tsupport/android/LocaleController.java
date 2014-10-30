@@ -18,6 +18,7 @@ import android.content.res.Configuration;
 import android.text.format.DateFormat;
 import android.util.Xml;
 
+import org.tsupport.android.time.FastDateFormat;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
@@ -47,6 +48,7 @@ public class LocaleController {
     static final int QUANTITY_MANY = 0x0010;
 
     public static boolean isRTL = false;
+    public static int nameDisplayOrder = 1;
     private static boolean is24HourFormat = false;
     public static FastDateFormat formatterDay;
     public static FastDateFormat formatterWeek;
@@ -74,7 +76,7 @@ public class LocaleController {
                 @Override
                 public void run() {
                     if (!formatterMonth.getTimeZone().equals(TimeZone.getDefault())) {
-                        LocaleController.recreateFormatters();
+                        LocaleController.getInstance().recreateFormatters();
                     }
                 }
             });
@@ -215,6 +217,14 @@ public class LocaleController {
         sortedLanguages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "한국어";
+        localeInfo.nameEnglish = "Korean";
+        localeInfo.shortName = "ko";
+        localeInfo.pathToFile = null;
+        sortedLanguages.add(localeInfo);
+        languagesDict.put(localeInfo.shortName, localeInfo);
+
         loadOtherLanguages();
 
         for (LocaleInfo locale : otherLanguages) {
@@ -296,15 +306,15 @@ public class LocaleController {
         }
     }
 
-    private String getLocaleString(Locale locale) {
+    public static String getLocaleString(Locale locale) {
         if (locale == null) {
-            return "";
+            return "en";
         }
         String languageCode = locale.getLanguage();
         String countryCode = locale.getCountry();
         String variantCode = locale.getVariant();
         if (languageCode.length() == 0 && countryCode.length() == 0) {
-            return "";
+            return "en";
         }
         StringBuilder result = new StringBuilder(11);
         result.append(languageCode);
@@ -509,6 +519,19 @@ public class LocaleController {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.remove("language");
                 editor.commit();
+
+                if (newLocale != null) {
+                    LocaleInfo info = null;
+                    if (newLocale.getLanguage() != null) {
+                        info = languagesDict.get(newLocale.getLanguage());
+                    }
+                    if (info == null) {
+                        info = languagesDict.get(getLocaleString(newLocale));
+                    }
+                    if (info == null) {
+                        newLocale = Locale.US;
+                    }
+                }
             }
             if (newLocale != null) {
                 if (localeInfo.pathToFile == null) {
@@ -544,12 +567,17 @@ public class LocaleController {
     public static String getCurrentLanguageCode() {
         return getString("LanguageCode", R.string.LanguageCode);
     }
-    public static String getString(String key, int res) {
-        String value = getInstance().localeValues.get(key);
+
+    private String getStringInternal(String key, int res) {
+        String value = localeValues.get(key);
         if (value == null) {
             value = ApplicationLoader.applicationContext.getString(res);
         }
         return value;
+    }
+
+    public static String getString(String key, int res) {
+        return getInstance().getStringInternal(key, res);
     }
 
     public static String formatPluralString(String key, int plural) {
@@ -661,52 +689,77 @@ public class LocaleController {
         } else if (dateDay + 1 == day && year == dateYear) {
             return String.format("%s %s %s", LocaleController.getString("LastSeen", R.string.LastSeen), LocaleController.getString("YesterdayAt", R.string.YesterdayAt), formatterDay.format(new Date(date * 1000)));
         } else if (year == dateYear) {
-            return String.format("%s %s %s %s", LocaleController.getString("LastSeenDate", R.string.LastSeenDate), formatterMonth.format(new Date(date * 1000)), LocaleController.getString("OtherAt", R.string.OtherAt), formatterDay.format(new Date(date * 1000)));
+            String format = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, formatterMonth.format(new Date(date * 1000)), formatterDay.format(new Date(date * 1000)));
+            return String.format("%s %s", LocaleController.getString("LastSeenDate", R.string.LastSeenDate), format);
         } else {
-            return String.format("%s %s %s %s", LocaleController.getString("LastSeenDate", R.string.LastSeenDate), formatterYear.format(new Date(date * 1000)), LocaleController.getString("OtherAt", R.string.OtherAt), formatterDay.format(new Date(date * 1000)));
+            String format = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, formatterYear.format(new Date(date * 1000)), formatterDay.format(new Date(date * 1000)));
+            return String.format("%s %s", LocaleController.getString("LastSeenDate", R.string.LastSeenDate), format);
         }
     }
 
-    public static void recreateFormatters() {
-        Locale locale = Locale.getDefault();
+    public void recreateFormatters() {
+        Locale locale = currentLocale;
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
         String lang = locale.getLanguage();
         if (lang == null) {
             lang = "en";
         }
         isRTL = lang.toLowerCase().equals("ar");
-        if (lang.equals("en")) {
-            formatterMonth = FastDateFormat.getInstance("MMM dd", locale);
-            formatterYear = FastDateFormat.getInstance("dd.MM.yy", locale);
-            formatterYearMax = FastDateFormat.getInstance("dd.MM.yyyy", locale);
-            chatDate = FastDateFormat.getInstance("MMMM d", locale);
-            chatFullDate = FastDateFormat.getInstance("MMMM d, yyyy", locale);
-        } else if (lang.startsWith("es")) {
-            formatterMonth = FastDateFormat.getInstance("dd 'de' MMM", locale);
-            formatterYear = FastDateFormat.getInstance("dd.MM.yy", locale);
-            formatterYearMax = FastDateFormat.getInstance("dd.MM.yyyy", locale);
-            chatDate = FastDateFormat.getInstance("d 'de' MMMM", locale);
-            chatFullDate = FastDateFormat.getInstance("d 'de' MMMM 'de' yyyy", locale);
-        } else {
-            formatterMonth = FastDateFormat.getInstance("dd MMM", locale);
-            formatterYear = FastDateFormat.getInstance("dd.MM.yy", locale);
-            formatterYearMax = FastDateFormat.getInstance("dd.MM.yyyy", locale);
-            chatDate = FastDateFormat.getInstance("d MMMM", locale);
-            chatFullDate = FastDateFormat.getInstance("d MMMM yyyy", locale);
+        nameDisplayOrder = lang.toLowerCase().equals("ko") ? 2 : 1;
+        String formatString = getStringInternal("formatterMonth", R.string.formatterMonth);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "dd MMM";
         }
-        formatterWeek = FastDateFormat.getInstance("EEE", locale);
+        formatterMonth = FastDateFormat.getInstance(formatString, locale);
 
-        if (lang != null) {
-            if (is24HourFormat) {
-                formatterDay = FastDateFormat.getInstance("HH:mm", locale);
-            } else {
-                if (lang.toLowerCase().equals("ar")) {
-                    formatterDay = FastDateFormat.getInstance("h:mm a", locale);
-                } else {
-                    formatterDay = FastDateFormat.getInstance("h:mm a", Locale.US);
-                }
-            }
+        formatString = getStringInternal("formatterYear", R.string.formatterYear);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "dd.MM.yy";
+        }
+        formatterYear = FastDateFormat.getInstance(formatString, locale);
+
+        formatString = getStringInternal("formatterYearMax", R.string.formatterYearMax);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "dd.MM.yyyy";
+        }
+        formatterYearMax = FastDateFormat.getInstance(formatString, locale);
+
+        formatString = getStringInternal("chatDate", R.string.chatDate);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "d MMMM";
+        }
+        chatDate = FastDateFormat.getInstance(formatString, locale);
+
+        formatString = getStringInternal("chatFullDate", R.string.chatFullDate);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "d MMMM yyyy";
+        }
+        chatFullDate = FastDateFormat.getInstance(formatString, locale);
+
+        formatString = getStringInternal("formatterWeek", R.string.formatterWeek);
+        if (formatString == null || formatString.length() == 0) {
+            formatString = "EEE";
+        }
+        formatterWeek = FastDateFormat.getInstance(formatString, locale);
+
+        if (is24HourFormat) {
+            formatString = getStringInternal("formatterDay24H", R.string.formatterDay24H);
         } else {
-            formatterDay = FastDateFormat.getInstance("h:mm a", Locale.US);
+            formatString = getStringInternal("formatterDay12H", R.string.formatterDay12H);
+        }
+        if (formatString == null || formatString.length() == 0) {
+            if (is24HourFormat) {
+                formatString = "HH:mm";
+            } else {
+                formatString = "h:mm a";
+            }
+        }
+        if (lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko")) {
+            formatterDay = FastDateFormat.getInstance(formatString, locale);
+        } else {
+            formatterDay = FastDateFormat.getInstance(formatString, Locale.US);
         }
     }
 

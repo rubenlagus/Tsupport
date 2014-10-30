@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,11 +27,10 @@ import android.widget.TextView;
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
 import org.tsupport.android.MediaController;
-import org.tsupport.android.MessagesController;
-import org.tsupport.messenger.NotificationCenter;
+import org.tsupport.android.MessageObject;
+import org.tsupport.android.NotificationCenter;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
-import org.tsupport.objects.MessageObject;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
 import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
 import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
@@ -69,15 +69,15 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     public boolean onFragmentCreate() {
         loading = true;
         MediaController.loadGalleryPhotosAlbums(classGuid);
-        NotificationCenter.getInstance().addObserver(this, MediaController.albumsDidLoaded);
-        NotificationCenter.getInstance().addObserver(this, MessagesController.closeChats);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.albumsDidLoaded);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.closeChats);
         return super.onFragmentCreate();
     }
 
     @Override
     public void onFragmentDestroy() {
-        NotificationCenter.getInstance().removeObserver(this, MediaController.albumsDidLoaded);
-        NotificationCenter.getInstance().removeObserver(this, MessagesController.closeChats);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.albumsDidLoaded);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeChats);
         super.onFragmentDestroy();
     }
 
@@ -120,6 +120,12 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
             fragmentView = inflater.inflate(R.layout.photo_picker_layout, container, false);
 
             emptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
+            emptyView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             emptyView.setText(LocaleController.getString("NoPhotos", R.string.NoPhotos));
             listView = (GridView)fragmentView.findViewById(R.id.media_grid);
             progressView = fragmentView.findViewById(R.id.progressLayout);
@@ -199,7 +205,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     @SuppressWarnings("unchecked")
     @Override
     public void didReceivedNotification(int id, Object... args) {
-        if (id == MediaController.albumsDidLoaded) {
+        if (id == NotificationCenter.albumsDidLoaded) {
             int guid = (Integer)args[0];
             if (classGuid == guid) {
                 albumsSorted = (ArrayList<MediaController.AlbumEntry>)args[1];
@@ -217,7 +223,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
                 }
                 loading = false;
             }
-        } else if (id == MessagesController.closeChats) {
+        } else if (id == NotificationCenter.closeChats) {
             removeSelfFromStack();
         }
     }
@@ -273,6 +279,9 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
         int count = listView.getChildCount();
         for (int a = 0; a < count; a++) {
             View view = listView.getChildAt(a);
+            if (view.getTag() == null) {
+                continue;
+            }
             int num = (Integer)view.getTag();
             if (num < 0 || num >= selectedAlbum.photos.size()) {
                 continue;
@@ -335,7 +344,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     @Override
     public void sendButtonPressed(int index) {
         if (selectedPhotos.isEmpty()) {
-            if (index < 0 || index >= selectedAlbum.photos.size()) {
+            if (selectedAlbum == null || index < 0 || index >= selectedAlbum.photos.size()) {
                 return;
             }
             MediaController.PhotoEntry photoEntry = selectedAlbum.photos.get(index);
@@ -395,10 +404,14 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
 
         int columnsCount = 2;
         if (selectedAlbum != null) {
-            if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
-                columnsCount = 5;
-            } else {
+            if (AndroidUtilities.isTablet()) {
                 columnsCount = 3;
+            } else {
+                if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
+                    columnsCount = 5;
+                } else {
+                    columnsCount = 3;
+                }
             }
         } else {
             if (rotation == Surface.ROTATION_270 || rotation == Surface.ROTATION_90) {
@@ -406,7 +419,11 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
             }
         }
         listView.setNumColumns(columnsCount);
-        itemWidth = (getParentActivity().getResources().getDisplayMetrics().widthPixels - ((columnsCount + 1) * AndroidUtilities.dp(4))) / columnsCount;
+        if (AndroidUtilities.isTablet()) {
+            itemWidth = (AndroidUtilities.dp(490) - ((columnsCount + 1) * AndroidUtilities.dp(4))) / columnsCount;
+        } else {
+            itemWidth = (AndroidUtilities.displaySize.x - ((columnsCount + 1) * AndroidUtilities.dp(4))) / columnsCount;
+        }
         listView.setColumnWidth(itemWidth);
 
         listAdapter.notifyDataSetChanged();

@@ -16,13 +16,11 @@ import android.content.Intent;
 import org.json.JSONObject;
 import org.tsupport.messenger.ConnectionsManager;
 import org.tsupport.messenger.FileLog;
-import org.tsupport.messenger.Utilities;
 import org.tsupport.ui.ApplicationLoader;
 
 public class GcmBroadcastReceiver extends BroadcastReceiver {
 
     public static final int NOTIFICATION_ID = 1;
-    private static final Integer sync = 1;
 
     @Override
     public void onReceive(final Context context, final Intent intent) {
@@ -30,7 +28,7 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
 
         // Avoid background connections
         if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
-            Utilities.RunOnUIThread(new Runnable() {
+            AndroidUtilities.RunOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     ApplicationLoader.postInitApplication();
@@ -53,13 +51,6 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
                     } catch (Exception e) {
                         FileLog.e("tsupport", e);
                     }
-
-                    /*SharedPreferences preferences = context.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
-                    boolean globalEnabled = preferences.getBoolean("EnableAll", false);
-                    if (!globalEnabled) {
-                        FileLog.d("tsupport", "GCM disabled");
-                        return;
-                    }*/
 
                     ConnectionsManager.getInstance().resumeNetworkMaybe();
                 }
