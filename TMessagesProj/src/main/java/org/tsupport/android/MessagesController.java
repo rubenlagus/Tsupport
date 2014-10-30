@@ -2567,15 +2567,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                                 if (!patternTSFBot.matcher(obj.messageText).find()) {
                                                     FileLog.d("TsupportUnread", "Message unread from me and no robot - " + obj.isUnread());
                                                     obj.setIsRead();
-                                                } else {
-                                                    FileLog.d("TsupportUnread", "Message unread from me but robot - " + obj.isUnread());
                                                 }
-                                                if (obj.hashtags.contains("#tsfBot")) {
-                                                    FileLog.d("TsupportUnread", "Message from me but robot");
-                                                }
-                                                FileLog.d("TsupportUnread", "Message: " + obj.messageText);
-                                                FileLog.d("TsupportUnread", "Message post check - " + obj.isUnread());
-
                                             }
                                             long dialog_id = obj.messageOwner.dialog_id;
                                             if (dialog_id == 0) {
@@ -2714,8 +2706,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         if (patternTSFBot.matcher(updates.message).find()) {
                             FileLog.d("tsupportUnread", "Unread in processUpdates 1");
                             message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                        } else {
-                            FileLog.d("tsupportUnread", "Mine but not #tsbot 1: " + updates.message);
                         }
                     } else {
                         message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
@@ -2789,8 +2779,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         if (patternTSFBot.matcher(updates.message).find()) {
                             FileLog.d("tsupportUnread", "Unread in processUpdates 2");
                             message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                        } else {
-                            FileLog.d("tsupportUnread", "Mine but not #tsbot 2: " + updates.message);
                         }
                     } else {
                         FileLog.d("tsupportUnread", "Not mine 2: " + updates.message);
@@ -2996,18 +2984,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 
                 if (upd.message.from_id == UserConfig.getCurrentUser().id) {
                     FileLog.d("TsupportUnread", "Message unread pre check proccessupdateArray");
-                    FileLog.d("TsupportUnread", upd.message.message);
                     if (!patternTSFBot.matcher(upd.message.message).find()) {
-                        FileLog.d("TsupportUnread", "Message unread from me and no robot - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
                         upd.message.flags = TLRPC.MESSAGE_FLAG_OUT;
-                    } else {
-                        FileLog.d("TsupportUnread", "Message unread from me but robot - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
                     }
                     FileLog.d("TsupportUnread", "Message post check - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
-                } else {
-                    FileLog.d("TsupportUnread", "Message read because not mine pre." + upd.message.flags);
-                    FileLog.d("TsupportUnread", upd.message.message);
-                    FileLog.d("TsupportUnread", "Message read because not mine post." + upd.message.flags);
                 }
 
                 messagesArr.add(upd.message);

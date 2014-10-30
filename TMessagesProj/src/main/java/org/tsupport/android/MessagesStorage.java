@@ -1172,7 +1172,7 @@ public class MessagesStorage {
                             }
                         }
                         if (usersToLoad.length() != 0) {
-                            cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
+                            cursor = database.queryFinalizedInternal(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
                             while (cursor.next()) {
                                 ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(0));
                                 if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
@@ -1286,7 +1286,6 @@ public class MessagesStorage {
             public void run() {
                 for (String key: templates.keySet()) {
                     try {
-                        FileLog.d("tsupportTemplates", "Adding: " + key + " -> " + templates.get(key));
                         SQLitePreparedStatement state = database.executeFastInternal("INSERT OR REPLACE INTO template VALUES(?, ?)");
 
                         state.bindString(1, key);
@@ -1547,7 +1546,7 @@ public class MessagesStorage {
                         }
                     }
                     if (usersToLoad.length() != 0) {
-                        cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
+                        cursor = database.queryFinalizedInternal(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
                         while (cursor.next()) {
                             ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(0));
                             if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
@@ -1967,7 +1966,7 @@ public class MessagesStorage {
                         }
                     }
                     if (usersToLoad.length() != 0) {
-                        cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
+                        cursor = database.queryFinalizedInternal(String.format(Locale.US, "SELECT data, status FROM users WHERE uid IN(%s)", usersToLoad.toString()));
                         while (cursor.next()) {
                             ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(0));
                             if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
@@ -2240,7 +2239,7 @@ public class MessagesStorage {
                     }
                     cursor.dispose();
                     if (userToLoad != 0) {
-                        cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT data, status FROM users WHERE uid = %d", userToLoad));
+                        cursor = database.queryFinalizedInternal(String.format(Locale.US, "SELECT data, status FROM users WHERE uid = %d", userToLoad));
                         if (cursor.next()) {
                             ByteBufferDesc data = buffersStorage.getFreeBuffer(cursor.byteArrayLength(0));
                             if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
