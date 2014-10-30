@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -272,7 +273,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     if (TrelloSupport.getInstance().openIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
                         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        textView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
                         textView.setEllipsize(TextUtils.TruncateAt.END);
                         textView.setMaxLines(2);
                         if (textView != null) {
@@ -289,7 +290,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                     if (TrelloSupport.getInstance().closedIssuesList.get(i) != null) {
                         TextView textView = (TextView) view.findViewById(R.id.info_text_view);
                         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-                        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        textView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
                         textView.setEllipsize(TextUtils.TruncateAt.END);
                         textView.setMaxLines(2);
                         if (textView != null) {

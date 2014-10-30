@@ -24,8 +24,7 @@
             android:layout_gravity="center"/>
 
         <include
-            layout="@layout/encrypted_chat_placeholder"
-            android:layout_gravity="center"/>
+            layout="@layout/encrypted_chat_placeholder"/>
 
     </org.tsupport.ui.Views.FrameLayoutFixed>
 
@@ -150,7 +149,7 @@
             android:textColorHint="#909090"
             android:ems="10"
             android:imeOptions="flagNoExtractUi"
-            android:inputType="textCapSentences|textMultiLine"
+            android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
             android:layout_alignParentTop="true"
             android:paddingBottom="12dp"
             android:maxLength="16384"
