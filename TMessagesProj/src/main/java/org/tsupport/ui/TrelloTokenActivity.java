@@ -34,9 +34,18 @@ public class TrelloTokenActivity extends Activity {
         }
 
         public void showHTML(String html) {
-            // TODO Simplify this, last method may work for everyone, NEED TO CHECK
+            // TODO Simplify this, token64Chars method may work for everyone, NEED TO CHECK
             html = Normalizer.normalize(html, Normalizer.Form.NFKD);
             FileLog.d("tsupportTrello", "HTML code: " + html);
+            FileLog.d("tsupportTrello", "Request not found");
+            FileLog.d("tsupportTrello", "Request trying 64chars");
+            Matcher matcher = token64Chars.matcher(html);
+            if (matcher.find()) {
+                if (matcher.group(1).length() == 64) {
+                    endActivity(matcher.group(1), true);
+                    return;
+                }
+            }
             try {
                 String temp = html.replace("<html>", "");
                 temp = temp.replace("</html>", "");
@@ -53,7 +62,7 @@ public class TrelloTokenActivity extends Activity {
             }
             FileLog.d("tsupportTrello", "Request not found");
             FileLog.d("tsupportTrello", "Request trying tokenPattern");
-            Matcher matcher = tokenPattern.matcher(html);
+            matcher = tokenPattern.matcher(html);
             if (matcher.find()) {
                 if (matcher.groupCount() == 1 && matcher.group(1).length() == 64) {
                     FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
@@ -67,15 +76,6 @@ public class TrelloTokenActivity extends Activity {
             if (matcher.find()) {
                 if (matcher.group(2).length() == 64) {
                     FileLog.d("tsupportTrello", "Request found: " + matcher.group(2));
-                    endActivity(matcher.group(2), true);
-                    return;
-                }
-            }
-            FileLog.d("tsupportTrello", "Request not found");
-            FileLog.d("tsupportTrello", "Request trying 64chars");
-            matcher = token64Chars.matcher(html);
-            if (matcher.find()) {
-                if (matcher.group(1).length() == 64) {
                     endActivity(matcher.group(2), true);
                     return;
                 }
@@ -132,9 +132,18 @@ public class TrelloTokenActivity extends Activity {
     }
 
     public void showHTML(String html) {
-        // TODO Simplify this, last method may work for everyone, NEED TO CHECK
+        // TODO Simplify this, token64Chars method may work for everyone, NEED TO CHECK
         html = Normalizer.normalize(html, Normalizer.Form.NFKD);
-        FileLog.d("tsupportTrello", "HTML code: " + html);
+        //FileLog.d("tsupportTrello", "HTML code: " + html);
+        //FileLog.d("tsupportTrello", "Request not found");
+        FileLog.d("tsupportTrello", "Request trying 64chars");
+        Matcher matcher = token64Chars.matcher(html);
+        if (matcher.find()) {
+            if (matcher.group(1).length() == 64) {
+                endActivity(matcher.group(1), true);
+                return;
+            }
+        }
         try {
             String temp = html.replace("<html>", "");
             temp = temp.replace("</html>", "");
@@ -142,38 +151,29 @@ public class TrelloTokenActivity extends Activity {
             temp = temp.replace("\n", "");
             temp = temp.trim();
             if (temp.length() == 64) {
-                FileLog.d("tsupportTrello", "Request found: " + temp);
+                //FileLog.d("tsupportTrello", "Request found: " + temp);
                 endActivity(temp, true);
                 return;
             }
         } catch (Exception e) {
             FileLog.e("tsupportTrello","Exception");
         }
-        FileLog.d("tsupportTrello", "Request not found");
+        //FileLog.d("tsupportTrello", "Request not found");
         FileLog.d("tsupportTrello", "Request trying tokenPattern");
-        Matcher matcher = tokenPattern.matcher(html);
+        matcher = tokenPattern.matcher(html);
         if (matcher.find()) {
             if (matcher.groupCount() == 1 && matcher.group(1).length() == 64) {
-                FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
+               // FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
                 endActivity(matcher.group(1), true);
                 return;
             }
         }
-        FileLog.d("tsupportTrello", "Request not found");
+        //FileLog.d("tsupportTrello", "Request not found");
         FileLog.d("tsupportTrello", "Request trying unicode");
         matcher = tokenUnicodePattern.matcher(html);
         if (matcher.find()) {
             if (matcher.group(2).length() == 64) {
                 FileLog.d("tsupportTrello", "Request found: " + matcher.group(2));
-                endActivity(matcher.group(2), true);
-                return;
-            }
-        }
-        FileLog.d("tsupportTrello", "Request not found");
-        FileLog.d("tsupportTrello", "Request trying 64chars");
-        matcher = token64Chars.matcher(html);
-        if (matcher.find()) {
-            if (matcher.group(1).length() == 64) {
                 endActivity(matcher.group(2), true);
                 return;
             }

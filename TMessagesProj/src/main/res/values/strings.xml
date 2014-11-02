@@ -204,7 +204,8 @@
     <string name="Phone">Phone</string>
     <!--usernames-->
     <string name="Username">Username</string>
-    <string name="UsernameInUse">Username already in use</string>
+    <string name="UsernamePlaceholder">Your Username</string>
+    <string name="UsernameInUse">Sorry, this username is already taken.</string>
     <string name="UsernameInvalid">Sorry, this username is invalid.</string>
     <string name="UsernameInvalidShort">A username must have at least 5 characters.</string>
     <string name="UsernameInvalidLong">The username must not exceed 32 characters.</string>

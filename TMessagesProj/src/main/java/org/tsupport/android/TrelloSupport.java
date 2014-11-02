@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Ruben Bermudez on 19/10/14.
@@ -54,20 +56,48 @@ public class TrelloSupport {
      */
     private static volatile TrelloSupport Instance = null;
 
-    private AsyncTask<Void, Void, Void> loadIssuesAsync =
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    TrelloSupport.getInstance().loadIssues();
+    class LoadIssuesAsync extends AsyncTask<Void, Void, Void> {
 
-                    return null;
-                }
+        private final ReentrantLock lock = new ReentrantLock();
+        private final Condition tryAgain = lock.newCondition();
 
-                @Override
-                protected void onPostExecute(Void result) {
-                    loading = false;
-                }
-            };
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                lock.lockInterruptibly();
+
+                TrelloSupport.getInstance().loadIssues();
+
+                tryAgain.await();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            tryAgain.signal();
+            lock.unlock();
+        }
+
+        public void runAgain() {
+            tryAgain.signal();
+        }
+
+        public void terminateTask() {
+            lock.unlock();
+        }
+
+        @Override
+        protected void onCancelled() {
+            terminateTask();
+        }
+    }
+
+    private LoadIssuesAsync loadIssuesAsync;
 
     public static TrelloSupport getInstance() {
         TrelloSupport localInstance = Instance;
@@ -86,6 +116,7 @@ public class TrelloSupport {
     private TrelloSupport() {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
         token = preferences.getString("token", "");
+        loadIssuesAsync = new LoadIssuesAsync();
         loadIssuesAsync();
     }
 
@@ -193,15 +224,16 @@ public class TrelloSupport {
     }
 
     public void loadIssuesAsync() {
-        if (!loading) {
-            loading = true;
-            AsyncTask.Status status = loadIssuesAsync.getStatus();
-            if (status == AsyncTask.Status.RUNNING) {
-                FileLog.d("tsupportTrello","Closed because of running");
-                return;
-            } else {
-                FileLog.d("tsupportTrello","Executing");
+        AsyncTask.Status status = loadIssuesAsync.getStatus();
+        if (status == AsyncTask.Status.RUNNING) {
+            FileLog.d("tsupportTrello","Closed because of running");
+            return;
+        } else {
+            FileLog.d("tsupportTrello","Executing");
+            try {
                 loadIssuesAsync.execute();
+            } catch (IllegalStateException e) {
+                FileLog.e("tsupportTrello", "Error launching task ", e);
             }
         }
     }
