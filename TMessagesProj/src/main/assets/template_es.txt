@@ -16,7 +16,7 @@ Es un mensaje del servicio de mantenimiento que arregla los ajustes de Telegram 
 {KEYS}
 ddos
 {VALUE}
-Estamos sufriendo un ataque DDoS, que no es más que un grupo de personas no agradables que envían una gran cantidad de datos para sobrecargar nuestros servidores y quitar el acceso a Telegram.
+Estamos sufriendo un ataque DDoS, que no es más que un grupo de personas poco amigables que envían una gran cantidad de datos para sobrecargar nuestros servidores y bloquear el acceso a Telegram.
 
 Nos gustaría dar una hora exacta de solución del problema pero, por desgracia, no es tan simple. Por favor, sé paciente. Estamos trabajando en una solución para que todo vuelva a ser tan veloz como siempre.
 
@@ -54,16 +54,6 @@ Dime qué necesitas.
 ¿Puedo ayudarte con cualquier otra duda sobre Telegram?
 
 {KEYS}
-videoi
-{VALUE}
-iOS - abre la foto o vídeo, pulsa el ícono del cuadrado y la flecha, y luego selecciona ‘Guardar en el carrete’.
-
-{KEYS}
-videoa
-{VALUE}
-Basta que pulses junto al mensaje (en el espacio vacío que queda entre el mensaje y el fin de la pantalla, sólo un toque) y verás desplegarse la opción. Elige 'Guardar en galería'.
-
-{KEYS}
 ipad
 {VALUE}
 Hola, sentimos los inconvenientes en la versión de Telegram para iPad. Actualmente estamos trabajando en solucionarlos.
@@ -82,12 +72,12 @@ ok
 {KEYS}
 8api
 {VALUE}
-Sí, poco a poco iremos actualizando la app para aprovechar todas las nuevas ventajas de iOS 8, danos tiempo por favor ;)
+Sí, poco a poco iremos actualizando la app para aprovechar todas las nuevas ventajas de iOS 8, danos tiempo, por favor ;)
 
 {KEYS}
 8
 {VALUE}
-Acabamos de lanzar una actualización con soporte para iOS 8 y iPhone 6, puedes encontrarla en el App Store.
+Acabamos de lanzar una actualización con soporte para iOS 8 y iPhone 6, puedes encontrarla en el App Store (https://telegram.org/dl/).
 
 {KEYS}
 del
@@ -115,9 +105,9 @@ exportar
 {VALUE}
 Por el momento no tenemos una opción de ese tipo disponible en Telegram.
 
-Una idea: abre Telegram web en un ordenador y copia/pega el contenido que quieras en un documento.
+Una idea: abre Telegram Web en un ordenador y copia/pega el contenido que quieras en un documento.
 
-Enlace a Telegram web: https://telegram.org/dl/webogram
+Enlace a Telegram web: http://web.telegram.org
 
 {KEYS}
 self
@@ -132,7 +122,7 @@ Crea un grupo con un amigo, luego expúlsalo y podrás enviarte cualquier conten
 webogram
 web
 {VALUE}
-https://telegram.org/dl/webogram
+http://web.telegram.org
 
 {KEYS}
 ls
@@ -140,7 +130,7 @@ ultimavez
 {VALUE}
 Lo siento. Por el momento, no tenemos un modo 'invisible' en Telegram. Pero esperamos que esté disponible antes de fin de año.
 
-Mientras tatno, si bloqueas a uno de tus contactos, él no podrá ver tu estado de conexión (aparecerás como ‘fuera de línea’) ni tampoco tu foto de perfil. Puede ser bastante útil si quieres desaparecer para alguien.
+Mientras tanto, si bloqueas a uno de tus contactos, éste no podrá ver tu estado de conexión (aparecerás como ‘fuera de línea’) ni tampoco tu foto de perfil. Puede ser bastante útil si quieres desaparecer para alguien.
 
 {KEYS}
 estado
@@ -156,7 +146,7 @@ Pero te doy una idea: si tienes un grupo de amigos al que te gustaría notificar
 numeroprivado
 numerogrupo
 {VALUE}
-Telegram no proporciona los números de teléfono de los usuarios de un grupo, o usuarios que te hayan hablado, es un mecanismo de privacidad propio de Telegram.
+Telegram no proporciona los números de teléfono de los usuarios de un grupo, o usuarios que te hayan hablado mediante tu apodo, es un mecanismo de privacidad propio de Telegram.
 
 Para conocer el número de teléfono de un usuario, debes pedirle a éste que lo comparta contigo.
 
@@ -187,15 +177,22 @@ broadcast
 {VALUE}
 Las difusiones te permiten enviar el mismo mensaje, de una vez, a un máximo de 100 contactos. A diferencia de un grupo, los destinatarios no sabrán de los otros y recibirán la difusión como un mensaje normal de tu parte. Una vez que la lista de difusión ha sido creada, puede ser usada nuevamente para enviar mensajes al mismo conjunto de contactos.
 
-Para crear una lista de difusión:
-iPhone: Inicia un nuevo mensaje (pulsa el ícono de la esquina superior derecha en Chats). Luego, ‘Nueva difusión’.
-Android: Pulsa los tres puntos blancos de la esquina superior derecha. Luego, ‘Nueva lista de difusión’.
+{KEYS}
+broadcasti
+{VALUE}
+Para crear una lista de difusión, inicia un nuevo mensaje (pulsa el ícono de la esquina superior derecha en Chats). Luego, ‘Nueva difusión’.
+
+{KEYS}
+broadcasta
+{VALUE}
+Para crear una lista de difusión, pulsa los tres puntos blancos de la esquina superior derecha. Luego, ‘Nueva lista de difusión’.
 
 {KEYS}
 recuperarcontacto
 rcontact
 {VALUE}
 No es posible recuperar un contacto que se ha eliminado, debes volver a introducir su número en tu agenda y volverá a tu Telegram.
+
 {KEYS}
 PIN-code
 pin
@@ -203,7 +200,6 @@ pin
 En algún momento añadiremos la opción de proteger la apertura de la app con un código PIN.
 
 {KEYS}
-guardarfotos
 guardarfoto
 savephoto
 foto
@@ -212,25 +208,8 @@ photo
 Abre una foto, despliega sus opciones y elige 'Guardar en galería'.
 
 {KEYS}
-errorimportacion
-
-
-{VALUE}
-Telegram importa, automáticamente, contactos desde el dispositivo en el que se inicie la cuenta.
-
-De ese modo, si iniciaste Telegram en otro equipo, se importaron los contactos que estaban almacenados ahí.
-
-Tienes dos opciones:
-
-- Eliminar los contactos uno a uno. Eso sí, sólo podrás quitar los contactos que estén usando Telegram. Los que no, no pueden ser quitados de manera manual.
-
-- Eliminar tu cuenta por completo y volver a crearla. Es una solución bastante radical, pero te ayudará a quitar todos los contactos que tenías importados por error y volver a importar los que tú quieras.
-
-Ten en cuenta que, en caso de elegir la segunda opción, perderás todos los datos vinculados a la cuenta ya existente.
-
-{KEYS}
 archivoios
-
+song
 {VALUE}
 En Telegram para iOS, los archivos se envían de diferente modo. Necesitas una app para visualizar y seleccionar los archivos (como Dropbox, Google Drive u otras, por ejemplo).
 
@@ -271,11 +250,6 @@ Puedes descargarla desde el siguiente enlace: http://telegram.org/dl/ios
 Para facilitar la migración, descárgala e inicia sesión antes de desinstalar la aplicación antigua.
 
 {KEYS}
-hd
-{VALUE}
-Telegram HD es una de nuestras aplicaciones oficiales para iPhone e iPad, como también para otros dispositivos con iOS. Fue publicada como una aplicación separada a raíz de problemas organizacionales que ya han sido resueltos con Apple. Actualizaremos la aplicación HD para que funcione bien en dispositivos con iOS 8 e iPhones 6 y luego comenzar la migración de usuarios desde la edición HD. Así que, si te estás preguntando qué aplicación necesitas, ve por Telegram Messenger.
-
-{KEYS}
 noquieroactualizar
 noupdate
 noup
@@ -298,10 +272,11 @@ Puedes descargarla en el siguiente enlace: http://telegram.org/dl/android
 
 {KEYS}
 agenda
+añadircontactos
 {VALUE}
-Telegram funciona con números de teléfono, los de la agenda de contactos de tu dispositivo. Tras eso, se importarán en Telegram.
+Telegram funciona con números de teléfono, los de la agenda de contactos de tu dispositivo. Una vez guardados ahi, se importarán en Telegram.
 
-Quienes tengan ya instalado Telegram, aparecerán en la parte alta de la lista de contactos de la aplicación, con sus respectivas fotos de perfil.
+Quienes tengan ya instalado Telegram, aparecerán en la parte superior de la lista de contactos de la aplicación, con sus respectivas fotos de perfil.
 
 Si tras añadirlos tienes problemas para visualizarlos, por favor, revisa estos pasos para solucionarlo: https://telegram.org/faq/es#problemas-con-contactos
 
@@ -312,7 +287,6 @@ Telegram para iPhone se lanzó el 14 de agosto de 2013. La versión alfa de Tele
 Cada día van aparecido nuevos clientes de Telegram, elaborados por desarrolladores independientes usando la plataforma abierta de Telegram.
 
 {KEYS}
-
 off
 {VALUE}
 Si te aparece como fuera de línea/desconectado y sin foto de perfil, significa que te ha bloqueado.
@@ -358,7 +332,7 @@ Pulsa la foto de perfil del contacto, dentro del chat que tienes con él. Pulsa 
 {KEYS}
 up
 {VALUE}
-Te recomendamos que actualices Telegram a través de tu tienda de aplicaciones habitual (App Store / Play Store...)
+Te recomendamos que actualices Telegram a través de tu tienda de aplicaciones habitual (App Store / Play Store...). También puedes hacerlo tocando el siguiente enlace: https://telegram.org/dl/
 
 {KEYS}
 eliminarfotoperfil
@@ -416,17 +390,6 @@ No tenemos llamadas en Telegram.
 Aunque que las llamadas de voz y de vídeo pueden parecer atractivas, no consideramos que sean parte del núcleo de la experiencia de mensajería. Y, ya que ambas características requieren considerables recursos en términos de tiempo, trabajo y mantenimiento - preferimos utilizar toda esa energía para lograr una mensajería rápida, segura y fiable, capaz de transferir archivos de gran tamaño, la sincronización a través de muchos dispositivos y mantenerte feliz, sin esas molestas llamadas entrantes.
 
 {KEYS}
-cambiarnumero
-
-{VALUE}
-Si quieres cambiar de número, tendrás que crear una nueva cuenta. No tenemos opciones para fusionar cuentas o editar una ya existente.
-
-Si no vas a usar más tu número viejo, te recomiendo que elimines la cuenta de Telegram asociada a él.
-
-Puedes eliminar la cuenta aquí:
-https://telegram.org/deactivate
-
-{KEYS}
 color
 {VALUE}
 No tenemos opciones para cambiar el color en Telegram.
@@ -476,23 +439,17 @@ crollback
 No disponemos de una opción que permita hacer eso. Siempre puedes volver a agregarlo a tu agenda teléfonica, y si has perdido el número no te queda otra que volver a pedirlo.
 
 {KEYS}
-song
-{VALUE}
-En Telegram para iOS, los archivos se envían de manera diferente. Necesitas una app para visualizar y seleccionar los archivos (como Dropbox, Google Drive u otras, por ejemplo).
-
-Una vez elegido el archivo, debes seleccionar la opción 'Abrir con Telegram'. Podrás enviarlo al chat que desees.
-
-{KEYS}
 robot
 {VALUE}
 Somos personas, nos encargamos de atender todas tus preguntas o dudas sobre Telegram.
 
 {KEYS}
-change
-number
+changenumber
+cambiarnumero
 {VALUE}
 Cada nuevo número de teléfono tiene una cuenta de Telegram nueva. Así que, si cambias tu número de teléfono, no podrás acceder a tus mensajes hasta que vuelvas a iniciar la sesión. Podemos añadir algunas características más adelante que te permitan usar múltiples números, pero por ahora es imposible.
 
+Si no vas a usar más tu número viejo, te recomiendo que elimines la cuenta de Telegram asociada a él.
 Puedes eliminar la cuenta aquí:
 https://telegram.org/deactivate
 
@@ -501,9 +458,7 @@ Ten en cuenta que perderás los chats de la antigua cuenta.
 {KEYS}
 boss
 {VALUE}
-Sus principales precursores son Pavel y Nikolai Durov.
-
-Somos un proyecto completamente independiente. Recibimos un generoso aporte de parte de Pavel y pudimos dar forma a esta app. Claro que este proyecto incluye algunas de sus ideas.
+Sus principales precursores son Pavel y Nikolai Durov, pero somos un proyecto completamente independiente. Recibimos un generoso aporte de parte de Pavel y pudimos dar forma a esta app. Claro que este proyecto incluye algunas de sus ideas.
 
 {KEYS}
 pers
@@ -517,9 +472,7 @@ em
 {VALUE}
 Para enviar un mensaje, necesitas tener a tus amigos en los contactos del teléfono. Y ellos necesitan tener Telegram.
 
-iOS: En la pantalla 'Chats', pulsa el botón de la esquina superior derecha (el botón del lápiz), luego elige a tu amigo y envía el mensaje.
-
-Android: En la pantalla principal, pulsa el botón de nuevo mensaje, luego elige a tu amigo en la lista y envía el mensaje.
+Si quieres enviarles un mensaje, pulsa el botón de nuevo mensaje, en la parte superior de Telegram, y luego elige el contacto al que quieras enviar el mensaje.
 
 {KEYS}
 telegram
@@ -539,12 +492,12 @@ https://telegram.org/press
 {KEYS}
 grupo
 {VALUE}
-En la pantalla de chats, pulsa el icono de la esquina superior derecha, en la pantalla de chats, y elige 'Nuevo grupo'.
+En la pantalla de chats, pulsa el icono de la esquina superior derecha y elige 'Nuevo grupo'.
 
 {KEYS}
 addgrupo
 {VALUE}
-Toca en la foto de grupo, al finaln de la lista de miembros encontrarás la opción 'Añadir participante'.
+Toca en la foto de grupo, al final de la lista de miembros encontrarás la opción 'Añadir participante'.
 
 {KEYS}
 gratis
@@ -557,25 +510,19 @@ Recuerda: Telegram necesita internet para funcionar. Si no tienes wifi, tu opera
 {KEYS}
 eliminarconios
 remi
-
 {VALUE}
-Para eliminar un contacto en iOS:
-
-Abre un chat con él, pulsa su foto de perfil, selecciona ‘Editar’ y ‘Eliminar contacto’. Desaparecerá de la agenda de contactos de tu dispositivo, también. Otra vía es, justamente, eliminarlo desde allá.
+Para eliminar un contacto, abre un chat con él, pulsa su foto de perfil, selecciona ‘Editar’ y ‘Eliminar contacto’. Desaparecerá de la agenda de contactos de tu dispositivo, también. Otra vía es, justamente, eliminarlo desde allá.
 
 {KEYS}
 eliminarconandroid
 rema
 {VALUE}
-
-Para eliminar un contacto en Android:
-
-Abre un chat con él, pulsa su foto de perfil, luego los tres puntos blancos de la esquina superior derecha (o el botón de menú físico de tu dispositivo) y elige ‘Eliminar’.
+Para eliminar un contacto, abre un chat con él, pulsa su foto de perfil, luego el botón de menú y elige ‘Eliminar’.
 
 {KEYS}
 sug
 {VALUE}
-¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Ten aseguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
+¡Gracias por tu opinión! Transmitiré tu mensaje al equipo de desarrollo. Ten por seguro que todas las sugerencias de los usuarios son tenidas en cuenta para futuras versiones de Telegram.
 
 {KEYS}
 inv
@@ -589,26 +536,10 @@ Aquí tienes una lista completa de aplicaciones de Telegram:
 https://telegram.org/apps
 
 {KEYS}
-mensajeios
-
-{VALUE}
-Para enviar un mensaje, necesitas tener a tus amigos en los contactos del teléfono. Y ellos necesitan tener Telegram. En iOS debes seguir los siguientes pasos: 
-
-Ve la pantalla 'Chats', pulsa el botón de la esquina superior derecha (el botón del lápiz), luego elige a tu amigo y envía el mensaje.
-
-{KEYS}
-mensajeandroid
-
-{VALUE}
-Para enviar un mensaje, necesitas tener a tus amigos en los contactos del teléfono. Y ellos necesitan tener Telegram. En Android debes seguir los siguientes pasos: 
-
-En la pantalla principal, pulsa el botón de nuevo mensaje, luego elige a tu amigo desde la lista y envía el mensaje.
-
-{KEYS}
 whatsapp
 wa
 {VALUE}
-A diferencia de WhatsApp, Telegram es gratis, segura y poderosa. Con Telegram puedes crear grupos de hasta 200 miembros, listas de difusión con un máximo de 100 personas, compartir fotos, largos vídeos y archivos de cualquier tipo (.doc, .ppt, .zip, etc.). Telegram es un proyecto de código abierto y no comercial.
+A diferencia de WhatsApp, Telegram es gratis, segura y potente. Con Telegram puedes crear grupos de hasta 200 miembros, listas de difusión con un máximo de 100 personas, compartir fotos, largos vídeos y archivos de cualquier tipo (.doc, .ppt, .zip, etc.). Telegram es un proyecto de código abierto y no comercial.
 
 Además, puedes usar Telegram en todos tus dispositivos al mismo tiempo (incluyendo computadores). Mira la lista de aplicaciones de Telegram:
 https://telegram.org/apps
@@ -626,7 +557,6 @@ Nuestra única sede está en Berlín. Sin embargo, no estamos ligados a ningún 
 {KEYS}
 base
 b
-
 {VALUE}
 Telegram es un proyecto global con infraestructura alrededor de todo el mundo. Intentamos mantenerlo descentralizado y extendido en cuantas jurisdicciones diferentes sea posible. Si quieres aprender más sobre la gente detrás de Telegram, por favor, mira nuestras Preguntas Frecuentes:
 https://telegram.org/faq/es#preguntas-generales
@@ -645,7 +575,6 @@ https://telegram.org/faq/es#seguridad
 
 {KEYS}
 secreto
-
 {VALUE}
 Los chats secretos son el tipo de comunicación más segura en Telegram. Todos los mensajes y archivos en los chats secretos son cifrados de móvil a móvil, lo que significa que sólo tú y tu compañero de chat podéis acceder a ellos. También puedes establecer la autodestrucción en los chats secretos - una vez que el tiempo acabe, los mensajes desaparecen de ambos dispositivos. En las últimas versiones de las aplicaciones oficiales de Telegram, cuando un mensaje es eliminado de un chat secreto en tu dispositivo, también es eliminado desde el dispositivo de tu compañero.
 
@@ -655,24 +584,18 @@ https://telegram.org/faq/es#chats-secretos
 {KEYS}
 guardarandroid
 gfandroid
-
 {VALUE}
-Para guardar una foto o vídeo en Android:
+Para guardar una foto o vídeo, basta que pulses junto al mensaje (en el espacio vacío que queda entre el mensaje y el fin de la pantalla, sólo un toque) y verás desplegarse la opción. Elige 'Guardar en galería'.  
 
-Basta que pulses junto al mensaje (en el espacio vacío que queda entre el mensaje y el fin de la pantalla, sólo un toque) y verás desplegarse la opción. Elige 'Guardar en galería'.  
-
-También, una vez descargados, podrás encontrarlos en la ruta: Almacenamiento externo / Telegram, dentro del administrador de tus archivos.
+También, una vez descargados, podrás encontrarlos en la ruta: "Almacenamiento externo / Telegram", dentro de tu administrador de archivos.
 
 Si quieres activar el guardado automático de fotos, ve a Ajustes y activa la opción ‘Guardar en galería’.
 
 {KEYS}
 guardarios
 gfios
-
 {VALUE}
-Para guardar una foto o vídeo en iOS:
-
-Abre la foto o vídeo, pulsa el ícono del cuadrado y la flecha, y luego selecciona ‘Guardar en el carrete’.
+Para guardar una foto o vídeo, ábrelo y pulsa el ícono del cuadrado y la flecha, y luego selecciona ‘Guardar en el carrete’.
 
 Si quieres activar el guardado automático de fotos, ve a Ajustes y activa la opción ‘Guardar fotos recibidas’.
 
@@ -680,33 +603,21 @@ Si quieres activar el guardado automático de fotos, ve a Ajustes y activa la op
 garchivoandroid
 gaandroid
 sdpath
+sd
+descargararchivo
+descargar
 {VALUE}
-Todos tus archivos descargados en Telegram, se almacenan automáticamente en la ruta: Almacenamiento externo / Telegram / Telegram Documents.
+Todos tus archivos descargados en Telegram se almacenan automáticamente en la ruta: "Almacenamiento externo/Telegram/Telegram Documents".
 
-Puedes llegar a ellos usando el administrador de archivos de Android.
+Puedes gestionarlos a tu antojo con el administrador de archivos de Android.
 
 En la carpeta Telegram Audio, podrás encontrar las notas de voz descargadas en tus chats.
 
 {KEYS}
-chatsecretoios
-csios
-
+chatsecreto
+cs
 {VALUE}
-Para comenzar un chat secreto en iOS, debes seguir los siguientes pasos:
-
-Inicia un nuevo mensaje (pulsa el botón de la esquina superior derecha), luego elige 'Nuevo chat secreto’.
-
-Puedes encontrar más información sobre los chats secretos en nuestras Preguntas Frecuentes: 
-https://telegram.org/faq/es#chats-secretos
-
-{KEYS}
-chatsecretoandroid
-scsandroid
-
-{VALUE}
-Para comenzar un chat secreto en Android, debes seguir los siguientes pasos:
-
-Pulsa los tres puntos blancos, de la esquina superior derecha, y luego elige ‘Nuevo chat secreto’.
+Para comenzar un chat secreto, pulsa el botón de la esquina superior derecha y elige 'Nuevo chat secreto’.
 
 Puedes encontrar más información sobre los chats secretos en nuestras Preguntas Frecuentes: 
 https://telegram.org/faq/es#chats-secretos
@@ -714,7 +625,6 @@ https://telegram.org/faq/es#chats-secretos
 {KEYS}
 autodestruccion
 destruccion
-
 {VALUE}
 La autodestrucción te permite eliminar mensajes, de ambos dispositivos, en el tiempo que elijas. Es una característica que está disponible en los chats secretos.
 
@@ -722,53 +632,11 @@ Puedes aprender más sobre ella aquí:
 https://telegram.org/faq/es#p-cmo-funcionan-los-mensajes-que-se-autodestruyen
 
 {KEYS}
-descargararchivo
-descargar
-
-{VALUE}
-Los archivos descargados se almacenan automáticamente en la siguiente ruta:
-Almacenamiento externo / Telegram.
-
-Ahí podrás encontrar los diferentes contenidos separados por tipo: imágenes, vídeos, audios y archivos.
-
-Podrás gestionarlos a tu antojo con el administrador de archivos de Android.
-
-{KEYS}
-creargrupoios
-cgios
-
-{VALUE}
-Para crear un grupo en iOS:
-
-Ve a Chats, pulsa el ícono de la esquina superior derecha y luego selecciona 'Nuevo grupo’.
-
-{KEYS}
-creargrupoandroid
-cgandroid
-
-{VALUE}
-Para crear un grupo en Android:
-
-Pulsa los tres puntos blancos, en la esquina superior derecha, y selecciona ‘Nuevo grupo’.
-
-{KEYS}
-añadircontacto
-
-{VALUE}
-Tienes que añadir a tus contactos, con sus números de teléfono, en la agenda de contactos de tu dispositivo. Tras eso, se importarán en Telegram.
-
-Quienes tengan ya instalado Telegram, aparecerán en la parte alta de la lista de contactos de la aplicación, con sus respectivas fotos de perfil.
-
-Si tras añadirlos tienes problemas para visualizarlos, por favor, revisa estos pasos para solucionarlo: https://telegram.org/faq/es#problemas-con-contactos
-
-{KEYS}
 telegramhd
-
 {VALUE}
 Telegram HD fue publicada como una aplicación aparte, a raíz de asuntos organizacionales que han sido resueltos con Apple. Por lo tanto, la aplicación ha sido quitada de la tienda. Así que, si todavía la estás usando, por favor, actualiza a Telegram Messenger aquí: https://telegram.org/dl/ios 
 
 La aplicación HD no recibirá más actualizaciones. Disculpa por la confusión.
-
 
 {KEYS}
 emoji
@@ -782,17 +650,8 @@ tick
 check
 {VALUE}
 En Telegram:
-1 tick = mensaje entregado al servidor. Tu amigo recibe la notificación (si la tiene activada)
-2 ticks = mensaje leído (tu amigo abrió el chat y revisó el mensaje)
-
-{KEYS}
-sd
-{VALUE}
-Una vez descargado el archivo dentro de Telegram, podrás encontrarlo dentro del administrador de archivos en el apartado External Storage /Telegram. Ahí encontrarás todos los archivos, fotos, vídeos y audios :)
-
-Puedes acudir a esa carpeta y, vía copiar/pegar, pasarla al directorio que prefieras.
-
-Siempre puedes pulsar justo al lado del archivo en Telegram (no sobre él, sino junto a él en la misma línea) y seleccionar 'Guardar en descargas'.
+1 tick = mensaje enviado al servidor (tu amigo ha recibido la notificación, si la tiene activada).
+2 ticks = mensaje leído (tu amigo ha abierto el chat y ha leído el mensaje).
 
 {KEYS}
 panic
@@ -816,7 +675,6 @@ Para solucionar problemas con tus contactos en iOS, por favor, sigue estos pasos
 {KEYS}
 contactobug
 conb
-
 {VALUE}
 Parece que algo no anda bien. Necesitamos observar esta situación. Podrías, por favor, decirme:
 
@@ -851,7 +709,7 @@ nota
 {VALUE}
 Actualmente, en Android tenemos dos tipos de notificaciones: las de GCM y el Servicio de notificaciones.
 
-Las primeras funcionan dependiendo de Google y pueden no funcionar bien en todos los equipos. Por otro lado, el Servicio de notificaciones es un proceso en segundo plano independiente de Google y más confiable en la entrega de los avisos.
+Las primeras funcionan dependiendo de Google y pueden no funcionar bien en todos los equipos. Por otro lado, el Servicio de notificaciones es un proceso en segundo plano independiente de Google y más fiable en la entrega de los avisos.
 
 Si tienes activo el Servicio de notificaciones y aún así hay problemas, revisa que no exista una aplicación que ‘mate’ procesos en segundo plano. Es probable que ahí esté la razón del error.
 
@@ -868,7 +726,7 @@ Lo siento, Telegram aún no incorpora esa característica, pero puede que en un 
 {KEYS}
 ayudar
 {VALUE}
-No somos una organización comercial, así que estamos buscando voluntarios que nos ayuden con el soporte para los usuarios. Si estás interesado en responder preguntas sobre Telegram a usuarios de tu país, por favor, echa un vistazo a la Iniciativa del Soporte de Telegram. https://core.telegram.org/tsi
+No somos una organización comercial, así que estamos buscando voluntarios que nos ayuden con el soporte para los usuarios. Si estás interesado en responder preguntas sobre Telegram a usuarios de tu país, por favor, echa un vistazo al siguiente enlace: https://telegram.org/faq/es#p-puedo-ayudar
 
 {KEYS}
 nube
@@ -878,10 +736,9 @@ Para evitar ocupar más memoria de la necesaria en tu dispositivo, Telegram no d
 {KEYS}
 loginotherphone
 liop
+errorimportacion
 {VALUE}
-Telegram importa automáticamente contactos desde el dispositivo en el que se inicie la cuenta.
-
-De ese modo, si iniciaste Telegram en otro equipo, se importaron los contactos que estaban almacenados ahí.
+Telegram importa automáticamente contactos desde el dispositivo en el que se inicie la cuenta. De ese modo, si iniciaste Telegram en otro equipo, se importaron los contactos que estaban almacenados ahí.
 
 Tienes dos opciones:
 
