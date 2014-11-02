@@ -274,7 +274,7 @@ Puedes descargarla en el siguiente enlace: http://telegram.org/dl/android
 agenda
 añadircontactos
 {VALUE}
-Telegram funciona con números de teléfono, los de la agenda de contactos de tu dispositivo. Una vez guardados ahi, se importarán en Telegram.
+Telegram funciona con números de teléfono, los de la agenda de contactos de tu dispositivo. Una vez guardados ahí, se importarán en Telegram.
 
 Quienes tengan ya instalado Telegram, aparecerán en la parte superior de la lista de contactos de la aplicación, con sus respectivas fotos de perfil.
 
