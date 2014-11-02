@@ -121,20 +121,17 @@ public class TrelloSupport {
     }
 
     public void loadIssues() {
-        FileLog.d("tsupportTrello", "Loading 1");
         HashMap<String, String> openIssuesTemp = new HashMap<String, String>();
         HashMap<String, String> closedIssuesTemp = new HashMap<String, String>();
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         String getCardsURL = getCards.replace("@myapikey@", BuildVars.TRELLO_API_KEY).replace("@mytoken@", token);
-        FileLog.d("tsupportTrello", "URL: " + getCardsURL);
         HttpGet httpGet = new HttpGet(getCardsURL);
         try{
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             if(statusCode == 200){
-                FileLog.d("tsupportTrello", "Loading correct");
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
@@ -143,7 +140,6 @@ public class TrelloSupport {
                     builder.append(line);
                 }
                 try{
-                    FileLog.d("tsupportTrello", "Loading 2");
                     JSONArray jsonArray = new JSONArray(builder.toString());
 
                     for (int i=0; i<jsonArray.length(); i++) {
@@ -171,10 +167,8 @@ public class TrelloSupport {
                         for (int j=0; j<labels.length(); j++) {
                             JSONObject label = labels.getJSONObject(j);
                             if (label.getString("color").compareToIgnoreCase("green") == 0) {
-                                FileLog.d("tsupportTrello", "Loading: " + jsonObject.getString("name"));
                                 closedIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " +jsonObject.getString("name"));
                             } else if (label.getString("color").compareToIgnoreCase("blue") != 0){
-                                FileLog.d("tsupportTrello", "Loading: " + jsonObject.getString("name"));
                                 openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
                             }
                         }
@@ -212,7 +206,7 @@ public class TrelloSupport {
 
                 } catch(Exception e){
                     e.printStackTrace();
-                    FileLog.e("tsupportTrello", "Error loading " + e);
+                    FileLog.e("tsupportTrello", "Error loading ", e);
                 }
 
             }

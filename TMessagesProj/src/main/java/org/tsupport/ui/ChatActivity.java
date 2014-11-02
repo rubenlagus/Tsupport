@@ -2370,6 +2370,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     topPlaneClose.setImageResource(R.drawable.ic_msg_btn_cross_custom);
                     topPanel.setBackgroundResource(R.drawable.top_pane_custom);
                     topPanelText.setText(LocaleController.getString("ConversationOwnedByMe", R.string.ConversationOwnedByMe));
+
                     topPanel.setVisibility(View.VISIBLE);
                     topPlaneClose.setVisibility(View.VISIBLE);
                     topPlaneClose.setOnClickListener(new View.OnClickListener() {
