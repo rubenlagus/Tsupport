@@ -52,10 +52,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     private static final Pattern patternTSFBot = Pattern.compile("#tsfBot");
     public ArrayList<TLRPC.TL_dialog> dialogs = new ArrayList<TLRPC.TL_dialog>();
     public ArrayList<TLRPC.TL_dialog> dialogsServerOnly = new ArrayList<TLRPC.TL_dialog>();
-    public ArrayList<Integer> idFromSearch = new ArrayList<Integer>();
-    public ArrayList<TLRPC.User> usersFromSearch = new ArrayList<TLRPC.User>();
-    public ArrayList<TLRPC.User> usersSearched = new ArrayList<TLRPC.User>();
-    public ArrayList<TLRPC.User> globalSearched = new ArrayList<TLRPC.User>();
     public ConcurrentHashMap<Long, TLRPC.TL_dialog> dialogs_dict = new ConcurrentHashMap<Long, TLRPC.TL_dialog>(100, 1.0f, 2);
     public HashMap<Integer, MessageObject> dialogMessage = new HashMap<Integer, MessageObject>();
     public ConcurrentHashMap<Long, ArrayList<PrintingUser>> printingUsers = new ConcurrentHashMap<Long, ArrayList<PrintingUser>>(100, 1.0f, 2);
@@ -91,8 +87,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     public boolean updatingState = false;
     public boolean firstGettingTask = false;
     public boolean registeringForPush = false;
-    public boolean canContinueSearch = true;
-    public Integer searchOffset = 0;
 
     private long lastStatusUpdateTime = 0;
     private long statusRequest = 0;
@@ -708,7 +702,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             TLRPC.TL_contacts_getBlocked req = new TLRPC.TL_contacts_getBlocked();
             req.offset = 0;
             req.limit = 200;
-            FileLog.d("tsupport", "Blocked requesting: ");
             ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
                 @Override
                 public void run(TLObject response, TLRPC.TL_error error) {
@@ -723,7 +716,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         MessagesStorage.getInstance().putUsersAndChats(res.users, null, true, true);
                         MessagesStorage.getInstance().putBlockedUsers(blocked, true);
                     }
-                    FileLog.d("tsupport", "Blocked recived: " + blocked.size());
                     processLoadedBlockedUsers(blocked, users, false);
                 }
             });
@@ -734,7 +726,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() {
-                FileLog.d("tsupport", "Blocked loaded: " + ids.size());
                 if (users != null) {
                     MessagesController.getInstance().putUsers(users, cache);
                 }
@@ -747,7 +738,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     UserConfig.saveConfig(false);
                 }
                 blockedUsers = ids;
-                FileLog.d("tsupport", "Blocked loaded notified: ");
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.blockedUsersDidLoaded);
             }
         });
@@ -903,72 +893,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         }
     }
 
-    public void searchDialogs(final Integer token, final String query, final int classGuid) {
-        FileLog.e("tsupportSearch", "Calling search internal: " + query);
-
-        if (searchOffset == 0) {
-            MessagesController.getInstance().usersFromSearch.clear();
-            //MessagesController.getInstance().usersFromSearchOrdered.clear();
-        }
-
-        TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
-        req.offset = searchOffset;
-        req.limit = 1000;
-        req.max_id = 0;
-        req.max_date = 0;
-        req.min_date = 0;
-        req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
-        req.q = query;
-        req.peer = new TLRPC.TL_inputPeerEmpty();
-        long reqId = ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
-            @Override
-            public void run(TLObject response, TLRPC.TL_error error) {
-                if (error == null) {
-                    final TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
-                    FileLog.e("tsupportSearch", "Result search: " + res.count);
-                    processLoadedSearchDialogs(res, classGuid, token);
-                }
-                else {
-                    FileLog.e("tsupportSearch", "Error: " + error);
-                }
-            }
-        });
-        ConnectionsManager.getInstance().bindRequestToGuid(reqId, classGuid);
-    }
-
-    public void processLoadedSearchDialogs(final TLRPC.messages_Messages res, final int classGuid, final int token) {
-        FileLog.e("tsupportSearch", "Users: " + res.users.size());
-        FileLog.e("tsupportSearch", "Chats: " + res.chats.size());
-        MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
-        AndroidUtilities.RunOnUIThread(new Runnable() {
-            @Override
-            public void run() {
-                for (TLRPC.User user : res.users) {
-                    MessagesController.getInstance().users.put(user.id, user);
-                    if (user.id == UserConfig.getClientUserId()) {
-                        UserConfig.setCurrentUser(user);
-                    } else {
-                        if (!MessagesController.getInstance().usersFromSearch.contains(user.id)) {
-                            MessagesController.getInstance().usersFromSearch.add(user);
-                            //MessagesController.getInstance().usersFromSearchOrdered.add(user);
-                        }
-                    }
-                }
-                for (TLRPC.Chat chat : res.chats) {
-                    MessagesController.getInstance().chats.put(chat.id, chat);
-                }
-
-                if (res.users.size() <= 0) {
-                    canContinueSearch = false;
-                } else {
-                    searchOffset += res.messages.size();
-                }
-
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.reloadSearchChatResults, token);
-            }
-        });
-    }
-
     public void processLoadedMediaCount(final int count, final long uid, final int classGuid, final boolean fromCache) {
         AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
@@ -1099,7 +1023,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     dialog.unread_count = 0;
                 }
                 dialogMessage.remove(dialog.top_message);
-                MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                     @Override
                     public void run() {
                         AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -1395,10 +1319,10 @@ public class MessagesController implements NotificationCenter.NotificationCenter
 	}
     }
 
-    public void loadMessages(final long dialog_id, final int count, final int max_id, boolean fromCache, int midDate, final int classGuid, boolean from_unread, boolean forward, final Semaphore semaphore) {
+    public void loadMessages(final long dialog_id, final int count, final int max_id, boolean fromCache, int midDate, final int classGuid, final int load_type) {
         int lower_part = (int)dialog_id;
         if (fromCache || lower_part == 0) {
-            MessagesStorage.getInstance().getMessages(dialog_id, count, max_id, midDate, classGuid, from_unread, forward, semaphore);
+            MessagesStorage.getInstance().getMessages(dialog_id, count, max_id, midDate, classGuid, load_type);
         } else {
             TLRPC.TL_messages_getHistory req = new TLRPC.TL_messages_getHistory();
             if (lower_part < 0) {
@@ -1423,7 +1347,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 public void run(TLObject response, TLRPC.TL_error error) {
                     if (error == null) {
                         final TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
-                        processLoadedMessages(res, dialog_id, count, max_id, false, classGuid, 0, 0, 0, 0, false, semaphore);
+                        processLoadedMessages(res, dialog_id, count, max_id, false, classGuid, 0, 0, 0, 0, load_type);
                     }
                 }
             });
@@ -1431,7 +1355,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         }
     }
 
-    public void processLoadedMessages(final TLRPC.messages_Messages messagesRes, final long dialog_id, final int count, final int max_id, final boolean isCache, final int classGuid, final int first_unread, final int last_unread, final int unread_count, final int last_date, final boolean isForward, final Semaphore semaphore) {
+    public void processLoadedMessages(final TLRPC.messages_Messages messagesRes, final long dialog_id, final int count, final int max_id, final boolean isCache, final int classGuid, final int first_unread, final int last_message_id, final int unread_count, final int last_date, final int load_type) {
         Utilities.stageQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -1439,14 +1363,11 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 if (!isCache) {
                     MessagesStorage.getInstance().putMessages(messagesRes, dialog_id);
                 }
-                if (lower_id != 0 && isCache && messagesRes.messages.size() == 0 && !isForward) {
-                    if (semaphore != null) {
-                        semaphore.release();
-                    }
+                if (lower_id != 0 && isCache && messagesRes.messages.size() == 0 && (load_type == 0 || load_type == 3)) {
                     AndroidUtilities.RunOnUIThread(new Runnable() {
                         @Override
                         public void run() {
-                            loadMessages(dialog_id, count, max_id, false, 0, classGuid, false, false, null);
+                            loadMessages(dialog_id, count, max_id, false, 0, classGuid, load_type);
                         }
                     });
                     return;
@@ -1460,21 +1381,14 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     message.dialog_id = dialog_id;
                     objects.add(new MessageObject(message, usersLocal, 2));
                 }
-                if (semaphore != null) {
-                    putUsers(messagesRes.users, isCache);
-                    putChats(messagesRes.chats, isCache);
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesDidLoaded, dialog_id, count, objects, isCache, first_unread, last_unread, unread_count, last_date, isForward);
-                    semaphore.release();
-                } else {
-                    AndroidUtilities.RunOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            putUsers(messagesRes.users, isCache);
-                            putChats(messagesRes.chats, isCache);
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesDidLoaded, dialog_id, count, objects, isCache, first_unread, last_unread, unread_count, last_date, isForward);
-                        }
-                    });
-                }
+                AndroidUtilities.RunOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        putUsers(messagesRes.users, isCache);
+                        putChats(messagesRes.chats, isCache);
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesDidLoaded, dialog_id, count, objects, isCache, first_unread, last_message_id, unread_count, last_date, load_type);
+                    }
+                });
             }
         });
     }
@@ -1840,7 +1754,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             req.read_contents = true;
             if (offset == 0) {
                 MessagesStorage.getInstance().processPendingRead(dialog_id, max_positive_id, max_date, false);
-                MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                     @Override
                     public void run() {
                         AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -1878,8 +1792,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 markDialogAsRead(dialog_id, 0, max_positive_id, res.offset, max_date, was, popup);
                             }
                             processNewDifferenceParams(res.seq, res.pts, -1);
-                        } else {
-                            FileLog.e("tsupportRead", error.code + " Error: " + error.text);
                         }
                     }
                 });
@@ -2519,7 +2431,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         }
                     });
 
-                    MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                    MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             if (!msgUpdates.isEmpty()) {
@@ -2563,12 +2475,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         final ArrayList<MessageObject> pushMessages = new ArrayList<MessageObject>();
                                         for (TLRPC.Message message : res.new_messages) {
                                             MessageObject obj = new MessageObject(message, usersDict, 2);
-                                            if (obj.isFromMe()) {
-                                                if (!patternTSFBot.matcher(obj.messageText).find()) {
-                                                    FileLog.d("TsupportUnread", "Message unread from me and no robot - " + obj.isUnread());
-                                                    obj.setIsRead();
-                                                }
-                                            }
+
                                             long dialog_id = obj.messageOwner.dialog_id;
                                             if (dialog_id == 0) {
                                                 if (obj.messageOwner.to_id.chat_id != 0) {
@@ -2616,7 +2523,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
                                             }
                                         });
-                                        MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                                        MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                                             @Override
                                             public void run() {
                                                 if (!pushMessages.isEmpty()) {
@@ -2702,15 +2609,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     message.to_id.chat_id = updates.chat_id;
                     message.message = updates.message;
                     message.date = updates.date;
-                    if (updates.from_id == UserConfig.getCurrentUser().id) {
-                        if (patternTSFBot.matcher(updates.message).find()) {
-                            FileLog.d("tsupportUnread", "Unread in processUpdates 1");
-                            message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                        }
-                    } else {
-                        message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                        FileLog.d("tsupportUnread", "Not mine 1: " + updates.message);
-                    }
+                    message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
                     message.media = new TLRPC.TL_messageMediaEmpty();
                     MessagesStorage.lastSeqValue = updates.seq;
                     MessagesStorage.lastPtsValue = updates.pts;
@@ -2734,7 +2633,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
                         }
                     });
-                    MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                    MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -2775,15 +2674,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     message.to_id.user_id = updates.from_id;
                     message.message = updates.message;
                     message.date = updates.date;
-                    if (updates.from_id == UserConfig.getCurrentUser().id) {
-                        if (patternTSFBot.matcher(updates.message).find()) {
-                            FileLog.d("tsupportUnread", "Unread in processUpdates 2");
-                            message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                        }
-                    } else {
-                        FileLog.d("tsupportUnread", "Not mine 2: " + updates.message);
-                        message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                    }
+                    message.flags = TLRPC.MESSAGE_FLAG_UNREAD;
                     message.media = new TLRPC.TL_messageMediaEmpty();
                     MessagesStorage.lastSeqValue = updates.seq;
                     MessagesStorage.lastPtsValue = updates.pts;
@@ -2807,7 +2698,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
                         }
                     });
-                    MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                    MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                         @Override
                         public void run() {
                             AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -2981,15 +2872,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         return false;
                     }
                 }
-
-                if (upd.message.from_id == UserConfig.getCurrentUser().id) {
-                    FileLog.d("TsupportUnread", "Message unread pre check proccessupdateArray");
-                    if (!patternTSFBot.matcher(upd.message.message).find()) {
-                        upd.message.flags = TLRPC.MESSAGE_FLAG_OUT;
-                    }
-                    FileLog.d("TsupportUnread", "Message post check - " + (upd.message.flags & TLRPC.MESSAGE_FLAG_UNREAD));
-                }
-
                 messagesArr.add(upd.message);
                 MessageObject obj = new MessageObject(upd.message, usersDict, 2);
                 if (obj.type == 11) {
@@ -3070,7 +2952,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     newMessage.action = new TLRPC.TL_messageActionUserJoined();
                     newMessage.local_id = newMessage.id = UserConfig.getNewMessageId();
                     UserConfig.saveConfig(false);
-                    newMessage.flags = 0;
+                    newMessage.flags = TLRPC.MESSAGE_FLAG_UNREAD;
                     newMessage.date = update.date;
                     newMessage.from_id = update.user_id;
                     newMessage.to_id = new TLRPC.TL_peerUser();
@@ -3134,7 +3016,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 } else {
                     MessagesStorage.getInstance().deleteBlockedUser(finalUpdate.user_id);
                 }
-                MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                     @Override
                     public void run() {
                         AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -3145,7 +3027,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                         blockedUsers.add(finalUpdate.user_id);
                                     }
                                 } else {
-                                    blockedUsers.remove((Integer)finalUpdate.user_id);
+                                    blockedUsers.remove((Integer) finalUpdate.user_id);
                                 }
                                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.blockedUsersDidLoaded);
                             }
@@ -3155,7 +3037,27 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             } else if (update instanceof TLRPC.TL_updateNotifySettings) {
                 updatesOnMainThread.add(update);
             } else if (update instanceof TLRPC.TL_updateServiceNotification) {
-                //TODO
+                TLRPC.TL_message newMessage = new TLRPC.TL_message();
+                newMessage.local_id = newMessage.id = UserConfig.getNewMessageId();
+                UserConfig.saveConfig(false);
+                newMessage.flags = TLRPC.MESSAGE_FLAG_UNREAD;
+                newMessage.date = update.date;
+                newMessage.from_id = 777000;
+                newMessage.to_id = new TLRPC.TL_peerUser();
+                newMessage.to_id.user_id = UserConfig.getClientUserId();
+                newMessage.dialog_id = 777000;
+                newMessage.media = update.media;
+                newMessage.message = ((TLRPC.TL_updateServiceNotification)update).message;
+
+                messagesArr.add(newMessage);
+                MessageObject obj = new MessageObject(newMessage, usersDict);
+                ArrayList<MessageObject> arr = messages.get(newMessage.dialog_id);
+                if (arr == null) {
+                    arr = new ArrayList<MessageObject>();
+                    messages.put(newMessage.dialog_id, arr);
+                }
+                arr.add(obj);
+                pushMessages.add(obj);
             }
         }
         if (!messages.isEmpty()) {
@@ -3181,7 +3083,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             ContactsController.getInstance().processContactsUpdates(contactsIds, usersDict);
         }
 
-        MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+        MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
             @Override
             public void run() {
                 AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -3304,7 +3206,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             }
         });
 
-        MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+        MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
             @Override
             public void run() {
                 AndroidUtilities.RunOnUIThread(new Runnable() {
@@ -3326,7 +3228,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         if (!markAsReadEncrypted.isEmpty()) {
                             for (HashMap.Entry<Integer, Integer> entry : markAsReadEncrypted.entrySet()) {
                                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesReadedEncrypted, entry.getKey(), entry.getValue());
-                                long dialog_id = (long)(entry.getKey()) << 32;
+                                long dialog_id = (long) (entry.getKey()) << 32;
                                 TLRPC.TL_dialog dialog = dialogs_dict.get(dialog_id);
                                 if (dialog != null) {
                                     MessageObject message = dialogMessage.get(dialog.top_message);
@@ -3700,7 +3602,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 dialog.unread_count = 0;
                                 dialogMessage.remove(dialog.top_message);
                             }
-                            MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+                            MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
                                 @Override
                                 public void run() {
                                     AndroidUtilities.RunOnUIThread(new Runnable() {

@@ -53,6 +53,8 @@
     <string name="SelectChat">Elige el chat</string>
     <string name="PhotoTip">Mantén pulsado para ver</string>
     <string name="CompatibilityChat">%1$s usa una versión antigua de Telegram, así que las fotos secretas serán mostradas en un modo de compatibilidad.\n\nCuando %2$s actualice Telegram, las fotos con autodestrucción de 1 minuto o menos funcionarán con el modo \'Mantén pulsado para ver\', y te notificaremos siempre que la otra parte haga una captura de pantalla.</string>
+    <string name="SearchConversations">Conversations</string>
+    <string name="SearchMessages">Messages</string>
     <!--broadcasts-->
     <string name="BroadcastList">Lista de difusión</string>
     <string name="NewBroadcastList">Nueva difusión</string>
@@ -388,7 +390,7 @@
     <string name="ForwardMessagesToGroup">¿Reenviar mensajes a %1$s?</string>
     <string name="FeatureUnavailable">Sorry, this feature is currently not available in your country.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Rápida</string>
     <string name="Page3Title">Gratis</string>
     <string name="Page4Title">Segura</string>
@@ -526,4 +528,5 @@
     <string name="trelloTokenNeeded">Se necesita el Token de acceso de Trello. Ve a Ajustes-&gt;Enlazar con Trello</string>
     <string name="AreYouSentIssue">¿Estás seguro que quieres enviar el problema: @title@?</string>
     <string name="AreYouSentClosedIssue">¿Estás seguro que quieres enviar el problema resuelto: @title@?</string>
+    <string name="Users">Usuarios</string>
 </resources>

@@ -3,7 +3,7 @@
 <!--https://www.transifex.com/projects/p/telegram/language/ko/members/-->
 
 <resources>
-    <string name="AppName">텔레그램</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">한국어</string>
     <string name="LanguageNameInEnglish">Korean</string>
     <string name="LanguageCode">ko</string>
@@ -53,6 +53,8 @@
     <string name="SelectChat">채팅방 선택</string>
     <string name="PhotoTip">꾹 눌러서 보기</string>
     <string name="CompatibilityChat">%1$s님의 텔레그램 버전이 낮아 비밀 사진을 호환성 모드로 표시합니다.\n\n%2$s님이 텔레그램을 업데이트하고 나면, 자동삭제 시간이 1분 이하인 사진은 \"탭하고 누르고 있어야 보임\" 상태가 되며, 상대방이 화면을 캡처할 때 마다 알림을 받습니다.</string>
+    <string name="SearchConversations">Conversations</string>
+    <string name="SearchMessages">Messages</string>
     <!--broadcasts-->
     <string name="BroadcastList">단체 메시지 리스트</string>
     <string name="NewBroadcastList">새 단체 메시지 리스트</string>
@@ -388,7 +390,7 @@
     <string name="ForwardMessagesToGroup">%1$s 그룹에 메시지를 전달할까요?</string>
     <string name="FeatureUnavailable">이 기능은 회원님의 국가에서는 사용할 수 없습니다.</string>
     <!--Intro view-->
-    <string name="Page1Title">텔레그램</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">눈부신 속도</string>
     <string name="Page3Title">완전 무료</string>
     <string name="Page4Title">보안성</string>
@@ -527,4 +529,5 @@
     <string name="trelloTokenNeeded"><![CDATA[Trello access token needed. Go to Settings->Link with Trello]]></string>
     <string name="AreYouSentIssue">Are you sure you want to send the issue: @title@</string>
     <string name="AreYouSentClosedIssue">Are you sure you want to send the solved issue: @title@?</string>
+    <string name="Users">Usuarios</string>
 </resources>

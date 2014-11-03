@@ -53,6 +53,8 @@
     <string name="SelectChat">Select Chat</string>
     <string name="PhotoTip">Tap and hold to view</string>
     <string name="CompatibilityChat">%1$s is using an older version of Telegram, so secret photos will be shown in compatibility mode.\n\nOnce %2$s updates Telegram, photos with timers for 1 minute or less will start working in \'Tap and hold to view\' mode, and you will be notified whenever the other party takes a screenshot.</string>
+    <string name="SearchConversations">CONVERSATIONS</string>
+    <string name="SearchMessages">MESSAGES</string>
     <!--broadcasts-->
     <string name="BroadcastList">Broadcast List</string>
     <string name="NewBroadcastList">New Broadcast List</string>
@@ -526,4 +528,5 @@
     <string name="trelloTokenNeeded">Trello access token needed. Go to Settings->Link with Trello</string>
     <string name="AreYouSentIssue">Are you sure you want to send the issue: @title@?</string>
     <string name="AreYouSentClosedIssue">Are you sure you want to send the solved issue: @title@?</string>
+    <string name="Users">Usuarios</string>
 </resources>

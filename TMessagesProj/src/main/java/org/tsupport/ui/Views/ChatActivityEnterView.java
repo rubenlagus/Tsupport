@@ -105,7 +105,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.recordProgressChanged);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.closeChats);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.audioDidSent);
-	    NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.hideEmojiKeyboard);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
@@ -121,7 +121,7 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeChats);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.audioDidSent);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.emojiDidLoaded);
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.hideEmojiKeyboard);	
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.hideEmojiKeyboard);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateTemplatesNotification);
         if (mWakeLock != null) {
             try {
@@ -422,9 +422,9 @@ public class ChatActivityEnterView implements NotificationCenter.NotificationCen
                     String message = LocaleController.getString("IssueSolved", R.string.IssueSolved).replace("@id", issueId);
                     SendMessagesHelper.getInstance().sendMessage(message, dialog_id);
                 } else {
-                    int count = (int) Math.ceil(text.length() / 2048.0f);
+                    int count = (int)Math.ceil(text.length() / 4096.0f);
                     for (int a = 0; a < count; a++) {
-                        String mess = text.substring(a * 2048, Math.min((a + 1) * 2048, text.length()));
+                        String mess = text.substring(a * 4096, Math.min((a + 1) * 4096, text.length()));
                         matcher = patternContact.matcher(mess);
                         if (matcher.find()) {
                             String number = matcher.group(1);

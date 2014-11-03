@@ -200,6 +200,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         private int backgroundState = -1;
         private View parent = null;
         private int size = AndroidUtilities.dp(64);
+        private int previousBackgroundState = -2;
+        private float animatedAlphaValue = 1.0f;
 
         private static DecelerateInterpolator decelerateInterpolator = null;
         private static Paint progressPaint = null;
@@ -221,20 +223,29 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             long dt = newTime - lastUpdateTime;
             lastUpdateTime = newTime;
 
-            radOffset += 360 * dt / 3000.0f;
-            float progressDiff = currentProgress - animationProgressStart;
-            if (progressDiff > 0) {
-                currentProgressTime += dt;
-                if (currentProgressTime >= 300) {
-                    animatedProgressValue = currentProgress;
-                    animationProgressStart = currentProgress;
-                    currentProgressTime = 0;
-                } else {
-                    animatedProgressValue = animationProgressStart + progressDiff * decelerateInterpolator.getInterpolation(currentProgressTime / 300.0f);
+            if (animatedProgressValue != 1) {
+                radOffset += 360 * dt / 3000.0f;
+                float progressDiff = currentProgress - animationProgressStart;
+                if (progressDiff > 0) {
+                    currentProgressTime += dt;
+                    if (currentProgressTime >= 300) {
+                        animatedProgressValue = currentProgress;
+                        animationProgressStart = currentProgress;
+                        currentProgressTime = 0;
+                    } else {
+                        animatedProgressValue = animationProgressStart + progressDiff * decelerateInterpolator.getInterpolation(currentProgressTime / 300.0f);
+                    }
                 }
+                parent.invalidate();
             }
-
-            parent.invalidate();
+            if (animatedProgressValue >= 1 && previousBackgroundState != -2) {
+                animatedAlphaValue -= dt / 200.0f;
+                if (animatedAlphaValue <= 0) {
+                    animatedAlphaValue = 0.0f;
+                    previousBackgroundState = -2;
+                }
+                parent.invalidate();
+            }
         }
 
         public float getRadOffset() {
@@ -256,28 +267,51 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             currentProgressTime = 0;
         }
 
-        public void setBackgroundState(int state) {
+        public void setBackgroundState(int state, boolean animated) {
             lastUpdateTime = System.currentTimeMillis();
+            if (animated && backgroundState != state) {
+                previousBackgroundState = backgroundState;
+                animatedAlphaValue = 1.0f;
+            } else {
+                previousBackgroundState = -2;
+            }
             backgroundState = state;
             parent.invalidate();
         }
 
         public void onDraw(Canvas canvas) {
-            if (backgroundState < 0 || backgroundState > 3) {
-                return;
-            }
-
             int x = (canvas.getWidth() - size) / 2;
             int y = (canvas.getHeight() - size) / 2;
 
-            Drawable drawable = progressDrawables[backgroundState];
-            if (drawable != null) {
-                drawable.setBounds(x, y, x + size, y + size);
-                drawable.draw(canvas);
+            if (previousBackgroundState >= 0 && previousBackgroundState < 4) {
+                Drawable drawable = progressDrawables[previousBackgroundState];
+                if (drawable != null) {
+                    drawable.setAlpha((int)(255 * animatedAlphaValue));
+                    drawable.setBounds(x, y, x + size, y + size);
+                    drawable.draw(canvas);
+                }
             }
 
-            if (backgroundState == 0 || backgroundState == 1) {
+            if (backgroundState >= 0 && backgroundState < 4) {
+                Drawable drawable = progressDrawables[backgroundState];
+                if (drawable != null) {
+                    if (previousBackgroundState != -2) {
+                        drawable.setAlpha((int)(255 * (1.0f - animatedAlphaValue)));
+                    } else {
+                        drawable.setAlpha(255);
+                    }
+                    drawable.setBounds(x, y, x + size, y + size);
+                    drawable.draw(canvas);
+                }
+            }
+
+            if (backgroundState == 0 || backgroundState == 1 || previousBackgroundState == 0 || previousBackgroundState == 1) {
                 int diff = AndroidUtilities.dp(1);
+                if (previousBackgroundState != -2) {
+                    progressPaint.setAlpha((int)(255 * animatedAlphaValue));
+                } else {
+                    progressPaint.setAlpha(255);
+                }
                 progressRect.set(x + diff, y + diff, x + size - diff, y + size - diff);
                 canvas.drawArc(progressRect, -90 + radOffset, Math.max(4, 360 * animatedProgressValue), false, progressPaint);
                 updateAnimation();
@@ -365,7 +399,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             String location = (String)args[0];
             for (int a = 0; a < 3; a++) {
                 if (currentFileNames[a] != null && currentFileNames[a].equals(location)) {
-                    checkProgress(a);
+                    radialProgressViews[a].setProgress(1.0f, true);
+                    checkProgress(a, true);
                     break;
                 }
             }
@@ -373,7 +408,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             String location = (String)args[0];
             for (int a = 0; a < 3; a++) {
                 if (currentFileNames[a] != null && currentFileNames[a].equals(location)) {
-                    checkProgress(a);
+                    radialProgressViews[a].setProgress(1.0f, true);
+                    checkProgress(a, true);
                     break;
                 }
             }
@@ -672,11 +708,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         bottomLayout.setBackgroundColor(0x7F000000);
 
         radialProgressViews[0] = new RadialProgressView(containerView.getContext(), containerView);
-        radialProgressViews[0].setBackgroundState(0);
+        radialProgressViews[0].setBackgroundState(0, false);
         radialProgressViews[1] = new RadialProgressView(containerView.getContext(), containerView);
-        radialProgressViews[1].setBackgroundState(0);
+        radialProgressViews[1].setBackgroundState(0, false);
         radialProgressViews[2] = new RadialProgressView(containerView.getContext(), containerView);
-        radialProgressViews[2].setBackgroundState(0);
+        radialProgressViews[2].setBackgroundState(0, false);
 
         shareButton = new ImageView(containerView.getContext());
         shareButton.setImageResource(R.drawable.ic_ab_share_white);
@@ -1149,7 +1185,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         pickerView.setVisibility(View.GONE);
         for (int a = 0; a < 3; a++) {
             if (radialProgressViews[a] != null) {
-                radialProgressViews[a].setBackgroundState(-1);
+                radialProgressViews[a].setBackgroundState(-1, false);
             }
         }
 
@@ -1374,11 +1410,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
 
         for (int a = 0; a < 3; a++) {
-            checkProgress(a);
+            checkProgress(a, false);
         }
     }
 
-    private void checkProgress(int a) {
+    private void checkProgress(int a, boolean animated) {
         if (currentFileNames[a] != null) {
             int index = currentIndex;
             if (a == 1) {
@@ -1396,19 +1432,19 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             if (f != null && f.exists()) {
                 if (currentFileNames[a].endsWith("mp4")) {
-                    radialProgressViews[a].setBackgroundState(3);
+                    radialProgressViews[a].setBackgroundState(3, animated);
                 } else {
-                    radialProgressViews[a].setBackgroundState(-1);
+                    radialProgressViews[a].setBackgroundState(-1, animated);
                 }
             } else {
                 if (currentFileNames[a].endsWith("mp4")) {
                     if (!FileLoader.getInstance().isLoadingFile(currentFileNames[a])) {
-                        radialProgressViews[a].setBackgroundState(2);
+                        radialProgressViews[a].setBackgroundState(2, false);
                     } else {
-                        radialProgressViews[a].setBackgroundState(1);
+                        radialProgressViews[a].setBackgroundState(1, false);
                     }
                 } else {
-                    radialProgressViews[a].setBackgroundState(0);
+                    radialProgressViews[a].setBackgroundState(0, animated);
                 }
                 Float progress = FileLoader.getInstance().getFileProgress(currentFileNames[a]);
                 if (progress == null) {
@@ -1420,7 +1456,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 canZoom = currentFileNames[0] != null && !currentFileNames[0].endsWith("mp4") && radialProgressViews[0].backgroundState != 0;
             }
         } else {
-            radialProgressViews[a].setBackgroundState(-1);
+            radialProgressViews[a].setBackgroundState(-1, animated);
         }
     }
 
@@ -1888,7 +1924,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         currentThumb = null;
         for (int a = 0; a < 3; a++) {
             if (radialProgressViews[a] != null) {
-                radialProgressViews[a].setBackgroundState(-1);
+                radialProgressViews[a].setBackgroundState(-1, false);
             }
         }
         centerImage.setImageBitmap((Bitmap)null);
@@ -2435,7 +2471,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (x >= (containerView.getWidth() - AndroidUtilities.dp(64)) / 2.0f && x <= (containerView.getWidth() + AndroidUtilities.dp(64)) / 2.0f &&
                             y >= (containerView.getHeight() - AndroidUtilities.dp(64)) / 2.0f && y <= (containerView.getHeight() + AndroidUtilities.dp(64)) / 2.0f) {
                         onActionClick();
-                        checkProgress(0);
+                        checkProgress(0, true);
                         return true;
                     }
                 }

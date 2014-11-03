@@ -81,28 +81,26 @@
         android:layout_height="48dp"
         android:id="@+id/top_panel">
 
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/top_panel_text"
+            android:maxLines="2"
+            android:lines="2"
+            android:textAlignment="center"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:textColor="#ffffff"/>
+
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_weight="0.1"
             android:scaleType="centerInside"
             android:layout_marginRight="4dp"
             android:layout_gravity="right|center"
             android:id="@+id/top_plane_close"
             android:clickable="true"/>
-
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_gravity="left|center_vertical"
-            android:id="@+id/top_panel_text"
-            android:textAllCaps="true"
-            android:textAlignment="center"
-            android:textSize="12dp"
-            android:textStyle="bold"
-            android:textColor="#ffffff"
-            android:text="Owned conversation feature is not suported, take care." />
 
     </FrameLayout>
 
@@ -152,7 +150,7 @@
             android:textColorHint="#909090"
             android:ems="10"
             android:imeOptions="flagNoExtractUi"
-            android:inputType="textCapSentences|textMultiLine|textAutoCorrect"
+            android:inputType="textCapSentences|textMultiLine"
             android:layout_alignParentTop="true"
             android:paddingBottom="12dp"
             android:maxLength="16384"
@@ -265,7 +263,10 @@
         android:layout_alignParentBottom="true"
         android:background="#fbfcfd"
         android:id="@+id/bottom_overlay_chat"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true">
 
         <TextView
             android:layout_width="wrap_content"

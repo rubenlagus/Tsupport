@@ -23,7 +23,6 @@ public class NotificationCenter {
     public static final int messageReceivedByAck = 9;
     public static final int messageReceivedByServer = 10;
     public static final int messageSendError = 11;
-    public static final int reloadSearchResults = 12;
     public static final int contactsDidLoaded = 13;
     public static final int chatDidCreated = 15;
     public static final int chatDidFailCreate = 16;
@@ -45,8 +44,6 @@ public class NotificationCenter {
 
     public static final int readChatNotification = 50;
     public static final int updateTemplatesNotification = 51;
-    public static final int reloadSearchChatResults = 52;
-    public static final int reloadSearchUserResults = 53;
     public static final int hideTemplatesKeyboard = 54;
     public static final int exportTemplates = 55;
     public static final int trelloLoaded = 56;

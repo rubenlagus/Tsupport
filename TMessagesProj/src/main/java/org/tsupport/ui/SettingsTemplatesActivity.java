@@ -225,7 +225,7 @@ public class SettingsTemplatesActivity extends BaseFragment implements Notificat
             return;
         }
         loading = true;
-        MessagesStorage.getInstance().storageQueue.postRunnable(new Runnable() {
+        MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
             @Override
             public void run() {
                 templates.clear();
