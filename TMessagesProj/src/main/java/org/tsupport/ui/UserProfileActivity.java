@@ -467,7 +467,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
             } else {
                 args.putInt("enc_id", (int)(dialog_id >> 32));
             }
-            presentFragment(new ChatActivity(args), true);
+            ChatActivity chatActivity = new ChatActivity(args);
+            chatActivity.setDelegate(messageFragment);
+            presentFragment(chatActivity, true);
             removeSelfFromStack();
             TLRPC.User user = MessagesController.getInstance().getUser(user_id);
             SendMessagesHelper.getInstance().sendMessage(user, dialog_id);
@@ -610,7 +612,9 @@ public class UserProfileActivity extends BaseFragment implements NotificationCen
                             NotificationCenter.getInstance().postNotificationName(NotificationCenter.closeChats);
                             Bundle args = new Bundle();
                             args.putInt("user_id", user_id);
-                            presentFragment(new ChatActivity(args), true);
+                            ChatActivity chatActivity = new ChatActivity(args);
+                            chatActivity.setDelegate(new MessagesActivity(new Bundle()));
+                            presentFragment(chatActivity, true);
                         }
                     });
                     button = (ImageButton)view.findViewById(R.id.settings_call_phone);

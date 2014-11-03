@@ -685,7 +685,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 MessagesController.getInstance().putUser(res.user, false);
                                 Bundle args = new Bundle();
                                 args.putInt("user_id", res.user.id);
-                                presentFragment(new ChatActivity(args));
+                                ChatActivity chatActivity = new ChatActivity(args);
+                                chatActivity.setDelegate(new MessagesActivity(new Bundle()));
+                                presentFragment(chatActivity);
                             }
                         });
                     } else {
@@ -706,7 +708,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             MessagesController.getInstance().putUser(supportUser, true);
             Bundle args = new Bundle();
             args.putInt("user_id", supportUser.id);
-            presentFragment(new ChatActivity(args));
+            ChatActivity chatActivity = new ChatActivity(args);
+            chatActivity.setDelegate(new MessagesActivity(new Bundle()));
+            presentFragment(chatActivity);
         }
     }
 

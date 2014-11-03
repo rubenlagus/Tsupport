@@ -3008,7 +3008,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     } else if (lower_part < 0) {
                         args.putInt("chat_id", -lower_part);
                     }
-                    presentFragment(new ChatActivity(args), true);
+                    ChatActivity chatActivity = new ChatActivity(args);
+                    chatActivity.setDelegate(delegate);
+                    presentFragment(chatActivity, true);
+
                     forwardSelectedMessages(did, param);
                     if (!AndroidUtilities.isTablet()) {
                         removeSelfFromStack();
