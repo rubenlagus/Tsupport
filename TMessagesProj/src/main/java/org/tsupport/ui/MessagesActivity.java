@@ -55,7 +55,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
     private View progressView;
     private View emptyView;
     private SlidingTabView searchPanelView;
-    private String currentSearch;
+    private String currentSearch = "";
 
     private String selectAlertString;
     private String selectAlertStringGroup;
@@ -492,7 +492,7 @@ public class MessagesActivity extends BaseFragment implements NotificationCenter
         }
     }
 
-    if (currentSearch.compareToIgnoreCase("") != 0) {
+    if (currentSearch != null && currentSearch.compareToIgnoreCase("") != 0) {
         AndroidUtilities.RunOnUIThread(new Runnable() {
             @Override
             public void run() { //TODO
