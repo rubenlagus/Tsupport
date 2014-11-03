@@ -42,6 +42,7 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
     private Context mContext;
     private Timer searchTimer;
     private ArrayList<TLObject> searchResult = new ArrayList<TLObject>();
+    private ArrayList<Integer> searchResultsId = new ArrayList<Integer>();
     private ArrayList<CharSequence> searchResultNames = new ArrayList<CharSequence>();
     private ArrayList<MessageObject> searchResultMessages = new ArrayList<MessageObject>();
     private String lastSearchTextDialogs;
@@ -75,10 +76,81 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
             if (delegate != null) {
                 delegate.searchStateChanged(false);
             }
+            searchResultsId.clear();
+            updateSearchResults(new ArrayList<TLObject>(), new ArrayList<CharSequence>(), new ArrayList<TLRPC.User>());
             return;
         }
+        final ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
+        final ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
         TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
-        req.limit = 128;
+        req.limit = 256;
+        req.peer = new TLRPC.TL_inputPeerEmpty();
+        req.q = query;
+        req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
+        final int currentReqId = ++lastReqId;
+        if (delegate != null) {
+            delegate.searchStateChanged(true);
+        }
+        reqId = ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+            @Override
+            public void run(final TLObject response, final TLRPC.TL_error error) {
+                AndroidUtilities.RunOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (currentReqId == lastReqId) {
+                            if (error == null) {
+                                TLRPC.messages_Messages res = (TLRPC.messages_Messages) response;
+                                for (TLRPC.User user: res.users) {
+                                    if (!searchResultsId.contains(user.id)) {
+                                        resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, query));
+                                        resultArray.add(user);
+                                        searchResultsId.add(user.id);
+                                    }
+                                }
+                                for (TLRPC.Chat chat: res.chats) {
+                                    if (!searchResultsId.contains(chat.id)) {
+                                        resultArrayNames.add(Utilities.generateSearchName(chat.title, null, query));
+                                        resultArray.add(chat);
+                                        searchResultsId.add(chat.id);
+                                    }
+                                }
+                                MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
+                                MessagesController.getInstance().putUsers(res.users, false);
+                                MessagesController.getInstance().putChats(res.chats, false);
+                                searchResultMessages.clear();
+                                for (TLRPC.Message message : res.messages) {
+                                    searchResultMessages.add(new MessageObject(message, null, 0));
+                                }
+                                FileLog.e("tsupportSearch", "Chats: " + res.chats.size());
+                                FileLog.e("tsupportSearch", "Users: " + res.users.size());
+                                updateSearchResults(resultArray, resultArrayNames, new ArrayList<TLRPC.User>());
+                            }
+                        }
+                        if (delegate != null) {
+                            delegate.searchStateChanged(false);
+                        }
+                        reqId = 0;
+                    }
+                });
+            }
+        }, true, RPCRequest.RPCRequestClassGeneric | RPCRequest.RPCRequestClassFailOnServerErrors);
+    }
+
+    private void searchDialogsInternal(final String query, final boolean needEncrypted) {
+        /*if (reqId != 0) {
+            ConnectionsManager.getInstance().cancelRpc(reqId, true);
+            reqId = 0;
+        }
+
+        if (query == null || query.length() == 0) {
+            updateSearchResults(new ArrayList<TLObject>(), new ArrayList<CharSequence>(), new ArrayList<TLRPC.User>());
+            return;
+        }
+        final ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
+        final ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
+
+        TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
+        req.limit = 256;
         req.peer = new TLRPC.TL_inputPeerEmpty();
         req.q = query;
         req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
@@ -98,24 +170,19 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
                                 MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
                                 MessagesController.getInstance().putUsers(res.users, false);
                                 MessagesController.getInstance().putChats(res.chats, false);
-                                searchResultMessages.clear();
-                                for (TLRPC.Message message : res.messages) {
-                                    searchResultMessages.add(new MessageObject(message, null, 0));
+                                for (TLRPC.Chat chat: res.chats) {
+                                    resultArrayNames.add(Utilities.generateSearchName(chat.title, null, query));
+                                    resultArray.add(chat);
                                 }
-                                notifyDataSetChanged();
                             }
                         }
-                        if (delegate != null) {
-                            delegate.searchStateChanged(false);
-                        }
+                        updateSearchResults(resultArray, resultArrayNames, new ArrayList<TLRPC.User>());
                         reqId = 0;
                     }
                 });
             }
         }, true, RPCRequest.RPCRequestClassGeneric | RPCRequest.RPCRequestClassFailOnServerErrors);
-    }
 
-    private void searchDialogsInternal(final String query, final boolean needEncrypted) {
         MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -126,10 +193,9 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
                         updateSearchResults(new ArrayList<TLObject>(), new ArrayList<CharSequence>(), new ArrayList<TLRPC.User>());
                         return;
                     }
-                    ArrayList<TLObject> resultArray = new ArrayList<TLObject>();
-                    ArrayList<CharSequence> resultArrayNames = new ArrayList<CharSequence>();
 
-                    SQLiteCursor cursor = MessagesStorage.getInstance().getDatabase().queryFinalizedInternal("SELECT u.data, u.status, u.name FROM users as u INNER JOIN contacts as c ON u.uid = c.uid");
+
+                    SQLiteCursor cursor = MessagesStorage.getInstance().getDatabase().queryFinalizedInternal("SELECT u.data, u.status, u.name FROM users as u");
                     while (cursor.next()) {
                         String name = cursor.stringValue(2);
                         String username = null;
@@ -167,7 +233,6 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
                     cursor = MessagesStorage.getInstance().getDatabase().queryFinalizedCache("SELECT data, name FROM chats");
                     while (cursor.next()) {
                         String name = cursor.stringValue(1);
-                        String[] args = name.split(" ");
                         if (name.startsWith(q) || name.contains(" " + q)) {
                             ByteBufferDesc data = MessagesStorage.getInstance().getBuffersStorage().getFreeBuffer(cursor.byteArrayLength(0));
                             if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
@@ -187,7 +252,7 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
                     FileLog.e("tmessages", e);
                 }
             }
-        });
+        });*/
     }
 
     private void updateSearchResults(final ArrayList<TLObject> result, final ArrayList<CharSequence> names, final ArrayList<TLRPC.User> encUsers) {
@@ -217,11 +282,7 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
     }
 
     public String getLastSearchText() {
-        if (currentSearchType == 2) {
-            return lastSearchTextMessages;
-        } else {
-            return lastSearchTextDialogs;
-        }
+        return lastSearchTextMessages;
     }
 
     public boolean isGlobalSearch(int i) {
@@ -239,11 +300,7 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
 
     public void searchDialogs(final String query, final int type) {
         String lastSearchText;
-        if (type == 2) {
-            lastSearchText = lastSearchTextMessages;
-        } else {
-            lastSearchText = lastSearchTextDialogs;
-        }
+        lastSearchText = lastSearchTextMessages;
         boolean typeChanged = currentSearchType != type;
         currentSearchType = type;
         if (query == null && lastSearchText == null || query != null && lastSearchText != null && query.equals(lastSearchText)) {
@@ -252,11 +309,7 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
             }
             return;
         }
-        if (type == 2) {
-            lastSearchTextMessages = query;
-        } else {
-            lastSearchTextDialogs = query;
-        }
+        lastSearchTextMessages = query;
         try {
             if (searchTimer != null) {
                 searchTimer.cancel();
@@ -265,13 +318,9 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
             FileLog.e("tmessages", e);
         }
         if (query == null || query.length() == 0) {
-            if (currentSearchType == 2) {
-                searchMessagesInternal(null);
-            } else {
-                searchResult.clear();
-                searchResultNames.clear();
-                queryServerSearch(null);
-            }
+            searchMessagesInternal(null);
+            searchResult.clear();
+            searchResultNames.clear();
             notifyDataSetChanged();
         } else {
             searchTimer = new Timer();
@@ -284,22 +333,12 @@ public class MessagesActivitySearchAdapter extends BaseContactsSearchAdapter {
                     } catch (Exception e) {
                         FileLog.e("tmessages", e);
                     }
-                    if (type != 2) {
-                        searchDialogsInternal(query, type == 0);
-                        AndroidUtilities.RunOnUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                queryServerSearch(query);
-                            }
-                        });
-                    } else {
-                        AndroidUtilities.RunOnUIThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                searchMessagesInternal(query);
-                            }
-                        });
-                    }
+                    AndroidUtilities.RunOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            searchMessagesInternal(query);
+                        }
+                    });
                 }
             }, 200, 300);
         }
