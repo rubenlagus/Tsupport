@@ -24,8 +24,7 @@
             android:layout_gravity="center"/>
 
         <include
-            layout="@layout/encrypted_chat_placeholder"
-            android:layout_gravity="center"/>
+            layout="@layout/encrypted_chat_placeholder"/>
 
     </org.tsupport.ui.Views.FrameLayoutFixed>
 
@@ -87,7 +86,8 @@
             android:layout_width="wrap_content"
             android:layout_gravity="center"
             android:id="@+id/top_panel_text"
-            android:textAllCaps="true"
+            android:maxLines="2"
+            android:lines="2"
             android:textAlignment="center"
             android:textSize="12dp"
             android:textStyle="bold"
@@ -263,7 +263,10 @@
         android:layout_alignParentBottom="true"
         android:background="#fbfcfd"
         android:id="@+id/bottom_overlay_chat"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true">
 
         <TextView
             android:layout_width="wrap_content"

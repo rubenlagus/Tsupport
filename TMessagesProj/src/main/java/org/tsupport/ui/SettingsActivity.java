@@ -71,6 +71,7 @@ import org.tsupport.ui.Views.SettingsSectionLayout;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 public class SettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, PhotoViewer.PhotoViewerProvider {
@@ -354,7 +355,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.putInt("password", Integer.parseInt(input.getText().toString()));
-                                    editor.commit();
+                                    editor.putLong("passwordTimeStampt", (new Date()).getTime());
+                                    editor.apply();
                                     Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("PasswordEdited", R.string.PasswordEdited) , Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("MinPasswordLengh", R.string.MinPasswordLengh) , Toast.LENGTH_SHORT).show();
@@ -367,7 +369,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = preferences.edit();
                                 editor.remove("password");
-                                editor.commit();
+                                editor.remove("passwordTimeStampt");
+                                editor.apply();
                                 Toast.makeText( getParentActivity().getApplicationContext(), LocaleController.getString("PasswordRemoved", R.string.PasswordRemoved) , Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -682,7 +685,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 MessagesController.getInstance().putUser(res.user, false);
                                 Bundle args = new Bundle();
                                 args.putInt("user_id", res.user.id);
-                                presentFragment(new ChatActivity(args));
+                                ChatActivity chatActivity = new ChatActivity(args);
+                                chatActivity.setDelegate(new MessagesActivity(new Bundle()));
+                                presentFragment(chatActivity);
                             }
                         });
                     } else {
@@ -703,7 +708,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             MessagesController.getInstance().putUser(supportUser, true);
             Bundle args = new Bundle();
             args.putInt("user_id", supportUser.id);
-            presentFragment(new ChatActivity(args));
+            ChatActivity chatActivity = new ChatActivity(args);
+            chatActivity.setDelegate(new MessagesActivity(new Bundle()));
+            presentFragment(chatActivity);
         }
     }
 
@@ -994,6 +1001,10 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = preferences.edit();
                                     editor.clear().commit();
+                                    preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                                    editor = preferences.edit();
+                                    editor.remove("password");
+                                    editor.commit();
                                     NotificationCenter.getInstance().postNotificationName(NotificationCenter.appDidLogout);
                                     MessagesController.getInstance().unregistedPush();
                                     MessagesController.getInstance().logOut();

@@ -290,6 +290,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                         if (fragmentName.equals("chat")) {
                             if (args != null) {
                                 ChatActivity chat = new ChatActivity(args);
+                                chat.setDelegate(new MessagesActivity(new Bundle()));
                                 if (actionBarLayout.addFragmentToStack(chat)) {
                                     chat.restoreSelfArgs(savedInstanceState);
                                 }
@@ -566,6 +567,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 Bundle args = new Bundle();
                 args.putInt("user_id", push_user_id);
                 ChatActivity fragment = new ChatActivity(args);
+                fragment.setDelegate(new MessagesActivity(new Bundle()));
                 if (actionBarLayout.presentFragment(fragment, false, true, true)) {
                     pushOpened = true;
                 }
@@ -574,6 +576,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             Bundle args = new Bundle();
             args.putInt("chat_id", push_chat_id);
             ChatActivity fragment = new ChatActivity(args);
+            fragment.setDelegate(new MessagesActivity(new Bundle()));
             if (actionBarLayout.presentFragment(fragment, false, true, true)) {
                 pushOpened = true;
             }
@@ -581,6 +584,7 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             Bundle args = new Bundle();
             args.putInt("enc_id", push_enc_id);
             ChatActivity fragment = new ChatActivity(args);
+            fragment.setDelegate(new MessagesActivity(new Bundle()));
             if (actionBarLayout.presentFragment(fragment, false, true, true)) {
                 pushOpened = true;
             }
@@ -676,8 +680,9 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             } else {
                 args.putInt("enc_id", high_id);
             }
-            ChatActivity fragment = new ChatActivity(args);
 
+            ChatActivity fragment = new ChatActivity(args);
+            fragment.setDelegate(messageFragment);
             if (videoPath != null) {
                 if(android.os.Build.VERSION.SDK_INT >= 16) {
                     if (AndroidUtilities.isTablet()) {

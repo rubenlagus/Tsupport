@@ -3,29 +3,15 @@ package org.tsupport.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.webkit.ValueCallback;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
 import org.tsupport.messenger.BuildVars;
 import org.tsupport.messenger.FileLog;
 
-import java.io.IOException;
 import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,11 +21,9 @@ import java.util.regex.Pattern;
  */
 public class TrelloTokenActivity extends Activity {
 
-    private static final Pattern tokenPattern = Pattern.compile("<pre>\\s*([^\\n<]+)\\s*<\\/pre>");
-    private static final Pattern tokenUnicodePattern = Pattern.compile("[\\\\u003C<]pre[\\\\u003E>º]\\s*([^\\sn\\\\]+).*");
-    private static final Pattern approvedPattern = Pattern.compile("approve");
-    private static boolean loading = false;
-    private String url = "";
+    private static final Pattern tokenPattern = Pattern.compile("<html>\\s*\\n([^\\n<]+)\\s*<\\/html>");
+    private static final Pattern tokenUnicodePattern = Pattern.compile("html(\\\\u003E|>)\\s*([^\\sn\\\\]+).*");
+    private static final Pattern token64Chars = Pattern.compile("(\\w{64})");
 
     private class MyJavaScriptInterface {
 
@@ -50,22 +34,53 @@ public class TrelloTokenActivity extends Activity {
         }
 
         public void showHTML(String html) {
+            // TODO Simplify this, token64Chars method may work for everyone, NEED TO CHECK
             html = Normalizer.normalize(html, Normalizer.Form.NFKD);
-            Matcher matcher = tokenPattern.matcher(html);
+            FileLog.d("tsupportTrello", "HTML code: " + html);
+            FileLog.d("tsupportTrello", "Request not found");
+            FileLog.d("tsupportTrello", "Request trying 64chars");
+            Matcher matcher = token64Chars.matcher(html);
             if (matcher.find()) {
-                FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
-                endActivity(matcher.group(1), true);
-            } else {
-                FileLog.d("tsupportTrello", "Request not found: " + html);
-                FileLog.d("tsupportTrello", "Request trying unicode");
-                matcher = tokenUnicodePattern.matcher(html);
-                if (matcher.find()) {
-                    FileLog.d("tsupportTrello", "Request found unicode: " + matcher.group(1));
+                if (matcher.group(1).length() == 64) {
                     endActivity(matcher.group(1), true);
+                    return;
+                }
+            }
+            try {
+                String temp = html.replace("<html>", "");
+                temp = temp.replace("</html>", "");
+                temp = temp.replaceAll("\\s+", "");
+                temp = temp.replace("\n", "");
+                temp = temp.trim();
+                if (temp.length() == 64) {
+                    FileLog.d("tsupportTrello", "Request found: " + temp);
+                    endActivity(temp, true);
+                    return;
+                }
+            } catch (Exception e) {
+                FileLog.e("tsupportTrello","Exception");
+            }
+            FileLog.d("tsupportTrello", "Request not found");
+            FileLog.d("tsupportTrello", "Request trying tokenPattern");
+            matcher = tokenPattern.matcher(html);
+            if (matcher.find()) {
+                if (matcher.groupCount() == 1 && matcher.group(1).length() == 64) {
+                    FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
+                    endActivity(matcher.group(1), true);
+                    return;
+                }
+            }
+            FileLog.d("tsupportTrello", "Request not found");
+            FileLog.d("tsupportTrello", "Request trying unicode");
+            matcher = tokenUnicodePattern.matcher(html);
+            if (matcher.find()) {
+                if (matcher.group(2).length() == 64) {
+                    FileLog.d("tsupportTrello", "Request found: " + matcher.group(2));
+                    endActivity(matcher.group(2), true);
+                    return;
                 }
             }
         }
-
     }
 
     private static final String trelloAuthURL = "https://trello.com/1/authorize?key=@myapikey@&name=TsupportAndroid&expiration=never&response_type=token";
@@ -81,32 +96,14 @@ public class TrelloTokenActivity extends Activity {
         webview.addJavascriptInterface(new MyJavaScriptInterface(this), "HtmlViewer");
 
         WebViewClient webViewClient = new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if(Uri.parse(url).getPath().endsWith("approve")) {
-                    loading = true;
-                }
-                return super.shouldOverrideUrlLoading(view, url);
-            }
 
             @Override
             public void onPageFinished(WebView view, String url)
             {
                 FileLog.d("tsupportTrello", "Request result: " + url);
-                Matcher matcher = approvedPattern.matcher(url);
-                if (url.toString().contains("approve") || matcher.find() || loading) {
-                    if (matcher.find()) {
-                        FileLog.d("tsupportTrello", "Matcher");
-                    }
-                    if (loading) {
-                        FileLog.d("tsupportTrello", "Loading");
-                    }
-                    if (url.toString().contains("approve")) {
-                        FileLog.d("tsupportTrello", "Contains");
-                    }
-
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-                        view.evaluateJavascript("document.getElementsByTagName('html')[0].innerHTML", new ValueCallback<String>() {
+                if (url.toString().contains("approve")) {
+                   if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                        view.evaluateJavascript("document.getElementsByTagName('pre')[0].innerHTML", new ValueCallback<String>() {
                             @Override
                             public void onReceiveValue(String s) {
                                 showHTML(s);
@@ -114,7 +111,7 @@ public class TrelloTokenActivity extends Activity {
                         });
                     } else {
                         webview.loadUrl("javascript:window.HtmlViewer.showHTML" +
-                                "('<html>'+document.getElementsByTagName('html')[0].innerHTML+'</html>');");
+                                "('<html>'+document.getElementsByTagName('pre')[0].innerHTML+'</html>');");
                     }
                 } else if (url.compareTo("") == 0){
                     endActivity("", false);
@@ -135,25 +132,57 @@ public class TrelloTokenActivity extends Activity {
     }
 
     public void showHTML(String html) {
+        // TODO Simplify this, token64Chars method may work for everyone, NEED TO CHECK
         html = Normalizer.normalize(html, Normalizer.Form.NFKD);
-        Matcher matcher = tokenPattern.matcher(html);
+        //FileLog.d("tsupportTrello", "HTML code: " + html);
+        //FileLog.d("tsupportTrello", "Request not found");
+        FileLog.d("tsupportTrello", "Request trying 64chars");
+        Matcher matcher = token64Chars.matcher(html);
         if (matcher.find()) {
-            FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
-            endActivity(matcher.group(1), true);
-        } else {
-            FileLog.d("tsupportTrello", "Request not found: " + html);
-            FileLog.d("tsupportTrello", "Request trying unicode");
-            matcher = tokenUnicodePattern.matcher(html);
-            if (matcher.find()) {
-                FileLog.d("tsupportTrello", "Request found unicode: " + matcher.group(1));
+            if (matcher.group(1).length() == 64) {
                 endActivity(matcher.group(1), true);
+                return;
+            }
+        }
+        try {
+            String temp = html.replace("<html>", "");
+            temp = temp.replace("</html>", "");
+            temp = temp.replaceAll("\\s+", "");
+            temp = temp.replace("\n", "");
+            temp = temp.trim();
+            if (temp.length() == 64) {
+                //FileLog.d("tsupportTrello", "Request found: " + temp);
+                endActivity(temp, true);
+                return;
+            }
+        } catch (Exception e) {
+            FileLog.e("tsupportTrello","Exception");
+        }
+        //FileLog.d("tsupportTrello", "Request not found");
+        FileLog.d("tsupportTrello", "Request trying tokenPattern");
+        matcher = tokenPattern.matcher(html);
+        if (matcher.find()) {
+            if (matcher.groupCount() == 1 && matcher.group(1).length() == 64) {
+               // FileLog.d("tsupportTrello", "Request found: " + matcher.group(1));
+                endActivity(matcher.group(1), true);
+                return;
+            }
+        }
+        //FileLog.d("tsupportTrello", "Request not found");
+        FileLog.d("tsupportTrello", "Request trying unicode");
+        matcher = tokenUnicodePattern.matcher(html);
+        if (matcher.find()) {
+            if (matcher.group(2).length() == 64) {
+                FileLog.d("tsupportTrello", "Request found: " + matcher.group(2));
+                endActivity(matcher.group(2), true);
+                return;
             }
         }
     }
 
     public void endActivity(String token, boolean success) {
         Intent returnIntent = new Intent();
-        if (success) {
+        if (success && token.length() == 64) {
             FileLog.d("tsupportTrello", "Request success");
             returnIntent.putExtra("token", token);
             setResult(Activity.RESULT_OK, returnIntent);

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -1317,6 +1318,17 @@ public class MessagesStorage {
                 }
             }
         });
+    }
+
+    public void clearTemplates() {
+        try {
+            database.executeFastInternal("TRUNCATE TABLE template").stepThis().dispose();
+            TemplateSupport.modifing--;
+            if (TemplateSupport.modifing == 0)
+                TemplateSupport.rebuildInstance();
+        } catch (Exception e) {
+            FileLog.e("tsupportTemplates", e.toString());
+        }
     }
 
     public HashMap<String, String> getTemplates() {

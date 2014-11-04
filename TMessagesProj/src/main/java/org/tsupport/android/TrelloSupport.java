@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by Ruben Bermudez on 19/10/14.
@@ -54,20 +56,48 @@ public class TrelloSupport {
      */
     private static volatile TrelloSupport Instance = null;
 
-    private AsyncTask<Void, Void, Void> loadIssuesAsync =
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    TrelloSupport.getInstance().loadIssues();
+    class LoadIssuesAsync extends AsyncTask<Void, Void, Void> {
 
-                    return null;
-                }
+        private final ReentrantLock lock = new ReentrantLock();
+        private final Condition tryAgain = lock.newCondition();
 
-                @Override
-                protected void onPostExecute(Void result) {
-                    loading = false;
-                }
-            };
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            try {
+                lock.lockInterruptibly();
+
+                TrelloSupport.getInstance().loadIssues();
+
+                tryAgain.await();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            tryAgain.signal();
+            lock.unlock();
+        }
+
+        public void runAgain() {
+            tryAgain.signal();
+        }
+
+        public void terminateTask() {
+            lock.unlock();
+        }
+
+        @Override
+        protected void onCancelled() {
+            terminateTask();
+        }
+    }
+
+    private LoadIssuesAsync loadIssuesAsync;
 
     public static TrelloSupport getInstance() {
         TrelloSupport localInstance = Instance;
@@ -86,24 +116,22 @@ public class TrelloSupport {
     private TrelloSupport() {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
         token = preferences.getString("token", "");
+        loadIssuesAsync = new LoadIssuesAsync();
         loadIssuesAsync();
     }
 
     public void loadIssues() {
-        FileLog.d("tsupportTrello", "Loading 1");
         HashMap<String, String> openIssuesTemp = new HashMap<String, String>();
         HashMap<String, String> closedIssuesTemp = new HashMap<String, String>();
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         String getCardsURL = getCards.replace("@myapikey@", BuildVars.TRELLO_API_KEY).replace("@mytoken@", token);
-        FileLog.d("tsupportTrello", "URL: " + getCardsURL);
         HttpGet httpGet = new HttpGet(getCardsURL);
         try{
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
             if(statusCode == 200){
-                FileLog.d("tsupportTrello", "Loading correct");
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
@@ -112,7 +140,6 @@ public class TrelloSupport {
                     builder.append(line);
                 }
                 try{
-                    FileLog.d("tsupportTrello", "Loading 2");
                     JSONArray jsonArray = new JSONArray(builder.toString());
 
                     for (int i=0; i<jsonArray.length(); i++) {
@@ -140,10 +167,8 @@ public class TrelloSupport {
                         for (int j=0; j<labels.length(); j++) {
                             JSONObject label = labels.getJSONObject(j);
                             if (label.getString("color").compareToIgnoreCase("green") == 0) {
-                                FileLog.d("tsupportTrello", "Loading: " + jsonObject.getString("name"));
                                 closedIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " +jsonObject.getString("name"));
                             } else if (label.getString("color").compareToIgnoreCase("blue") != 0){
-                                FileLog.d("tsupportTrello", "Loading: " + jsonObject.getString("name"));
                                 openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
                             }
                         }
@@ -181,7 +206,7 @@ public class TrelloSupport {
 
                 } catch(Exception e){
                     e.printStackTrace();
-                    FileLog.e("tsupportTrello", "Error loading " + e);
+                    FileLog.e("tsupportTrello", "Error loading ", e);
                 }
 
             }
@@ -193,15 +218,16 @@ public class TrelloSupport {
     }
 
     public void loadIssuesAsync() {
-        if (!loading) {
-            loading = true;
-            AsyncTask.Status status = loadIssuesAsync.getStatus();
-            if (status == AsyncTask.Status.RUNNING) {
-                FileLog.d("tsupportTrello","Closed because of running");
-                return;
-            } else {
-                FileLog.d("tsupportTrello","Executing");
+        AsyncTask.Status status = loadIssuesAsync.getStatus();
+        if (status == AsyncTask.Status.RUNNING) {
+            FileLog.d("tsupportTrello","Closed because of running");
+            return;
+        } else {
+            FileLog.d("tsupportTrello","Executing");
+            try {
                 loadIssuesAsync.execute();
+            } catch (IllegalStateException e) {
+                FileLog.e("tsupportTrello", "Error launching task ", e);
             }
         }
     }

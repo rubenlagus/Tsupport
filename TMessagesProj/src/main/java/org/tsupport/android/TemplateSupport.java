@@ -207,10 +207,8 @@ public class TemplateSupport {
      * Remove all templates.
      */
     public static void removeAll() {
-        for (String key: templates.keySet()) {
-            modifing++;
-            MessagesStorage.getInstance().deleteTemplate(key);
-        }
+        modifing++;
+        MessagesStorage.getInstance().clearTemplates();
     }
 
     /**
