@@ -512,7 +512,7 @@
     <string name="IssueSolved">Hello there!\n\nJust a quick info that we were able to fix your issue #issue_@id.\n\nSorry for the delay. Please update Telegram as soon as possible to get our latest version and let us know if you have any further questions.</string>
     <string name="clearCache">Clear cache</string>
     <string name="AreYouSureClearCache">After clear cache, tsupport will be restarted.</string>
-    <string name="downloadUserPhotos">Users' photos</string>
+    <string name="downloadUserPhotos">Users\' photos</string>
     <string name="exportTemplates">Your templates will be exported and then you will be able to send it anywhere you like. This may take a while, please be patient.</string>
     <string name="exporting">Exporting...</string>
     <string name="linkTrello">Link with Trello</string>
