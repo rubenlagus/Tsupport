@@ -10,20 +10,30 @@ package org.tsupport.ui;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
 import org.tsupport.messenger.R;
-import org.tsupport.ui.Views.ActionBar.BaseFragment;
+import org.tsupport.ui.ActionBar.ActionBar;
+import org.tsupport.ui.ActionBar.ActionBarMenu;
+import org.tsupport.ui.ActionBar.BaseFragment;
 
 import java.util.Date;
 
@@ -32,6 +42,8 @@ public class PasswordView extends BaseFragment {
     private TextView problemText;
     private boolean donePressed = false;
     private View doneButton;
+
+    private final static int done_button = 1;
 
     public PasswordView(Bundle args) {
         super(args);
@@ -50,58 +62,105 @@ public class PasswordView extends BaseFragment {
     @Override
     public View createView(LayoutInflater inflater, ViewGroup container) {
         if (fragmentView == null) {
-            actionBarLayer.setCustomView(R.layout.settings_do_action_layout);
-            Button cancelButton = (Button)actionBarLayer.findViewById(R.id.cancel_button);
-            cancelButton.setOnClickListener(new View.OnClickListener() {
+            //actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+            actionBar.setAllowOverlayTitle(true);
+
+            actionBar.setTitle(LocaleController.getString("Password", R.string.Password));
+            actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
                 @Override
-                public void onClick(View view) {
-                    getParentActivity().finish();
+                public void onItemClick(int id) {
+                    if (id == -1) {
+                        //finishFragment();
+                    } else if (id == done_button) {
+                        if (donePressed) {
+                            return;
+                        }
+                        donePressed = true;
+                        if (checkCode()) {
+                            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putLong("passwordTimeStampt", (new Date()).getTime());
+                            editor.commit();
+                            presentFragment(new MessagesActivity(null), true);
+                            finishFragment();
+                        } else {
+                            problemText.setText(LocaleController.getString("IncorrectPassword", R.string.IncorrectPassword));
+                            problemText.setVisibility(View.VISIBLE);
+                            donePressed = false;
+                        }
+                    }
                 }
             });
 
-            doneButton = actionBarLayer.findViewById(R.id.done_button);
-            doneButton.setOnClickListener(new View.OnClickListener() {
+            fragmentView = new RelativeLayout(inflater.getContext());
+            fragmentView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            fragmentView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View view) {
-                    if (donePressed) {
-                        return;
-                    }
-                    donePressed = true;
-                    if (checkCode()) {
-                        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = preferences.edit();
-                        editor.putLong("passwordTimeStampt", (new Date()).getTime());
-                        editor.commit();
-                        presentFragment(new MessagesActivity(null), true);
-                    } else {
-                        problemText.setText(LocaleController.getString("IncorrectPassword", R.string.IncorrectPassword));
-                        problemText.setVisibility(View.VISIBLE);
-                        donePressed = false;
-                    }
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
                 }
             });
 
-            cancelButton.setText(LocaleController.getString("Cancel", R.string.Cancel).toUpperCase());
-            TextView textView = (TextView)doneButton.findViewById(R.id.done_button_text);
-            textView.setText(LocaleController.getString("Done", R.string.Done).toUpperCase());
 
-            fragmentView = inflater.inflate(R.layout.password_layout, container, false);
+            ActionBarMenu menu = actionBar.createMenu();
+            doneButton = menu.addItem(done_button, R.drawable.ic_done);
 
-            passwordField = (EditText) fragmentView.findViewById(R.id.password_field);
+            passwordField = new EditText(inflater.getContext());
+            passwordField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+            passwordField.setHintTextColor(0xffa3a3a3);
+            passwordField.setCursorVisible(false);
+            passwordField.setHint(LocaleController.getString("Password", R.string.Password));
+            passwordField.setHintTextColor(0xFF979797);
+            passwordField.setTextColor(0xff000000);
+            passwordField.setPadding(AndroidUtilities.dp(15), 0, AndroidUtilities.dp(15), AndroidUtilities.dp(15));
+            passwordField.setMaxLines(1);
+
+            passwordField.setMinWidth(AndroidUtilities.dp(110));
+            passwordField.setMaxWidth(AndroidUtilities.dp(160));
+            passwordField.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
+            passwordField.setInputType(InputType.TYPE_CLASS_NUMBER);
+            passwordField.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            passwordField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            passwordField.setGravity(Gravity.CENTER_HORIZONTAL);
+            AndroidUtilities.clearCursorDrawable(passwordField);
             passwordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                    if (i == EditorInfo.IME_ACTION_NEXT) {
+                    if (i == EditorInfo.IME_ACTION_DONE && doneButton != null) {
                         doneButton.performClick();
+                        return true;
                     }
                     return false;
                 }
             });
-            problemText = (TextView)fragmentView.findViewById(R.id.password_problem);
-            problemText.setVisibility(View.GONE);
 
-            TextView headerLabel = (TextView)fragmentView.findViewById(R.id.settings_section_text);
-            headerLabel.setText(LocaleController.getString("Password", R.string.Password));
+            ((RelativeLayout) fragmentView).addView(passwordField);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)passwordField.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+            layoutParams.topMargin = AndroidUtilities.dp(20);
+            layoutParams.leftMargin = AndroidUtilities.dp(0);
+            layoutParams.rightMargin = AndroidUtilities.dp(0);
+            layoutParams.bottomMargin = AndroidUtilities.dp(0);
+            layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            passwordField.setLayoutParams(layoutParams);
+
+
+            problemText = new TextView(inflater.getContext());
+            problemText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            problemText.setTextColor(0xFF316F9F);
+            problemText.setLineSpacing(2,1);
+            problemText.setGravity(Gravity.CENTER);
+            problemText.setPadding(0, AndroidUtilities.dp(4), 0, AndroidUtilities.dp(12));
+            ((RelativeLayout) fragmentView).addView(problemText);
+
+            RelativeLayout.LayoutParams layoutParamsProblemText = (RelativeLayout.LayoutParams)problemText.getLayoutParams();
+            layoutParamsProblemText.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            layoutParamsProblemText.topMargin = AndroidUtilities.dp(10);
+            layoutParamsProblemText.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            layoutParamsProblemText.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            problemText.setLayoutParams(layoutParamsProblemText);
+            problemText.setVisibility(View.GONE);
         } else {
             ViewGroup parent = (ViewGroup)fragmentView.getParent();
             if (parent != null) {

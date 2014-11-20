@@ -108,13 +108,13 @@ public class Utilities {
     }
 
     public native static long doPQNative(long _what);
-    public native static void loadBitmap(String path, Bitmap bitmap, int scale);
+    public native static void loadBitmap(String path, Bitmap bitmap, int scale, int width, int height, int stride);
     public native static void blurBitmap(Object bitmap, int radius);
     public native static int convertVideoFrame(ByteBuffer src, ByteBuffer dest, int destFormat, int width, int height, int padding, int swap);
     private native static void aesIgeEncryption(ByteBuffer buffer, byte[] key, byte[] iv, boolean encrypt, int offset, int length);
 
     public static void aesIgeEncryption(ByteBuffer buffer, byte[] key, byte[] iv, boolean encrypt, boolean changeIv, int offset, int length) {
-        aesIgeEncryption(buffer, key, changeIv ? iv : iv.clone(), encrypt, offset, length);
+        aesIgeEncryption(buffer, key, changeIv ? iv : (byte [])iv.clone(), encrypt, offset, length);
     }
 
     public static Integer parseInt(String value) {
@@ -640,7 +640,7 @@ public class Utilities {
                 builder.append(" ");
             }
             query.trim();
-            builder.append(Html.fromHtml("<font color=\"#357aa8\">" + query + "</font>"));
+            builder.append(Html.fromHtml("<font color=\"#4d83b3\">" + query + "</font>"));
 
             lastIndex = end;
         }

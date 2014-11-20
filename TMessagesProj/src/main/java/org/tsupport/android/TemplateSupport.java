@@ -33,7 +33,7 @@ public class TemplateSupport {
     /**
      * Static Map to keep pairs kay-values with the templates.
      */
-    private static TreeMap<String,String> templates = new TreeMap<String, String>();
+    public static TreeMap<String,String> templates = new TreeMap<String, String>();
 
     /**
      * Singleton Instance
@@ -97,11 +97,12 @@ public class TemplateSupport {
     public static void rebuildInstance() {
         if (modifing == 0) {
             modifing++;
-            if (templates != null) {
-                templates.clear();
-                templates.putAll(MessagesStorage.getInstance().getTemplates());
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+            if (templates == null) {
+                templates = new TreeMap<String, String>();
             }
+            templates.clear();
+            templates.putAll(MessagesStorage.getInstance().getTemplates());
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             modifing--;
         }
     }
@@ -146,7 +147,7 @@ public class TemplateSupport {
                     fileString += "\n";
                 }
             }
-            Pattern mainPattern = Pattern.compile("[{]KEYS[}]\\n([^{]+)[{]VALUE[}]\\n([^{]+)");
+            Pattern mainPattern = Pattern.compile("[{]KEYS[}]\\n?([^{]+)[{]VALUE[}]\\n?([^{]*)");
             Pattern keysPattern = Pattern.compile("((\\w+))");
             Matcher mainMatcher = mainPattern.matcher(fileString);
             FileLog.e("TemplateSupport", "File: " + fileString);

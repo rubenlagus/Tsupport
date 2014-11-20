@@ -20,7 +20,7 @@ public class NotificationRepeat extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        AndroidUtilities.RunOnUIThread(new Runnable() {
+        AndroidUtilities.runOnUIThread(new Runnable() {
             @Override
             public void run() {
                 NotificationsController.getInstance().repeatNotificationMaybe();

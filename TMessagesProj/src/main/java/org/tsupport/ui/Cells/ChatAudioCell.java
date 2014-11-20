@@ -25,6 +25,7 @@ import org.tsupport.android.MessagesController;
 import org.tsupport.messenger.FileLoader;
 import org.tsupport.messenger.R;
 import org.tsupport.messenger.TLRPC;
+import org.tsupport.ui.Views.AvatarDrawable;
 import org.tsupport.ui.Views.ProgressView;
 import org.tsupport.ui.Views.SeekBar;
 
@@ -36,6 +37,7 @@ public class ChatAudioCell extends ChatBaseCell implements SeekBar.SeekBarDelega
     private static TextPaint timePaint;
 
     private ImageReceiver avatarImage;
+    private AvatarDrawable avatarDrawable;
     private boolean needAvatarImage = false;
     private SeekBar seekBar;
     private ProgressView progressView;
@@ -63,9 +65,11 @@ public class ChatAudioCell extends ChatBaseCell implements SeekBar.SeekBarDelega
         TAG = MediaController.getInstance().generateObserverTag();
 
         avatarImage = new ImageReceiver(this);
+        avatarImage.setRoundRadius(AndroidUtilities.dp(25));
         seekBar = new SeekBar(context);
         seekBar.delegate = this;
         progressView = new ProgressView();
+        avatarDrawable = new AvatarDrawable();
 
         if (timePaint == null) {
             statesDrawable[0][0] = getResources().getDrawable(R.drawable.play1);
@@ -364,11 +368,15 @@ public class ChatAudioCell extends ChatBaseCell implements SeekBar.SeekBarDelega
                 if (audioUser != null) {
                     if (audioUser.photo != null) {
                         currentPhoto = audioUser.photo.photo_small;
+                    } else {
+                        currentPhoto = null;
                     }
-                    avatarImage.setImage(currentPhoto, "50_50", getResources().getDrawable(AndroidUtilities.getUserAvatarForId(uid)), false);
+                    avatarDrawable.setInfo(audioUser);
                 } else {
-                    avatarImage.setImage(null, "50_50", getResources().getDrawable(AndroidUtilities.getUserAvatarForId(uid)), false);
+                    avatarDrawable.setInfo(uid, null, null, false);
+                    currentPhoto = null;
                 }
+                avatarImage.setImage(currentPhoto, "50_50", avatarDrawable, false);
             }
 
             if (messageObject.isOut()) {

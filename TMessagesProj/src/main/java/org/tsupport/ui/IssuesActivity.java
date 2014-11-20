@@ -11,35 +11,38 @@ package org.tsupport.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.tsupport.android.AndroidUtilities;
 import org.tsupport.android.LocaleController;
-import org.tsupport.android.MessagesController;
 import org.tsupport.android.NotificationCenter;
 import org.tsupport.android.TrelloSupport;
 import org.tsupport.messenger.FileLog;
 import org.tsupport.messenger.R;
+import org.tsupport.ui.ActionBar.ActionBar;
 import org.tsupport.ui.Adapters.BaseFragmentAdapter;
-import org.tsupport.ui.Views.ActionBar.ActionBarLayer;
-import org.tsupport.ui.Views.ActionBar.ActionBarMenu;
-import org.tsupport.ui.Views.ActionBar.BaseFragment;
+import org.tsupport.ui.ActionBar.ActionBarMenu;
+import org.tsupport.ui.ActionBar.BaseFragment;
 
 public class IssuesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private ListView listView;
     private ListAdapter listViewAdapter;
     private boolean loading;
     private boolean loaded;
-    private View progressView;
+    private FrameLayout progressView;
     private TextView emptyView;
     private IssueSelectActivityDelegate delegate;
     private boolean open = false;
@@ -76,17 +79,16 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
     @Override
     public View createView(LayoutInflater inflater, ViewGroup container) {
         if (fragmentView == null) {
-            ActionBarMenu menu = actionBarLayer.createMenu();
-            actionBarLayer.setDisplayHomeAsUpEnabled(true, R.drawable.ic_ab_back);
-
-            actionBarLayer.setBackOverlay(R.layout.updating_state_layout);
+            ActionBarMenu menu = actionBar.createMenu();
+            actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+            actionBar.setAllowOverlayTitle(true);
             if (open) {
-                actionBarLayer.setTitle(LocaleController.getString("openIssues", R.string.openIssues));
+                actionBar.setTitle(LocaleController.getString("openIssues", R.string.openIssues));
             } else {
-                actionBarLayer.setTitle(LocaleController.getString("SolvedIssues", R.string.SolvedIssues));
+                actionBar.setTitle(LocaleController.getString("SolvedIssues", R.string.SolvedIssues));
             }
 
-            actionBarLayer.setActionBarMenuOnItemClick(new ActionBarLayer.ActionBarMenuOnItemClick() {
+            actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
                 @Override
                 public void onItemClick(int id) {
                     if (id == -1) {
@@ -101,13 +103,51 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                 }
             });
 
+            fragmentView = new FrameLayout(getParentActivity());
+            FrameLayout frameLayout = (FrameLayout) fragmentView;
 
-            fragmentView = inflater.inflate(R.layout.settings_blocked_users_layout, container, false);
-            listViewAdapter = new ListAdapter(getParentActivity());
-            listView = (ListView)fragmentView.findViewById(R.id.listView);
-            progressView = fragmentView.findViewById(R.id.progressLayout);
-            emptyView = (TextView)fragmentView.findViewById(R.id.searchEmptyView);
+            listView = new ListView(getParentActivity());
+            listView.setEmptyView(emptyView);
+            listView.setVerticalScrollBarEnabled(false);
+            listView.setDivider(null);
+            listView.setDividerHeight(0);
+            listView.setAdapter(listViewAdapter = new ListAdapter(getParentActivity()));
+            if (Build.VERSION.SDK_INT >= 11) {
+                listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
+            }
+            frameLayout.addView(listView);
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) listView.getLayoutParams();
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            listView.setLayoutParams(layoutParams);
+
+            progressView = new FrameLayout(getParentActivity());
+            frameLayout.addView(progressView);
+            layoutParams = (FrameLayout.LayoutParams) progressView.getLayoutParams();
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            progressView.setLayoutParams(layoutParams);
+
+            ProgressBar progressBar = new ProgressBar(getParentActivity());
+            progressView.addView(progressBar);
+            layoutParams = (FrameLayout.LayoutParams) progressView.getLayoutParams();
+            layoutParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.gravity = Gravity.CENTER;
+            progressView.setLayoutParams(layoutParams);
+
+
+            emptyView = new TextView(inflater.getContext());
+            emptyView.setTextColor(0xFF808080);
+            emptyView.setGravity(Gravity.CENTER);
+            emptyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
             emptyView.setText(LocaleController.getString("noIssues", R.string.noIssues));
+            frameLayout.addView(emptyView);
+            FrameLayout.LayoutParams layoutParamsEmptyView = (FrameLayout.LayoutParams)emptyView.getLayoutParams();
+            layoutParamsEmptyView.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            layoutParamsEmptyView.height = FrameLayout.LayoutParams.MATCH_PARENT;
+            emptyView.setLayoutParams(layoutParamsEmptyView);
+
             if (loading) {
                 progressView.setVisibility(View.VISIBLE);
                 emptyView.setVisibility(View.GONE);
@@ -144,7 +184,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
             });
             if (open) {
                 if (TrelloSupport.getInstance().openIssuesList.size() > 0) {
-                    AndroidUtilities.RunOnUIThread(new Runnable() {
+                    AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
                             listViewAdapter.notifyDataSetChanged();
@@ -159,7 +199,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                 }
             } else {
                 if (TrelloSupport.getInstance().closedIssuesList.size() > 0) {
-                    AndroidUtilities.RunOnUIThread(new Runnable() {
+                    AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
                             listViewAdapter.notifyDataSetChanged();
@@ -193,7 +233,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
     @Override
     public void didReceivedNotification(int id, Object... args) {
         if (id == NotificationCenter.trelloLoaded) {
-            AndroidUtilities.RunOnUIThread(new Runnable() {
+            AndroidUtilities.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     loading = false;
@@ -210,7 +250,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
     public void onResume() {
         super.onResume();
         if (listViewAdapter != null) {
-            AndroidUtilities.RunOnUIThread(new Runnable() {
+            AndroidUtilities.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     listViewAdapter.notifyDataSetChanged();

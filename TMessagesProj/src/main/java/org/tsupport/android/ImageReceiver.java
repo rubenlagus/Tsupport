@@ -56,24 +56,6 @@ public class ImageReceiver {
         parentView = view;
     }
 
-    public void setImage(Drawable placeholder) {
-        recycleBitmap(null);
-        currentPath = null;
-        isPlaceholder = true;
-        last_path = null;
-        last_httpUrl = null;
-        last_filter = null;
-        lastCacheOnly = false;
-        last_placeholder = placeholder;
-        last_size = 0;
-        currentImage = null;
-        ImageLoader.getInstance().cancelLoadingForImageView(this);
-        if (parentView != null) {
-            parentView.invalidate();
-        }
-        return;
-    }
-
     public void setImage(TLRPC.FileLocation path, String filter, Drawable placeholder, boolean cacheOnly) {
         setImage(path, null, filter, placeholder, 0, cacheOnly);
     }
@@ -157,7 +139,7 @@ public class ImageReceiver {
         if (roundRadius != 0) {
             bitmapShader = new BitmapShader(bitmap.getBitmap(), Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
             roundPaint.setShader(bitmapShader);
-            bitmapRect.set(0, 0, bitmap.getIntrinsicWidth(), bitmap.getIntrinsicHeight());
+            bitmapRect.set(0, 0, bitmap.getBitmap().getWidth(), bitmap.getBitmap().getHeight());
         }
         if (parentView != null) {
             parentView.invalidate();
@@ -243,11 +225,13 @@ public class ImageReceiver {
             if (bitmapDrawable != null) {
                 if (bitmapShader != null) {
                     drawRegion.set(imageX, imageY, imageX + imageW, imageY + imageH);
-                    roundRect.set(imageX, imageY, imageX + imageW, imageY + imageH);
-                    shaderMatrix.reset();
-                    shaderMatrix.setScale(1.5f, 1.5f);
-                    bitmapShader.setLocalMatrix(shaderMatrix);
-                    canvas.drawRoundRect(roundRect, roundRadius, roundRadius, roundPaint);
+                    if (isVisible) {
+                        roundRect.set(drawRegion);
+                        shaderMatrix.reset();
+                        shaderMatrix.setRectToRect(bitmapRect, roundRect, Matrix.ScaleToFit.FILL);
+                        bitmapShader.setLocalMatrix(shaderMatrix);
+                        canvas.drawRoundRect(roundRect, roundRadius, roundRadius, roundPaint);
+                    }
                 } else {
                     int bitmapW = bitmapDrawable.getIntrinsicWidth();
                     int bitmapH = bitmapDrawable.getIntrinsicHeight();
@@ -269,7 +253,7 @@ public class ImageReceiver {
                                 currentPath = null;
                             }
                             setImage(last_path, last_httpUrl, last_filter, last_placeholder, last_size, lastCacheOnly);
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tsupport", e);
                         }
                         canvas.restore();
                     } else {
@@ -294,9 +278,10 @@ public class ImageReceiver {
                                         currentPath = null;
                                     }
                                     setImage(last_path, last_httpUrl, last_filter, last_placeholder, last_size, lastCacheOnly);
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tsupport", e);
                                 }
                             }
+
                             canvas.restore();
                         } else {
                             drawRegion.set(imageX, imageY, imageX + imageW, imageY + imageH);
@@ -310,7 +295,7 @@ public class ImageReceiver {
                                         currentPath = null;
                                     }
                                     setImage(last_path, last_httpUrl, last_filter, last_placeholder, last_size, lastCacheOnly);
-                                    FileLog.e("tmessages", e);
+                                    FileLog.e("tsupport", e);
                                 }
                             }
                         }
@@ -429,15 +414,21 @@ public class ImageReceiver {
     public void setRoundRadius(int value) {
         roundRadius = value;
         if (roundRadius != 0) {
-            roundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            roundRect = new RectF();
-            shaderMatrix = new Matrix();
-            bitmapRect = new RectF();
+            if (roundPaint == null) {
+                roundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                roundRect = new RectF();
+                shaderMatrix = new Matrix();
+                bitmapRect = new RectF();
+            }
         } else {
             roundPaint = null;
             roundRect = null;
             shaderMatrix = null;
             bitmapRect = null;
         }
+    }
+
+    public int getRoundRadius() {
+        return roundRadius;
     }
 }

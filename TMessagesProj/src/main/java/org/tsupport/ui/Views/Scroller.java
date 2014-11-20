@@ -131,67 +131,67 @@ public class Scroller  {
     /**
      * The amount of friction applied to flings. The default value
      * is {@link android.view.ViewConfiguration#getScrollFriction}.
-     *
+     * 
      * @param friction A scalar dimension-less value representing the coefficient of
      *         friction.
      */
     public final void setFriction(float friction) {
         mDeceleration = computeDeceleration(friction);
     }
-
+    
     private float computeDeceleration(float friction) {
         return SensorManager.GRAVITY_EARTH   // g (m/s^2)
-                * 39.37f               // inch/meter
-                * mPpi                 // pixels per inch
-                * friction;
+                      * 39.37f               // inch/meter
+                      * mPpi                 // pixels per inch
+                      * friction;
     }
 
     /**
-     *
+     * 
      * Returns whether the scroller has finished scrolling.
-     *
+     * 
      * @return True if the scroller has finished scrolling, false otherwise.
      */
     public final boolean isFinished() {
         return mFinished;
     }
-
+    
     /**
      * Force the finished field to a particular value.
-     *
+     *  
      * @param finished The new finished value.
      */
     public final void forceFinished(boolean finished) {
         mFinished = finished;
     }
-
+    
     /**
      * Returns how long the scroll event will take, in milliseconds.
-     *
+     * 
      * @return The duration of the scroll in milliseconds.
      */
     public final int getDuration() {
         return mDuration;
     }
-
+    
     /**
      * Returns the current X offset in the scroll. 
-     *
+     * 
      * @return The new X offset as an absolute distance from the origin.
      */
     public final int getCurrX() {
         return mCurrX;
     }
-
+    
     /**
      * Returns the current Y offset in the scroll. 
-     *
+     * 
      * @return The new Y offset as an absolute distance from the origin.
      */
     public final int getCurrY() {
         return mCurrY;
     }
-
+    
     /**
      * Returns the current velocity.
      *
@@ -204,34 +204,34 @@ public class Scroller  {
 
     /**
      * Returns the start X offset in the scroll. 
-     *
+     * 
      * @return The start X offset as an absolute distance from the origin.
      */
     public final int getStartX() {
         return mStartX;
     }
-
+    
     /**
      * Returns the start Y offset in the scroll. 
-     *
+     * 
      * @return The start Y offset as an absolute distance from the origin.
      */
     public final int getStartY() {
         return mStartY;
     }
-
+    
     /**
      * Returns where the scroll will end. Valid only for "fling" scrolls.
-     *
+     * 
      * @return The final X offset as an absolute distance from the origin.
      */
     public final int getFinalX() {
         return mFinalX;
     }
-
+    
     /**
      * Returns where the scroll will end. Valid only for "fling" scrolls.
-     *
+     * 
      * @return The final Y offset as an absolute distance from the origin.
      */
     public final int getFinalY() {
@@ -242,51 +242,51 @@ public class Scroller  {
      * Call this when you want to know the new location.  If it returns true,
      * the animation is not yet finished.  loc will be altered to provide the
      * new location.
-     */
+     */ 
     public boolean computeScrollOffset() {
         if (mFinished) {
             return false;
         }
 
         int timePassed = (int)(AnimationUtils.currentAnimationTimeMillis() - mStartTime);
-
+    
         if (timePassed < mDuration) {
             switch (mMode) {
-                case SCROLL_MODE:
-                    float x = timePassed * mDurationReciprocal;
+            case SCROLL_MODE:
+                float x = timePassed * mDurationReciprocal;
+    
+                if (mInterpolator == null)
+                    x = viscousFluid(x); 
+                else
+                    x = mInterpolator.getInterpolation(x);
+    
+                mCurrX = mStartX + Math.round(x * mDeltaX);
+                mCurrY = mStartY + Math.round(x * mDeltaY);
+                break;
+            case FLING_MODE:
+                final float t = (float) timePassed / mDuration;
+                final int index = (int) (NB_SAMPLES * t);
+                final float t_inf = (float) index / NB_SAMPLES;
+                final float t_sup = (float) (index + 1) / NB_SAMPLES;
+                final float d_inf = SPLINE[index];
+                final float d_sup = SPLINE[index + 1];
+                final float distanceCoef = d_inf + (t - t_inf) / (t_sup - t_inf) * (d_sup - d_inf);
+                
+                mCurrX = mStartX + Math.round(distanceCoef * (mFinalX - mStartX));
+                // Pin to mMinX <= mCurrX <= mMaxX
+                mCurrX = Math.min(mCurrX, mMaxX);
+                mCurrX = Math.max(mCurrX, mMinX);
+                
+                mCurrY = mStartY + Math.round(distanceCoef * (mFinalY - mStartY));
+                // Pin to mMinY <= mCurrY <= mMaxY
+                mCurrY = Math.min(mCurrY, mMaxY);
+                mCurrY = Math.max(mCurrY, mMinY);
 
-                    if (mInterpolator == null)
-                        x = viscousFluid(x);
-                    else
-                        x = mInterpolator.getInterpolation(x);
+                if (mCurrX == mFinalX && mCurrY == mFinalY) {
+                    mFinished = true;
+                }
 
-                    mCurrX = mStartX + Math.round(x * mDeltaX);
-                    mCurrY = mStartY + Math.round(x * mDeltaY);
-                    break;
-                case FLING_MODE:
-                    final float t = (float) timePassed / mDuration;
-                    final int index = (int) (NB_SAMPLES * t);
-                    final float t_inf = (float) index / NB_SAMPLES;
-                    final float t_sup = (float) (index + 1) / NB_SAMPLES;
-                    final float d_inf = SPLINE[index];
-                    final float d_sup = SPLINE[index + 1];
-                    final float distanceCoef = d_inf + (t - t_inf) / (t_sup - t_inf) * (d_sup - d_inf);
-
-                    mCurrX = mStartX + Math.round(distanceCoef * (mFinalX - mStartX));
-                    // Pin to mMinX <= mCurrX <= mMaxX
-                    mCurrX = Math.min(mCurrX, mMaxX);
-                    mCurrX = Math.max(mCurrX, mMinX);
-
-                    mCurrY = mStartY + Math.round(distanceCoef * (mFinalY - mStartY));
-                    // Pin to mMinY <= mCurrY <= mMaxY
-                    mCurrY = Math.min(mCurrY, mMaxY);
-                    mCurrY = Math.max(mCurrY, mMinY);
-
-                    if (mCurrX == mFinalX && mCurrY == mFinalY) {
-                        mFinished = true;
-                    }
-
-                    break;
+                break;
             }
         }
         else {
@@ -296,12 +296,12 @@ public class Scroller  {
         }
         return true;
     }
-
+    
     /**
      * Start scrolling by providing a starting point and the distance to travel.
      * The scroll will use the default value of 250 milliseconds for the
      * duration.
-     *
+     * 
      * @param startX Starting horizontal scroll offset in pixels. Positive
      *        numbers will scroll the content to the left.
      * @param startY Starting vertical scroll offset in pixels. Positive numbers
@@ -317,7 +317,7 @@ public class Scroller  {
 
     /**
      * Start scrolling by providing a starting point and the distance to travel.
-     *
+     * 
      * @param startX Starting horizontal scroll offset in pixels. Positive
      *        numbers will scroll the content to the left.
      * @param startY Starting vertical scroll offset in pixels. Positive numbers
@@ -345,7 +345,7 @@ public class Scroller  {
     /**
      * Start scrolling based on a fling gesture. The distance travelled will
      * depend on the initial velocity of the fling.
-     *
+     * 
      * @param startX Starting point of the scroll (X)
      * @param startY Starting point of the scroll (Y)
      * @param velocityX Initial velocity of the fling (X) measured in pixels per
@@ -362,7 +362,7 @@ public class Scroller  {
      *        point.
      */
     public void fling(int startX, int startY, int velocityX, int velocityY,
-                      int minX, int maxX, int minY, int maxY) {
+            int minX, int maxX, int minY, int maxY) {
         // Continue a scroll or fling in progress
         if (mFlywheel && !mFinished) {
             float oldVel = getCurrVelocity();
@@ -387,7 +387,7 @@ public class Scroller  {
         mFinished = false;
 
         float velocity = FloatMath.sqrt(velocityX * velocityX + velocityY * velocityY);
-
+     
         mVelocity = velocity;
         float ALPHA = 800;
         final double l = Math.log(START_TENSION * velocity / ALPHA);
@@ -401,7 +401,7 @@ public class Scroller  {
 
         int totalDistance =
                 (int) (ALPHA * Math.exp(DECELERATION_RATE / (DECELERATION_RATE - 1.0) * l));
-
+        
         mMinX = minX;
         mMaxX = maxX;
         mMinY = minY;
@@ -411,13 +411,13 @@ public class Scroller  {
         // Pin to mMinX <= mFinalX <= mMaxX
         mFinalX = Math.min(mFinalX, mMaxX);
         mFinalX = Math.max(mFinalX, mMinX);
-
+        
         mFinalY = startY + Math.round(totalDistance * coeffY);
         // Pin to mMinY <= mFinalY <= mMaxY
         mFinalY = Math.min(mFinalY, mMaxY);
         mFinalY = Math.max(mFinalY, mMinY);
     }
-
+    
     static float viscousFluid(float x)
     {
         x *= sViscousFluidScale;
@@ -431,7 +431,7 @@ public class Scroller  {
         x *= sViscousFluidNormalize;
         return x;
     }
-
+    
     /**
      * Stops the animation. Contrary to {@link #forceFinished(boolean)},
      * aborting the animating cause the scroller to move to the final x and y
@@ -444,7 +444,7 @@ public class Scroller  {
         mCurrY = mFinalY;
         mFinished = true;
     }
-
+    
     /**
      * Extend the scroll animation. This allows a running animation to scroll
      * further and longer, when used with {@link #setFinalX(int)} or {@link #setFinalY(int)}.

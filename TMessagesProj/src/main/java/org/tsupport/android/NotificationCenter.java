@@ -41,7 +41,8 @@ public class NotificationCenter {
     public static final int hideEmojiKeyboard = 30;
     public static final int stopEncodingService = 31;
     public static final int didCreatedNewDeleteTask = 32;
-
+    public static final int mainUserInfoChanged = 33;
+    public static final int privacyRulesUpdated = 34;
     public static final int readChatNotification = 50;
     public static final int updateTemplatesNotification = 51;
     public static final int hideTemplatesKeyboard = 54;
@@ -50,13 +51,14 @@ public class NotificationCenter {
 
     public static final int wallpapersDidLoaded = 171;
 
-    public static final Integer ConversationOwned = 452;
-    public static final Integer ConversationNotOwned = 453;
-    public static final Integer ConversationOwnedNotSupported = 454;
-    public static final Integer ConversationOwnedDeleted = 455;
+    public static final int ConversationOwned = 452;
+    public static final int ConversationNotOwned = 453;
+    public static final int ConversationOwnedNotSupported = 454;
+    public static final int ConversationOwnedDeleted = 455;
 
     public static final int closeOtherAppActivities = 702;
     public static final int didUpdatedConnectionState = 703;
+    public static final int didReceiveSmsCode = 998;
     public static final int emojiDidLoaded = 999;
     public static final int appDidLogout = 1234;
 
