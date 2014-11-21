@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +47,8 @@ public class TrelloSupport {
     private static final String osXId = "5413f3adf0f537c87a136ac2";
     private static final String webogramId = "5413f3adf0f537c87a136ac3";
     private static final String globalId = "542576c9918041a6c8d7f193";
+
+    private static long lastLoad = 0;
 
     private String token = "";
     private boolean loading = false;
@@ -97,7 +100,7 @@ public class TrelloSupport {
         }
     }
 
-    private LoadIssuesAsync loadIssuesAsync;
+    private static LoadIssuesAsync loadIssuesAsync;
 
     public static TrelloSupport getInstance() {
         TrelloSupport localInstance = Instance;
@@ -109,6 +112,10 @@ public class TrelloSupport {
                     Instance = localInstance = new TrelloSupport();
                 }
             }
+        }
+        if (((new Date()).getTime() - lastLoad) < 60000 ) {
+            TrelloSupport.loadIssuesAsync();
+            lastLoad = (new Date()).getTime();
         }
         return localInstance;
     }
@@ -164,12 +171,16 @@ public class TrelloSupport {
                         } else if(jsonObject.getString("idList").compareToIgnoreCase(globalId) == 0 ) {
                             preline = "[GLO]";
                         }
-                        for (int j=0; j<labels.length(); j++) {
-                            JSONObject label = labels.getJSONObject(j);
-                            if (label.getString("color").compareToIgnoreCase("green") == 0) {
-                                closedIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " +jsonObject.getString("name"));
-                            } else if (label.getString("color").compareToIgnoreCase("blue") != 0){
-                                openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
+                        if (labels.length() == 0) {
+                            openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
+                        } else {
+                            for (int j = 0; j < labels.length(); j++) {
+                                JSONObject label = labels.getJSONObject(j);
+                                if (label.getString("color").compareToIgnoreCase("green") == 0) {
+                                    closedIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
+                                } else if (label.getString("color").compareToIgnoreCase("blue") != 0) {
+                                    openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
+                                }
                             }
                         }
                     }
@@ -217,7 +228,7 @@ public class TrelloSupport {
         }
     }
 
-    public void loadIssuesAsync() {
+    public static void loadIssuesAsync() {
         AsyncTask.Status status = loadIssuesAsync.getStatus();
         if (status == AsyncTask.Status.RUNNING) {
             FileLog.d("tsupportTrello","Closed because of running");

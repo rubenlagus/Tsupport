@@ -719,7 +719,7 @@ public class FileLoader {
                                 file.deleteOnExit();
                             }
                         } catch (Exception e) {
-                            FileLog.e("tmessages", e);
+                            FileLog.e("tsupport", e);
                         }
                     }
                 }

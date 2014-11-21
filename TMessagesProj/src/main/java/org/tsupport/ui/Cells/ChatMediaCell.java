@@ -67,12 +67,15 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
     private int photoWidth;
     private int photoHeight;
     private PhotoObject currentPhotoObject;
+    private PhotoObject currentPhotoObjectThumb;
     private String currentUrl;
     private String currentPhotoFilter;
     private ImageReceiver photoImage;
     private boolean progressVisible = false;
     private boolean photoNotSet = false;
     private boolean cancelLoading = false;
+
+    private boolean allowedToSetPhoto = true;
 
     private int TAG;
 
@@ -133,7 +136,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
             infoPaint.setTextSize(AndroidUtilities.dp(12));
 
             namePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            namePaint.setColor(0xff000000);
+            namePaint.setColor(0xff212121);
             namePaint.setTextSize(AndroidUtilities.dp(16));
 
             docBackPaint = new Paint();
@@ -172,6 +175,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
         if (photoImage != null) {
             photoImage.clearImage();
             currentPhotoObject = null;
+            currentPhotoObjectThumb = null;
         }
         currentUrl = null;
         if (gifDrawable != null) {
@@ -411,6 +415,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
             buttonState = -1;
             gifDrawable = null;
             currentPhotoObject = null;
+            currentPhotoObjectThumb = null;
             currentUrl = null;
             photoNotSet = false;
 
@@ -525,6 +530,9 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
                 }
 
                 currentPhotoObject = PhotoObject.getClosestImageWithSize(messageObject.photoThumbs, AndroidUtilities.getPhotoSize());
+                if (messageObject.type == 1) {
+                    currentPhotoObjectThumb = PhotoObject.getClosestImageWithSize(messageObject.photoThumbs, 80);
+                }
                 if (currentPhotoObject != null) {
                     boolean noSize = false;
                     if (currentMessageObject.type == 3 || currentMessageObject.type == 8) {
@@ -595,17 +603,22 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
                             }
                         }
                         if (photoExist || MediaController.getInstance().canDownloadMedia(MediaController.AUTODOWNLOAD_MASK_PHOTO)) {
-                            if (messageObject.imagePreview != null) {
-                                photoImage.setImage(currentPhotoObject.photoOwner.location, currentPhotoFilter, new BitmapDrawable(messageObject.imagePreview), noSize ? 0 : currentPhotoObject.photoOwner.size, false);
+                            if (allowedToSetPhoto || ImageLoader.getInstance().getImageFromMemory(currentPhotoObject.photoOwner.location, null, currentPhotoFilter, null) != null) {
+                                allowedToSetPhoto = true;
+                                if (messageObject.imagePreview != null) {
+                                    photoImage.setImage(currentPhotoObject.photoOwner.location, currentPhotoFilter, new BitmapDrawable(messageObject.imagePreview), noSize ? 0 : currentPhotoObject.photoOwner.size, false);
+                                } else {
+                                    photoImage.setImage(currentPhotoObject.photoOwner.location, currentPhotoFilter, null, noSize ? 0 : currentPhotoObject.photoOwner.size, false);
+                                }
                             } else {
-                                photoImage.setImage(currentPhotoObject.photoOwner.location, currentPhotoFilter, null, noSize ? 0 : currentPhotoObject.photoOwner.size, false);
+                                photoImage.setImageBitmap(messageObject.imagePreview);
                             }
                         } else {
                             photoNotSet = true;
                             if (messageObject.imagePreview != null) {
                                 photoImage.setImageBitmap(messageObject.imagePreview);
-                            } else {
-                                photoImage.setImageBitmap((Bitmap)null);
+                            } else if (currentPhotoObjectThumb != null) {
+                                photoImage.setImage(currentPhotoObjectThumb.photoOwner.location, currentPhotoFilter, null, 0, true);
                             }
                         }
                     }
@@ -800,6 +813,20 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
         }
     }
 
+    public void setAllowedToSetPhoto(boolean value) {
+        if (allowedToSetPhoto == value) {
+            return;
+        }
+        if (currentMessageObject != null && currentMessageObject.type == 1) {
+            allowedToSetPhoto = value;
+            if (value) {
+                MessageObject temp = currentMessageObject;
+                currentMessageObject = null;
+                setMessageObject(temp);
+            }
+        }
+    }
+
     @Override
     protected void onAfterBackgroundDraw(Canvas canvas) {
         boolean imageDrawn = false;
@@ -827,7 +854,7 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
                 menuDrawable = docMenuInDrawable;
             }
 
-            setDrawableBounds(menuDrawable, photoImage.getImageX() + backgroundWidth - AndroidUtilities.dp(50), AndroidUtilities.dp(10));
+            setDrawableBounds(menuDrawable, photoImage.getImageX() + backgroundWidth - AndroidUtilities.dp(44), AndroidUtilities.dp(10));
             menuDrawable.draw(canvas);
 
             if (!imageDrawn) {
@@ -911,16 +938,16 @@ public class ChatMediaCell extends ChatBaseCell implements MediaController.FileD
             }
         } else if (infoLayout != null && (buttonState == 1 || buttonState == 0 || buttonState == 3 || currentMessageObject.isSecretPhoto())) {
             infoPaint.setColor(0xffffffff);
-            setDrawableBounds(mediaBackgroundDrawable, photoImage.getImageX() + AndroidUtilities.dp(4), photoImage.getImageY() + AndroidUtilities.dp(4), infoWidth + AndroidUtilities.dp(8) + infoOffset, AndroidUtilities.dpf(16.5f));
+            setDrawableBounds(mediaBackgroundDrawable, photoImage.getImageX() + AndroidUtilities.dp(4), photoImage.getImageY() + AndroidUtilities.dp(4), infoWidth + AndroidUtilities.dp(8) + infoOffset, AndroidUtilities.dp(16.5f));
             mediaBackgroundDrawable.draw(canvas);
 
             if (currentMessageObject.type == 3) {
-                setDrawableBounds(videoIconDrawable, photoImage.getImageX() + AndroidUtilities.dp(8), photoImage.getImageY() + AndroidUtilities.dpf(7.5f));
+                setDrawableBounds(videoIconDrawable, photoImage.getImageX() + AndroidUtilities.dp(8), photoImage.getImageY() + AndroidUtilities.dp(7.5f));
                 videoIconDrawable.draw(canvas);
             }
 
             canvas.save();
-            canvas.translate(photoImage.getImageX() + AndroidUtilities.dp(8) + infoOffset, photoImage.getImageY() + AndroidUtilities.dpf(5.5f));
+            canvas.translate(photoImage.getImageX() + AndroidUtilities.dp(8) + infoOffset, photoImage.getImageY() + AndroidUtilities.dp(5.5f));
             infoLayout.draw(canvas);
             canvas.restore();
         }

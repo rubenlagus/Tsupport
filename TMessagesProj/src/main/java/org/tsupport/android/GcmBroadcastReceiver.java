@@ -26,9 +26,8 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, final Intent intent) {
         FileLog.d("tsupport", "GCM received intent: " + intent);
 
-        // Avoid background connections
         if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
-            AndroidUtilities.RunOnUIThread(new Runnable() {
+            AndroidUtilities.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
                     ApplicationLoader.postInitApplication();

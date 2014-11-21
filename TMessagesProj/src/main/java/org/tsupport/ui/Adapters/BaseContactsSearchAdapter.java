@@ -20,17 +20,18 @@ import java.util.ArrayList;
 
 public class BaseContactsSearchAdapter extends BaseFragmentAdapter {
 
+    protected ArrayList<TLRPC.User> globalSearch = new ArrayList<TLRPC.User>();
     private long reqId = 0;
     private int lastReqId;
     protected String lastFoundUsername = null;
 
     public void queryServerSearch(final String query) {
+        if (reqId != 0) {
+            ConnectionsManager.getInstance().cancelRpc(reqId, true);
+            reqId = 0;
+        }
         if (query == null || query.length() < 5) {
-            if (reqId != 0) {
-                ConnectionsManager.getInstance().cancelRpc(reqId, true);
-                reqId = 0;
-            }
-            MessagesController.getInstance().globalSearched.clear();
+            globalSearch.clear();
             lastReqId = 0;
             notifyDataSetChanged();
             return;
@@ -42,18 +43,14 @@ public class BaseContactsSearchAdapter extends BaseFragmentAdapter {
         reqId = ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
             @Override
             public void run(final TLObject response, final TLRPC.TL_error error) {
-                AndroidUtilities.RunOnUIThread(new Runnable() {
+                AndroidUtilities.runOnUIThread(new Runnable() {
                     @Override
                     public void run() {
                         if (currentReqId == lastReqId) {
                             if (error == null) {
-                                FileLog.d("tsupportSearch", "Server search a");
                                 TLRPC.TL_contacts_found res = (TLRPC.TL_contacts_found) response;
-                                FileLog.d("tsupportSearch", "Server search b");
-                                MessagesController.getInstance().globalSearched.addAll(res.users);
-                                FileLog.d("tsupportSearch", "Server search c " + res.users.size());
+                                globalSearch = res.users;
                                 lastFoundUsername = query;
-                                FileLog.d("tsupportSearch", "Server search d");
                                 notifyDataSetChanged();
                             }
                         }

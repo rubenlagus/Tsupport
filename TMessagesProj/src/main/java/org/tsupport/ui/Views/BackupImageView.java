@@ -42,40 +42,40 @@ public class BackupImageView extends View {
         imageReceiver = new ImageReceiver(this);
     }
 
-    public void setImage(TLRPC.FileLocation path, String filter, int placeholder) {
+    public void setImage(TLRPC.FileLocation path, String filter, Drawable placeholder) {
         setImage(path, null, filter, placeholder, null, 0);
     }
 
-    public void setImage(int placeholder) {
+    public void setImage(Drawable placeholder) {
         Drawable placeholderDrawable = null;
-        if (placeholder != 0) {
-            placeholderDrawable = getResources().getDrawable(placeholder);
+        if (placeholder != null) {
+            placeholderDrawable = placeholder;
         }
-        imageReceiver.setImage(placeholderDrawable);
+        imageReceiver.setImageBitmap(placeholder);
     }
 
     public void setImage(TLRPC.FileLocation path, String filter, Bitmap placeholderBitmap) {
-        setImage(path, null, filter, 0, placeholderBitmap, 0);
+        setImage(path, null, filter, null, placeholderBitmap, 0);
     }
 
-    public void setImage(TLRPC.FileLocation path, String filter, int placeholder, int size) {
+    public void setImage(TLRPC.FileLocation path, String filter, Drawable placeholder, int size) {
         setImage(path, null, filter, placeholder, null, size);
     }
 
     public void setImage(TLRPC.FileLocation path, String filter, Bitmap placeholderBitmap, int size) {
-        setImage(path, null, filter, 0, placeholderBitmap, size);
+        setImage(path, null, filter, null, placeholderBitmap, size);
     }
 
-    public void setImage(String path, String filter, int placeholder) {
+    public void setImage(String path, String filter, Drawable placeholder) {
         setImage(null, path, filter, placeholder, null, 0);
     }
 
-    public void setImage(TLRPC.FileLocation path, String httpUrl, String filter, int placeholder, Bitmap placeholderBitmap, int size) {
+    public void setImage(TLRPC.FileLocation path, String httpUrl, String filter, Drawable placeholder, Bitmap placeholderBitmap, int size) {
         Drawable placeholderDrawable = null;
         if (placeholderBitmap != null) {
             placeholderDrawable = new BitmapDrawable(null, placeholderBitmap);
-        } else if (placeholder != 0) {
-            placeholderDrawable = getResources().getDrawable(placeholder);
+        } else if (placeholder != null) {
+            placeholderDrawable = placeholder;
         }
         imageReceiver.setImage(path, httpUrl, filter, placeholderDrawable, size, false);
     }
@@ -86,6 +86,10 @@ public class BackupImageView extends View {
 
     public void setImageResource(int resId) {
         imageReceiver.setImageBitmap(getResources().getDrawable(resId));
+    }
+
+    public void setImageDrawable(Drawable drawable) {
+        imageReceiver.setImageBitmap(drawable);
     }
 
     @Override

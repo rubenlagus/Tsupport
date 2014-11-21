@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 
@@ -114,13 +115,17 @@ public class ApplicationLoader extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (Build.VERSION.SDK_INT < 11) {
+            java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
+            java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
+        }
+
         applicationContext = getApplicationContext();
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        java.lang.System.setProperty("java.net.preferIPv4Stack", "true");
-        java.lang.System.setProperty("java.net.preferIPv6Addresses", "false");
         SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
         if (preferences.getBoolean("pushService", false)) {
             startPushService();
@@ -272,7 +277,7 @@ public class ApplicationLoader extends Application {
                 UserConfig.registeredForPush = !isNew;
                 UserConfig.saveConfig(false);
                 if (UserConfig.getClientUserId() != 0) {
-                    AndroidUtilities.RunOnUIThread(new Runnable() {
+                    AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
                             MessagesController.getInstance().registerForPush(regid);

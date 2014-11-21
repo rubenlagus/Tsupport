@@ -15,9 +15,10 @@
         android:paddingTop="20dp"
         android:paddingBottom="20dp">
 
-        <org.tsupport.ui.Views.IdenticonView
+        <org.tsupport.ui.Views.IdenticonDrawable
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:scaleType="fitXY"
             android:id="@+id/identicon_view"/>
 
     </FrameLayout>

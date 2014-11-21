@@ -59,47 +59,6 @@ public class TemplateView extends LinearLayout {
         invalidateViews();
     }
 
-    /*
-    private void addToRecent(long paramLong) {
-        if (this.pager.getCurrentItem() == 0) {
-            return;
-        }
-        ArrayList<Long> localArrayList = new ArrayList<Long>();
-        long[] currentRecent = Emoji.data[0];
-        boolean was = false;
-        for (long aCurrentRecent : currentRecent) {
-            if (paramLong == aCurrentRecent) {
-                localArrayList.add(0, paramLong);
-                was = true;
-            } else {
-                localArrayList.add(aCurrentRecent);
-            }
-        }
-        if (!was) {
-            localArrayList.add(0, paramLong);
-        }
-        Emoji.data[0] = new long[Math.min(localArrayList.size(), 50)];
-        for (int q = 0; q < Emoji.data[0].length; q++) {
-            Emoji.data[0][q] = localArrayList.get(q);
-        }
-        adapters.get(0).data = Emoji.data[0];
-        adapters.get(0).notifyDataSetChanged();
-        saveRecents();
-    }
-
-    private String convert(long paramLong) {
-        String str = "";
-        for (int i = 0; ; i++) {
-            if (i >= 4) {
-                return str;
-            }
-            int j = (int)(0xFFFF & paramLong >> 16 * (3 - i));
-            if (j != 0) {
-                str = str + (char)j;
-            }
-        }
-    }*/
-
     private void init() {
         setOrientation(LinearLayout.VERTICAL);
         myView = new ListView(getContext());
@@ -109,35 +68,6 @@ public class TemplateView extends LinearLayout {
         setBackgroundDrawable(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{-14145496, -16777216}));
         addView(myView);
     }
-
-/*    private void saveRecents() {
-        ArrayList<Long> localArrayList = new ArrayList<Long>();
-        long[] arrayOfLong = Emoji.data[0];
-        int i = arrayOfLong.length;
-        for (int j = 0; ; j++) {
-            if (j >= i) {
-                getContext().getSharedPreferences("emoji", 0).edit().putString("recents", TextUtils.join(",", localArrayList)).commit();
-                return;
-            }
-            localArrayList.add(arrayOfLong[j]);
-        }
-    }*/
-
-    /*public void loadRecents() {
-        String str = getContext().getSharedPreferences("emoji", 0).getString("recents", "");
-        String[] arrayOfString = null;
-        if ((str != null) && (str.length() > 0)) {
-            arrayOfString = str.split(",");
-            Emoji.data[0] = new long[arrayOfString.length];
-        }
-        if (arrayOfString != null) {
-            for (int i = 0; i < arrayOfString.length; i++) {
-                Emoji.data[0][i] = Long.parseLong(arrayOfString[i]);
-            }
-            adapters.get(0).data = Emoji.data[0];
-            adapters.get(0).notifyDataSetChanged();
-        }
-    }*/
 
     public void onMeasure(int paramInt1, int paramInt2) {
         super.onMeasure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(paramInt1), MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.getSize(paramInt2), MeasureSpec.EXACTLY));
