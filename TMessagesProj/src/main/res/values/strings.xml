@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!--Translated by Telegram Team, corrected by Florian Keller-->
+
 
 <resources>
     <string name="AppName">TSupport</string>
@@ -106,6 +106,7 @@
     <string name="SaveToDownloads">Save to downloads</string>
     <string name="ApplyLocalizationFile">Apply localization file</string>
     <string name="UnsupportedAttachment">Unsupported attachment</string>
+    <string name="SetTimer">Set self-destruct timer</string>
     <!--notification-->
     <string name="MessageLifetimeChanged">%1$s set the self-destruct timer to %2$s</string>
     <string name="MessageLifetimeChangedOutgoing">You set the self-destruct timer to %1$s</string>
@@ -271,6 +272,12 @@
     <string name="NoMediaAutoDownload">No media</string>
     <string name="SaveToGallerySettings">Save to gallery</string>
     <string name="EditName">Edit name</string>
+    <string name="NotificationsPriority">Priority</string>
+    <string name="NotificationsPriorityDefault">Default</string>
+    <string name="NotificationsPriorityLow">Low</string>
+    <string name="NotificationsPriorityHigh">High</string>
+    <string name="NotificationsPriorityMax">Max</string>
+    <string name="RepeatNotifications">Repeat Notifications</string>
     <!--media view-->
     <string name="NoMedia">No shared media yet</string>
     <!--map view-->

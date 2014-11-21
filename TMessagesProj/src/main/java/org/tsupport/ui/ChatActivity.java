@@ -193,6 +193,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private Runnable openSecretPhotoRunnable = null;
     private float startX = 0;
     private float startY = 0;
+    private boolean wasUnreadFinal = false;
+    private int last_unread_date_final = 0;
 
     private final static int copy = 1;
     private final static int forward = 2;
@@ -513,7 +515,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (currentUser != null) {
             MessagesController.getInstance().cancelLoadFullUser(currentUser.id);
         }
-        if (!AndroidUtilities.isTablet()) {
+        if (!AndroidUtilities.isTablet() && getParentActivity() != null) {
             getParentActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         }
         AndroidUtilities.unlockOrientation(getParentActivity());
@@ -601,7 +603,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             @Override
                             public void didSelectFile(DocumentSelectActivity activity, String path) {
                                 activity.finishFragment();
-                                SendMessagesHelper.prepareSendingDocument(path, path, dialog_id);
+                                SendMessagesHelper.prepareSendingDocument(path, path, null, null, dialog_id);
                             }
 
                             @Override
@@ -922,7 +924,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             headerItem = menu.addItem(0, R.drawable.ic_ab_other);
             if (currentEncryptedChat != null) {
-                timeItem2 = headerItem.addSubItem(chat_enc_timer, LocaleController.getString("MessageLifetime", R.string.MessageLifetime), 0);
+                timeItem2 = headerItem.addSubItem(chat_enc_timer, LocaleController.getString("SetTimer", R.string.SetTimer), 0);
             } else {
                 assignConversation = headerItem.addSubItem(assign_conversation, LocaleController.getString("AssignConversation", R.string.AssignConversation), 0);
                 unassignConversation = headerItem.addSubItem(unassign_conversation, LocaleController.getString("UnassingConversation", R.string.UnassingConversation), 0);
@@ -1036,14 +1038,16 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             } else {
                 chatListView.setCacheColorHint(0);
                 try {
-                    if (selectedBackground == 1000001) {
-                        ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+                    if (ApplicationLoader.cachedWallpaper != null) {
+                        isCustomTheme = selectedBackground != 1000001;
+                        ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(ApplicationLoader.cachedWallpaper);
                     } else {
-                        File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
-                        if (toFile.exists()) {
-                            if (ApplicationLoader.cachedWallpaper != null) {
-                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(ApplicationLoader.cachedWallpaper);
-                            } else {
+                        if (selectedBackground == 1000001) {
+                            ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+                            ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
+                        } else {
+                            File toFile = new File(ApplicationLoader.applicationContext.getFilesDir(), "wallpaper.jpg");
+                            if (toFile.exists()) {
                                 Drawable drawable = Drawable.createFromPath(toFile.getAbsolutePath());
                                 if (drawable != null) {
                                     ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(drawable);
@@ -1052,10 +1056,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                     contentView.setBackgroundColor(-2693905);
                                     chatListView.setCacheColorHint(-2693905);
                                 }
+                                isCustomTheme = true;
+                            } else {
+                                ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
+                                ApplicationLoader.cachedWallpaper = ((SizeNotifierRelativeLayout) contentView).getBackgroundImage();
+                                isCustomTheme = false;
                             }
-                            isCustomTheme = true;
-                        } else {
-                            ((SizeNotifierRelativeLayout) contentView).setBackgroundImage(R.drawable.background_hd);
                         }
                     }
                 } catch (Throwable e) {
@@ -1352,7 +1358,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     }
 
     private void scrollToLastMessage() {
-        if ((forward_end_reached || first_unread_id == 0) && startLoadFromMessageId == 0) {
+        if (forward_end_reached && first_unread_id == 0 && startLoadFromMessageId == 0) {
             chatListView.setSelectionFromTop(messages.size() - 1, -100000 - chatListView.getPaddingTop());
         } else {
             messages.clear();
@@ -1880,7 +1886,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     showAttachmentError();
                     return;
                 }
-                SendMessagesHelper.prepareSendingDocument(tempPath, originalPath, dialog_id);
+                SendMessagesHelper.prepareSendingDocument(tempPath, originalPath, null, null, dialog_id);
             }
         }
     }
@@ -2152,8 +2158,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
 
                 if (first && messages.size() > 0) {
-                    final boolean wasUnreadFinal = wasUnread;
-                    final int last_unread_date_final = last_unread_date;
+                    wasUnreadFinal = wasUnread;
+                    last_unread_date_final = last_unread_date;
                     final int lastid = messages.get(0).messageOwner.id;
                     AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
@@ -2460,11 +2466,24 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (args.length > 0) {
                 long did = (Long) args[0];
                 if (did == dialog_id) {
-                    FileLog.d("tsupportRead", "Receivd notifiction");
-                    TLRPC.TL_dialog dialog =  MessagesController.getInstance().dialogs_dict.get(did);
+                    final int lastid = messages.get(0).messageOwner.id;
+                    AndroidUtilities.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (last_message_id != 0) {
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, last_message_id, 0, last_unread_date_final, wasUnreadFinal, false);
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, last_message_id, 0, last_unread_date_final, true, false);
+                            } else {
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, wasUnreadFinal, false);
+                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, minMessageId, 0, maxDate, true, false);
+                            }
 
-                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, dialog.top_message , 0, dialog.last_message_date, true, false);
-                    MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, -1, 0, dialog.last_message_date, true, false);
+                        }
+                    }, 700);
+                    FileLog.d("tsupportRead", "Receivd notifiction");
+                    //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, readWithMid, 0, readWithDate, true, false);
+                    //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, dialog.top_message , 0, dialog.last_message_date, true, false);
+                    //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, -1, 0, dialog.last_message_date, true, false);
                 }
             }
         } else if (id == NotificationCenter.messageReceivedByServer) {
@@ -3282,7 +3301,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     presentFragment(chatActivity, true);
                     if (!AndroidUtilities.isTablet()) {
                         removeSelfFromStack();
-                        chatActivity.getParentActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                        Activity parentActivity = getParentActivity();
+                        if (parentActivity == null) {
+                            parentActivity = chatActivity.getParentActivity();
+                        }
+                        if (parentActivity != null) {
+                            parentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                        }
                     }
                 } else {
                     activity.finishFragment();

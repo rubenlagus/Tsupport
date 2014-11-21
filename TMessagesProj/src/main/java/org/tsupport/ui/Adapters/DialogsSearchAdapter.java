@@ -31,6 +31,8 @@ import org.tsupport.ui.Cells.ProfileSearchCell;
 import org.tsupport.ui.Cells.DialogCell;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -52,7 +54,8 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
     private boolean messagesSearchEndReached;
     private String lastMessagesSearchString;
     private int numberFound = 0;
-
+    private int lastSearchId = 0;
+    
     public static interface MessagesActivitySearchAdapterDelegate {
         public abstract void searchStateChanged(boolean searching);
     }
@@ -137,6 +140,20 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                                 for (MessageObject message: tempIndex.values()) {
                                     searchResultMessages.add(message);
                                 }
+                                if (searchResultMessages.size() < 1000) {
+                                    Collections.sort(searchResultMessages, new Comparator<MessageObject>() {
+                                        @Override
+                                        public int compare(MessageObject msg1, MessageObject msg2) {
+                                            if (msg1.messageOwner.date == msg2.messageOwner.date) {
+                                                return 0;
+                                            } else if (msg1.messageOwner.date < msg2.messageOwner.date) {
+                                                return 1;
+                                            } else {
+                                                return -1;
+                                            }
+                                        }
+                                    });
+                                }
                                 messagesSearchEndReached = res.messages.size() < 100;
                                 numberFound += res.messages.size();
                                 FileLog.e("tsupportSearch", "Count: " + res.count);
@@ -194,10 +211,13 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                                 MessagesStorage.getInstance().putUsersAndChats(res.users, res.chats, true, true);
                                 MessagesController.getInstance().putUsers(res.users, false);
                                 MessagesController.getInstance().putChats(res.chats, false);
-                                searchResultMessages.clear();
+                                if (req.max_id == 0) {
+                                    searchResultMessages.clear();
+                                }
                                 for (TLRPC.Message message : res.messages) {
                                     searchResultMessages.add(new MessageObject(message, null, 0));
                                 }
+                                messagesSearchEndReached = res.messages.size() != 20;
                                 notifyDataSetChanged();
                             }
                         }

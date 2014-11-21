@@ -483,7 +483,7 @@ public class MessagesStorage {
                     state.dispose();
                     buffersStorage.reuseFreeBuffer(data);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -509,7 +509,7 @@ public class MessagesStorage {
                     lastSavedDate = date;
                     lastSavedQts = qts;
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -522,7 +522,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastCache(String.format(Locale.US, "REPLACE INTO dialog_settings VALUES(%d, %d)", did, flags)).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -635,7 +635,7 @@ public class MessagesStorage {
                         }
                     });
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -665,7 +665,7 @@ public class MessagesStorage {
 
                     MessagesController.getInstance().processLoadedBlockedUsers(ids, users, true);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -678,7 +678,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastInternal("DELETE FROM blocked_users WHERE uid = " + id).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -705,7 +705,7 @@ public class MessagesStorage {
                     state.dispose();
                     database.commitTransactionInternal();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -737,7 +737,7 @@ public class MessagesStorage {
                     database.executeFastCache("DELETE FROM messages WHERE uid = " + did).stepThis().dispose();
                     database.executeFastCache("DELETE FROM media WHERE uid = " + did).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -775,7 +775,7 @@ public class MessagesStorage {
                         }
                     });
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -788,7 +788,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastCache("DELETE FROM user_photos WHERE uid = " + uid).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -801,7 +801,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastCache("DELETE FROM user_photos WHERE uid = " + uid + " AND id = " + pid).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -831,7 +831,7 @@ public class MessagesStorage {
                     }
                     state.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -860,7 +860,7 @@ public class MessagesStorage {
                     cursor.dispose();
                     MessagesController.getInstance().processLoadedDeleteTask(date, arr);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -920,7 +920,7 @@ public class MessagesStorage {
                         MessagesController.getInstance().didAddedNewTask(minDate, messages);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -988,10 +988,9 @@ public class MessagesStorage {
 
             if (!dialogsToUpdate.isEmpty()) {
                 MessagesController.getInstance().processDialogsUpdateRead(dialogsToUpdate);
-                MessagesController.getInstance().getMessages(messages);
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -1036,7 +1035,7 @@ public class MessagesStorage {
                     state.dispose();
                     buffersStorage.reuseFreeBuffer(data);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1099,7 +1098,7 @@ public class MessagesStorage {
                         buffersStorage.reuseFreeBuffer(data);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1152,7 +1151,7 @@ public class MessagesStorage {
                     }
                     MessagesController.getInstance().processChatInfo(chat_id, info, loadedUsers, true);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (semaphore != null) {
                         semaphore.release();
@@ -1324,7 +1323,7 @@ public class MessagesStorage {
                     state.dispose();
                     database.commitTransactionCache();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1341,7 +1340,7 @@ public class MessagesStorage {
                     String ids = TextUtils.join(",", uids);
                     database.executeFastCache("DELETE FROM contacts WHERE uid IN(" + ids + ")").stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1379,7 +1378,7 @@ public class MessagesStorage {
                     state2.step();
                     state2.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1409,7 +1408,7 @@ public class MessagesStorage {
                     }
                     MessagesController.getInstance().processLoadedMediaCount(count, uid, classGuid, true);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1473,7 +1472,7 @@ public class MessagesStorage {
                     res.messages.clear();
                     res.chats.clear();
                     res.users.clear();
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     MessagesController.getInstance().processLoadedMedia(res, uid, offset, count, max_id, true, classGuid);
                 }
@@ -1504,7 +1503,7 @@ public class MessagesStorage {
                     state2.dispose();
                     database.commitTransactionCache();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1620,7 +1619,7 @@ public class MessagesStorage {
 
                     SendMessagesHelper.getInstance().processUnsentMessages(messages, users, chats, encryptedChats);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -1672,7 +1671,7 @@ public class MessagesStorage {
 
                     if (lower_id != 0) {
                         if (load_type == 3) {
-                            cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT max(mid) FROM messages WHERE uid = %d AND mid > 0", dialog_id));
+                            cursor = database.queryFinalizedCache(String.format(Locale.US, "SELECT max(mid), min(mid) FROM messages WHERE uid = %d AND mid > 0", dialog_id));
                             if (cursor.next()) {
                                 last_message_id = cursor.intValue(0);
                                 first_message_id = cursor.intValue(1);
@@ -1900,7 +1899,7 @@ public class MessagesStorage {
                     res.messages.clear();
                     res.chats.clear();
                     res.users.clear();
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     MessagesController.getInstance().processLoadedMessages(res, dialog_id, count_query, max_id, true, classGuid, min_unread_id, last_message_id, first_message_id, count_unread, max_unread_date, load_type, false);
                 }
@@ -1916,7 +1915,7 @@ public class MessagesStorage {
                     try {
                         database.beginTransactionCache();
                     } catch (Exception e) {
-                        FileLog.e("tsupport", e);
+                        FileLog.e("tsupportStorage", e);
                     }
                 }
             });
@@ -1924,7 +1923,7 @@ public class MessagesStorage {
             try {
                 database.beginTransactionCache();
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             }
         }
     }
@@ -1968,7 +1967,7 @@ public class MessagesStorage {
                         cursor.dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     semaphore.release();
                 }
@@ -1977,7 +1976,7 @@ public class MessagesStorage {
         try {
             semaphore.acquire();
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
         return !result.isEmpty() ? result.get(0) : null;
     }
@@ -2004,7 +2003,7 @@ public class MessagesStorage {
                         buffersStorage.reuseFreeBuffer(data);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2025,7 +2024,7 @@ public class MessagesStorage {
                     state.bindInteger(3, chat.id);
                     state.step();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -2049,7 +2048,7 @@ public class MessagesStorage {
                     state.bindInteger(2, chat.id);
                     state.step();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -2073,7 +2072,7 @@ public class MessagesStorage {
                     state.bindInteger(2, chat.id);
                     state.step();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -2116,7 +2115,7 @@ public class MessagesStorage {
                     buffersStorage.reuseFreeBuffer(data2);
                     buffersStorage.reuseFreeBuffer(data3);
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (state != null) {
                         state.dispose();
@@ -2146,7 +2145,7 @@ public class MessagesStorage {
                         }
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     semaphore.release();
                 }
@@ -2200,7 +2199,7 @@ public class MessagesStorage {
                         state.dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2296,7 +2295,7 @@ public class MessagesStorage {
                 }
                 buffersStorage.reuseFreeBuffer(data);
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             }
         }
         cursor.dispose();
@@ -2318,7 +2317,7 @@ public class MessagesStorage {
                 }
                 buffersStorage.reuseFreeBuffer(data);
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             }
         }
         cursor.dispose();
@@ -2351,7 +2350,7 @@ public class MessagesStorage {
                 }
                 buffersStorage.reuseFreeBuffer(data);
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             }
         }
         cursor.dispose();
@@ -2370,7 +2369,7 @@ public class MessagesStorage {
 		        database.commitTransactionInternal();
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -2409,7 +2408,7 @@ public class MessagesStorage {
                         database.executeFastCache(String.format(Locale.US, "DELETE FROM download_queue WHERE uid = %d AND type = %d", id, type)).stepThis().dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2426,7 +2425,7 @@ public class MessagesStorage {
                         database.executeFastCache(String.format(Locale.US, "DELETE FROM download_queue WHERE type = %d", type)).stepThis().dispose();
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2459,7 +2458,7 @@ public class MessagesStorage {
                         }
                     });
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2750,7 +2749,7 @@ public class MessagesStorage {
                 });
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -2777,7 +2776,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastCache("UPDATE messages SET send_state = 2 WHERE mid = " + mid).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2790,7 +2789,7 @@ public class MessagesStorage {
                 try {
 
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2803,7 +2802,7 @@ public class MessagesStorage {
                 try {
                     database.executeFastCache("DELETE FROM secret_holes WHERE uid = " + enc_id).stepThis().dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2831,7 +2830,7 @@ public class MessagesStorage {
 
                     state.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2850,7 +2849,7 @@ public class MessagesStorage {
                     state.step();
                     state.dispose();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -2865,7 +2864,7 @@ public class MessagesStorage {
                 state.bindInteger(2, newId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2882,7 +2881,7 @@ public class MessagesStorage {
                         oldId = cursor.intValue(0);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 } finally {
                     if (cursor != null) {
                         cursor.dispose();
@@ -2892,7 +2891,7 @@ public class MessagesStorage {
 //                    try {
 //                        database.executeFast(String.format(Locale.US, "DELETE FROM randoms WHERE random_id = %d", random_id)).stepThis().dispose();
 //                    } catch (Exception e) {
-//                        FileLog.e("tsupport", e);
+//                        FileLog.e("tsupportStorage", e);
 //                    }
 //                }
             }
@@ -2907,7 +2906,7 @@ public class MessagesStorage {
                 state.bindInteger(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2921,7 +2920,7 @@ public class MessagesStorage {
                 state.bindInteger(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -2935,7 +2934,7 @@ public class MessagesStorage {
                 state.bindLong(2, oldId);
                 state.step();
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             } finally {
                 if (state != null) {
                     state.dispose();
@@ -3021,7 +3020,7 @@ public class MessagesStorage {
                 }
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -3062,9 +3061,8 @@ public class MessagesStorage {
                     state.dispose();
                 }
             }
-
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -3079,7 +3077,6 @@ public class MessagesStorage {
         } else {
             markMessagesAsReadInternal(messages, encryptedMessages);
         }
-        MessagesController.getInstance().getMessages(messages);
     }
 
     public void markMessagesAsDeletedByRandoms(final ArrayList<Long> messages) {
@@ -3114,7 +3111,7 @@ public class MessagesStorage {
                         MessagesStorage.getInstance().updateDialogsWithDeletedMessagesInternal(mids);
                     }
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -3175,7 +3172,7 @@ public class MessagesStorage {
                     buffersStorage.reuseFreeBuffer(data);
                 }
             } catch (Exception e) {
-                FileLog.e("tsupport", e);
+                FileLog.e("tsupportStorage", e);
             }
             cursor.dispose();
             FileLoader.getInstance().deleteFiles(filesToDelete);
@@ -3184,7 +3181,7 @@ public class MessagesStorage {
             database.executeFastCache(String.format(Locale.US, "DELETE FROM media WHERE mid IN(%s)", ids)).stepThis().dispose();
             database.executeFastCache("DELETE FROM media_counts WHERE 1").stepThis().dispose();
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -3294,7 +3291,7 @@ public class MessagesStorage {
                 MessagesController.getInstance().processDialogsUpdate(dialogs, encryptedChats);
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
     }
 
@@ -3375,7 +3372,7 @@ public class MessagesStorage {
 
                     database.commitTransactionCache();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -3470,11 +3467,11 @@ public class MessagesStorage {
                     dialogs.users.clear();
                     dialogs.chats.clear();
                     encryptedChats.clear();
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                     /*try {
                         database.executeFast("DELETE FROM dialogs WHERE 1").stepThis().dispose();
                     } catch (Exception e2) {
-                        FileLog.e("tsupport", e);
+                        FileLog.e("tsupportStorage", e);
                     }*/
                     MessagesController.getInstance().processLoadedDialogs(dialogs, encryptedChats, 0, 0, 100, true, true);
                 }
@@ -3558,7 +3555,7 @@ public class MessagesStorage {
 
                     loadUnreadMessages();
                 } catch (Exception e) {
-                    FileLog.e("tsupport", e);
+                    FileLog.e("tsupportStorage", e);
                 }
             }
         });
@@ -3573,7 +3570,7 @@ public class MessagesStorage {
                 user = users.get(0);
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
         return user;
     }
@@ -3584,7 +3581,7 @@ public class MessagesStorage {
             getUsersInternal(TextUtils.join(",", uids), users);
         } catch (Exception e) {
             users.clear();
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
         return users;
     }
@@ -3598,7 +3595,7 @@ public class MessagesStorage {
                 chat = chats.get(0);
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
         return chat;
     }
@@ -3612,7 +3609,7 @@ public class MessagesStorage {
                 chat = encryptedChats.get(0);
             }
         } catch (Exception e) {
-            FileLog.e("tsupport", e);
+            FileLog.e("tsupportStorage", e);
         }
         return chat;
     }

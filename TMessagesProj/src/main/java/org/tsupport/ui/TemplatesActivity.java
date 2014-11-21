@@ -119,6 +119,9 @@ public class TemplatesActivity extends BaseFragment implements NotificationCente
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
+                        emptyView.setVisibility(View.GONE);
+                        listView.setVisibility(View.GONE);
+                        progressView.setVisibility(View.VISIBLE);
                     } else if (id == attach_document) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setMessage(LocaleController.getString("loadtemplatesfromfile", R.string.loadtemplatesfromfile));
@@ -280,6 +283,8 @@ public class TemplatesActivity extends BaseFragment implements NotificationCente
             return;
         }
         loading = true;
+        templates.clear();
+        templatesKeys.clear();
         templates.putAll(TemplateSupport.templates);
         templatesKeys.addAll(TemplateSupport.templates.keySet());
         Collections.sort(templatesKeys, new Comparator<String>() {
@@ -288,6 +293,27 @@ public class TemplatesActivity extends BaseFragment implements NotificationCente
                 return str1.compareTo(str2);
             }
         });
+        if (templates.size() > 0) {
+            if (emptyView != null) {
+                emptyView.setVisibility(View.GONE);
+            }
+            if (listView != null) {
+                listView.setVisibility(View.VISIBLE);
+            }
+            if (progressView != null) {
+                progressView.setVisibility(View.GONE);
+            }
+        } else {
+            if (emptyView != null) {
+                emptyView.setVisibility(View.VISIBLE);
+            }
+            if (listView != null) {
+                listView.setVisibility(View.GONE);
+            }
+            if (progressView != null) {
+                progressView.setVisibility(View.GONE);
+            }
+        }
         loading = false;
         loadTemplatesInternal();
     }
