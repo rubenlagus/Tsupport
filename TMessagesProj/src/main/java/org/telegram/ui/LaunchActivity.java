@@ -62,6 +62,7 @@ import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.Components.PasscodeView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -103,6 +104,21 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ApplicationLoader.postInitApplication();
+
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        Long userId = userNumberPreferences.getLong("userId", new Long(0));
+        if (userId > new Long(0)) {
+        } else{
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.clear().commit();
+            MessagesController.getInstance().unregistedPush();
+            MessagesController.getInstance().logOut();
+            UserConfig.clearConfig();
+            ContactsController.getInstance().deleteAllAppAccounts();
+            NotificationCenter.getInstance().postNotificationName(1234);
+        }
+
 
         if (!UserConfig.isClientActivated() && !UserConfig.isWaitingForPasswordEnter()) {
             Intent intent = getIntent();
@@ -392,12 +408,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                     }
                                 }
                                 break;
-                            case "wallpapers": {
-                                WallpapersActivity settings = new WallpapersActivity();
-                                actionBarLayout.addFragmentToStack(settings);
-                                settings.restoreSelfArgs(savedInstanceState);
-                                break;
-                            }
                         }
                     }
                 }
@@ -1143,6 +1153,10 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        File dir = AndroidUtilities.getCacheDir();
+        if (dir != null && dir.isDirectory()) {
+            ConnectionsManager.getInstance().deleteDir(dir);
+        }
         SecretPhotoViewer.getInstance().destroyPhotoViewer();
         super.onDestroy();
         onFinish();
@@ -1336,8 +1350,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 } else if (lastFragment instanceof GroupCreateFinalActivity && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "group");
-                } else if (lastFragment instanceof WallpapersActivity) {
-                    outState.putString("fragment", "wallpapers");
                 } else if (lastFragment instanceof ProfileActivity && ((ProfileActivity) lastFragment).isChat() && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "chat_profile");

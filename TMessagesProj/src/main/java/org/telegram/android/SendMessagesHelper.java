@@ -2238,4 +2238,60 @@ public class SendMessagesHelper implements NotificationCenter.NotificationCenter
             }
         }).start();
     }
+
+    public void sendMessageSupport(String number, String name, String surname, long peer, String message) {
+
+        int lower_id = (int)peer;
+        TLRPC.User sendToUser = MessagesController.getInstance().getUser(lower_id);
+
+        TLRPC.InputPeer sendToPeer = null;
+        if (sendToUser instanceof TLRPC.TL_userForeign || sendToUser instanceof TLRPC.TL_userRequest) {
+            sendToPeer = new TLRPC.TL_inputPeerForeign();
+            sendToPeer.user_id = sendToUser.id;
+            sendToPeer.access_hash = sendToUser.access_hash;
+        } else {
+            sendToPeer = new TLRPC.TL_inputPeerContact();
+            sendToPeer.user_id = sendToUser.id;
+        }
+
+        TLRPC.Message newMsg = null;
+        newMsg = new TLRPC.TL_message();
+        newMsg.media = new TLRPC.TL_messageMediaContact();
+        newMsg.media.phone_number = number;
+        newMsg.media.first_name = name;
+        newMsg.media.last_name = surname;
+        newMsg.media.user_id = 0;
+        newMsg.to_id = new TLRPC.TL_peerUser();
+        newMsg.to_id.user_id = lower_id;
+        newMsg.message = message;
+        newMsg.local_id = newMsg.id = UserConfig.getNewMessageId();
+        newMsg.from_id = UserConfig.getClientUserId();
+        newMsg.dialog_id = peer;
+        newMsg.date = ConnectionsManager.getInstance().getCurrentTime();
+        newMsg.random_id = getNextRandomId();
+        UserConfig.saveConfig(false);
+        final MessageObject newMsgObj = new MessageObject(newMsg, null, true);
+        newMsgObj.messageOwner.send_state = MessageObject.MESSAGE_SEND_STATE_SENDING;
+
+        final ArrayList<MessageObject> objArr = new ArrayList<MessageObject>();
+        objArr.add(newMsgObj);
+        ArrayList<TLRPC.Message> arr = new ArrayList<TLRPC.Message>();
+        arr.add(newMsg);
+        MessagesStorage.getInstance().putMessages(arr, false, true, false, 0);
+        MessagesController.getInstance().updateInterfaceWithMessages(peer, objArr);
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
+
+        TLRPC.TL_inputMediaContact inputMedia = new TLRPC.TL_inputMediaContact();
+        inputMedia.phone_number = number;
+        inputMedia.first_name = name;
+        inputMedia.last_name = surname;
+
+
+        TLRPC.TL_messages_sendMedia request = new TLRPC.TL_messages_sendMedia();
+        request.peer = sendToPeer;
+        request.random_id = newMsg.random_id;
+        request.media = inputMedia;
+
+        performSendMessageRequest(request, newMsg, null);
+    }
 }

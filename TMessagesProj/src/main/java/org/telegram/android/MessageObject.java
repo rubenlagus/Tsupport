@@ -207,21 +207,7 @@ public class MessageObject {
                         }
                     }
                 } else if (message.action instanceof TLRPC.TL_messageActionLoginUnknownLocation) {
-                    String date = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, LocaleController.formatterYear.format(((long) message.date) * 1000), LocaleController.formatterDay.format(((long) message.date) * 1000));
-                    TLRPC.User to_user = UserConfig.getCurrentUser();
-                    if (to_user == null) {
-                        if (users != null) {
-                            to_user = users.get(messageOwner.to_id.user_id);
-                        }
-                        if (to_user == null) {
-                            to_user = MessagesController.getInstance().getUser(messageOwner.to_id.user_id);
-                        }
-                    }
-                    String name = "";
-                    if (to_user != null) {
-                        name = to_user.first_name;
-                    }
-                    messageText = LocaleController.formatString("NotificationUnrecognizedDevice", R.string.NotificationUnrecognizedDevice, name, date, message.action.title, message.action.address);
+                    // Disabled
                 } else if (message.action instanceof TLRPC.TL_messageActionUserJoined) {
                     if (fromUser != null) {
                         messageText = LocaleController.formatString("NotificationContactJoined", R.string.NotificationContactJoined, ContactsController.formatName(fromUser.first_name, fromUser.last_name));

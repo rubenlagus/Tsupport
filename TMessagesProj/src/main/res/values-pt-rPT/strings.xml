@@ -3,7 +3,7 @@
 <!--https://www.transifex.com/projects/p/telegram/language/pt_PT/members/-->
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">Português (Portugal)</string>
     <string name="LanguageNameInEnglish">Portuguese (Portugal)</string>
     <string name="LanguageCode">pt_PT</string>
@@ -509,7 +509,7 @@
     <string name="ForwardMessagesToGroup">Encaminhar mensagem para %1$s?</string>
     <string name="FeatureUnavailable">Desculpe, esta funcionalidade não está disponível para seu país.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Rápido</string>
     <string name="Page3Title">Gratuito</string>
     <string name="Page4Title">Seguro</string>

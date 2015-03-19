@@ -88,6 +88,16 @@ public class NotificationCenter {
     public static final int audioDidStarted = totalEvents++;
     public static final int audioRouteChanged = totalEvents++;
 
+    // Tsupport
+    public static final int readChatNotification = totalEvents++;
+    public static final int updateTemplatesNotification = totalEvents++;
+    public static final int exportTemplates = totalEvents++;
+    public static final int hideTemplatesKeyboard = totalEvents++;
+    public static final int conversationOwned = totalEvents++;
+    public static final int conversationNotOwned = totalEvents++;
+    public static final int conversationOwnedDeleted = totalEvents++;
+    public static final int trelloLoaded = totalEvents++;
+    //
     final private HashMap<Integer, ArrayList<Object>> observers = new HashMap<>();
 
     final private HashMap<Integer, Object> removeAfterBroadcast = new HashMap<>();

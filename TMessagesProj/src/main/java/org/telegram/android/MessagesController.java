@@ -151,7 +151,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.messageReceivedByServer);
         addSupportUser();
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-        enableJoined = preferences.getBoolean("EnableContactJoined", true);
+        enableJoined = preferences.getBoolean("EnableContactJoined", false);
 
         preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         maxGroupCount = preferences.getInt("maxGroupCount", 200);
@@ -1636,12 +1636,18 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
                             @Override
                             public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                                if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                                    return 0;
-                                } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
+                                    return -1;
+                                } else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
                                     return 1;
                                 } else {
-                                    return -1;
+                                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                                        return 0;
+                                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                        return 1;
+                                    } else {
+                                        return -1;
+                                    }
                                 }
                             }
                         });
@@ -1773,12 +1779,18 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
                             @Override
                             public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                                if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                                    return 0;
-                                } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
+                                    return -1;
+                                } else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
                                     return 1;
                                 } else {
-                                    return -1;
+                                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                                        return 0;
+                                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                                        return 1;
+                                    } else {
+                                        return -1;
+                                    }
                                 }
                             }
                         });
@@ -3301,28 +3313,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             } else if (update instanceof TLRPC.TL_updateActivation) {
                 //DEPRECATED
             } else if (update instanceof TLRPC.TL_updateNewAuthorization) {
-                TLRPC.TL_messageService newMessage = new TLRPC.TL_messageService();
-                newMessage.action = new TLRPC.TL_messageActionLoginUnknownLocation();
-                newMessage.action.title = update.device;
-                newMessage.action.address = update.location;
-                newMessage.local_id = newMessage.id = UserConfig.getNewMessageId();
-                UserConfig.saveConfig(false);
-                newMessage.flags = TLRPC.MESSAGE_FLAG_UNREAD;
-                newMessage.date = update.date;
-                newMessage.from_id = 777000;
-                newMessage.to_id = new TLRPC.TL_peerUser();
-                newMessage.to_id.user_id = UserConfig.getClientUserId();
-                newMessage.dialog_id = 777000;
-
-                messagesArr.add(newMessage);
-                MessageObject obj = new MessageObject(newMessage, usersDict, true);
-                ArrayList<MessageObject> arr = messages.get(newMessage.dialog_id);
-                if (arr == null) {
-                    arr = new ArrayList<>();
-                    messages.put(newMessage.dialog_id, arr);
-                }
-                arr.add(obj);
-                pushMessages.add(obj);
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateNewGeoChatMessage) {
                 //DEPRECATED
             } else if (update instanceof TLRPC.TL_updateNewEncryptedMessage) {
@@ -3838,12 +3829,18 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             Collections.sort(dialogs, new Comparator<TLRPC.TL_dialog>() {
                 @Override
                 public int compare(TLRPC.TL_dialog tl_dialog, TLRPC.TL_dialog tl_dialog2) {
-                    if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
-                        return 0;
-                    } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                    if (tl_dialog.unread_count > 0 && tl_dialog2.unread_count <= 0) {
+                        return -1;
+                    } else if (tl_dialog.unread_count <= 0 &&  tl_dialog2.unread_count > 0) {
                         return 1;
                     } else {
-                        return -1;
+                        if (tl_dialog.last_message_date == tl_dialog2.last_message_date) {
+                            return 0;
+                        } else if (tl_dialog.last_message_date < tl_dialog2.last_message_date) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
                     }
                 }
             });

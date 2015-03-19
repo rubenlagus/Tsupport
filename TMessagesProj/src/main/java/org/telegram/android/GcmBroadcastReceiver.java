@@ -66,5 +66,6 @@ public class GcmBroadcastReceiver extends BroadcastReceiver {
         }
 
         setResultCode(Activity.RESULT_OK);
+
     }
 }
