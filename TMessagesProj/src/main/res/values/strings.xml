@@ -3,7 +3,7 @@
 
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">English</string>
     <string name="LanguageNameInEnglish">English</string>
     <string name="LanguageCode">en</string>
@@ -637,7 +637,7 @@
     <string name="NoUsernameFound">There is no Telegram account with this username.</string>
     <string name="BotCantJoinGroups">This bot can\'t join groups.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Fast</string>
     <string name="Page3Title">Free</string>
     <string name="Page4Title">Secure</string>
@@ -833,6 +833,60 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s at %2$s</string>
+    <!--Tsupport-->
+    <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
+    <string name="saveToTemplates">Save as template</string>
+    <string name="insertKey">Insert a key for this template</string>
+    <string name="templates">Templates</string>
+    <string name="noTemplates">No templates found</string>
+    <string name="deleteTemplateText">Tap and hold on a template to delete.</string>
+    <string name="templateKey">Key</string>
+    <string name="templateValue">Value</string>
+    <string name="template">Template</string>
+    <string name="templatesRemoved">All templates have been removed</string>
+    <string name="loadtemplatesfromfile">The file you will load must have KEYS-VALUE format, otherwise templates will load incorrectly.</string>
+    <string name="ConversationOwnedByOther">Other TSF member is answering this conversation.</string>
+    <string name="ConversationOwnedByMe">This conversation is assigned to you.</string>
+    <string name="ConversationOwnedNotSupported">Your device does not support "Owned Conversation".</string>
+    <string name="ConversationOwnedDelete">This conversation has been unassigned</string>
+    <string name="searching">Searching...</string>
+    <string name="hashtags">Hashtags</string>
+    <string name="search">Search</string>
+    <string name="NoMoreSearch">No older messages available</string>
+    <string name="IncorrectPassword">Incorrect Password</string>
+    <string name="InsertYourPasswor">Insert your password</string>
+    <string name="Remove">Remove</string>
+    <string name="MinPasswordLengh">Password should have, at least, 4 digits</string>
+    <string name="PasswordEdited">Password saved</string>
+    <string name="PasswordRemoved">Password removed</string>
+    <string name="NoMoreResults">No more results found</string>
+    <string name="IssueNoted">Your issue #issue_@id has been recorded and we get back to you as soon as it\'s fixed.\n\nSorry for the inconvenience!</string>
+    <string name="IssueSolved">Hello there!\n\nJust a quick info that we were able to fix your issue #issue_@id.\n\nSorry for the delay. Please update Telegram as soon as possible to get our latest version and let us know if you have any further questions.</string>
+    <string name="clearCache">Clear cache</string>
+    <string name="AreYouSureClearCache">After clearing cache, TSupport will be restarted.</string>
+    <string name="downloadUserPhotos">Users\' photos</string>
+    <string name="exportTemplates">Your templates will be exported and then you will be able to send it anywhere you like. This may take a while, please be patient.</string>
+    <string name="exporting">Exporting...</string>
+    <string name="linkTrello">Link with Trello</string>
+    <string name="trelloTokenExists">Trello access has already been granted.</string>
+    <string name="grantTrelloAccess">By granting acccess to Trello, the app will get a list of open and solved issues.</string>
+    <string name="tokenNotFetched">Couldn\'t fetch the Access Token, please try again.</string>
+    <string name="tokenFetched">Access Token has been correctly fetched.</string>
+    <string name="openIssues">Open issues</string>
+    <string name="SolvedIssues">Closed issues</string>
+    <string name="noIssues">No issues found</string>
+    <string name="trelloTokenNeeded">Trello access token needed. Go to Settings > Link with Trello</string>
+    <string name="AreYouSentIssue">Are you sure you want to send the issue: @title@?</string>
+    <string name="AreYouSentClosedIssue">Are you sure you want to send the solved issue: @title@?</string>
+    <string name="Users">Users</string>
+    <string name="AssignConversation">Assign Conversation</string>
+    <string name="UnassingConversation">Unassign Conversation</string>
+    <string name="Refresh">Refresh</string>
+    <string name="Refreshing">Refreshing</string>
+    <string name="AddTemplate">New template</string>
+    <string name="ReloadDefault">Default</string>
+    <string name="ImportTemplates">Import</string>
+    <string name="ExportTemplates">Export</string>
     <!--update text-->
     <string name="updateText">Telegram for Android has been updated. New in version 3.1:\n\n- Search for messages inside a specific chat.\n- Fully redesigned attachment menu. Send contacts and audio files straight from the attachment menu.\n- Improved in-app media playback (YouTube, Vimeo, SoundCloud etc.), new player for large audio files.\n\nMore about this update:\nhttps://telegram.org/blog/search-and-media</string>
     <string name="updateBuild">577</string>

@@ -38,7 +38,7 @@ public class NotificationsService extends Service {
         FileLog.e("tmessages", "service destroyed");
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
-        if (preferences.getBoolean("pushService", true)) {
+        if (preferences.getBoolean("pushService", false)) {
             Intent intent = new Intent("org.telegram.start");
             sendBroadcast(intent);
         }

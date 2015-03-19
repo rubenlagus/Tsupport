@@ -9,6 +9,7 @@
 package org.telegram.ui;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -60,6 +61,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.TLObject;
 import org.telegram.messenger.TLRPC;
+import org.telegram.messenger.TsupportApi;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -188,6 +190,7 @@ public class LoginActivity extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        MessagesController.getInstance().getDifference();
         if (!AndroidUtilities.isTablet()) {
             getParentActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
@@ -1193,9 +1196,14 @@ public class LoginActivity extends BaseFragment {
                                 MessagesController.getInstance().cleanUp();
                                 UserConfig.setCurrentUser(res.user);
                                 UserConfig.saveConfig(true);
+                                SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+                                userNumberEditor.putString("userId", requestPhone.replace("+",""));
+                                userNumberEditor.commit();
                                 MessagesStorage.getInstance().cleanUp(true);
                                 ArrayList<TLRPC.User> users = new ArrayList<>();
                                 users.add(res.user);
+                                TsupportApi.getInstance().addUser(requestPhone.replace("+",""));
                                 MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                                 MessagesController.getInstance().putUser(res.user, false);
                                 ContactsController.getInstance().checkAppAccount();

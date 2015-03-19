@@ -22,14 +22,17 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file("config/debug.keystore")
+            storeFile file('config/android.jks')
+            storePassword 'rbermudez'
+            keyAlias 'release'
+            keyPassword 'rbermudez'
         }
 
         release {
-            storeFile file("config/release.keystore")
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storeFile file('config/android.jks')
+            storePassword 'rbermudez'
+            keyAlias 'release'
+            keyPassword 'rbermudez'
         }
     }
 
@@ -71,7 +74,8 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 8
+        applicationId "org.tsupport.messenger"
+        minSdkVersion 11
         targetSdkVersion 22
         versionCode 580
         versionName "3.1.1"

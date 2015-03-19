@@ -421,7 +421,7 @@ public class NotificationsController {
 
             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Context.MODE_PRIVATE);
             int notifyOverride = getNotifyOverride(preferences, override_dialog_id);
-            if (!notifyAboutLast || notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || chat_id != 0 && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0) {
+            if (!notifyAboutLast || notifyOverride == 2 || (!preferences.getBoolean("EnableAll", false) || chat_id != 0 && !preferences.getBoolean("EnableGroup", false)) && notifyOverride == 0) {
                 notifyDisabled = true;
             }
 
@@ -1094,7 +1094,7 @@ public class NotificationsController {
             popup = (int)dialog_id == 0 ? 0 : preferences.getInt(isChat ? "popupGroup" : "popupAll", 0);
             if (value == null) {
                 int notifyOverride = getNotifyOverride(preferences, dialog_id);
-                value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || isChat && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0);
+                value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", false) || isChat && !preferences.getBoolean("EnableGroup", false)) && notifyOverride == 0);
                 settingsCache.put(dialog_id, value);
             }
             if (value) {
@@ -1140,7 +1140,7 @@ public class NotificationsController {
                     notifyOverride = 1;
                 }
             }
-            boolean canAddValue = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || ((int)dialog_id < 0) && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0);
+            boolean canAddValue = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", false) || ((int)dialog_id < 0) && !preferences.getBoolean("EnableGroup", false)) && notifyOverride == 0);
 
             Integer currentCount = pushDialogs.get(dialog_id);
             Integer newCount = entry.getValue();
@@ -1227,7 +1227,7 @@ public class NotificationsController {
                 Boolean value = settingsCache.get(dialog_id);
                 if (value == null) {
                     int notifyOverride = getNotifyOverride(preferences, dialog_id);
-                    value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || ((int) dialog_id < 0) && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0);
+                    value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", false) || ((int) dialog_id < 0) && !preferences.getBoolean("EnableGroup", false)) && notifyOverride == 0);
                     settingsCache.put(dialog_id, value);
                 }
                 if (!value || dialog_id == openned_dialog_id && ApplicationLoader.isScreenOn) {
@@ -1250,7 +1250,7 @@ public class NotificationsController {
                     pushDialogsOverrideMention.put(dialog_id, 0);
                     notifyOverride = 1;
                 }
-                value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", true) || ((int) dialog_id < 0) && !preferences.getBoolean("EnableGroup", true)) && notifyOverride == 0);
+                value = !(notifyOverride == 2 || (!preferences.getBoolean("EnableAll", false) || ((int) dialog_id < 0) && !preferences.getBoolean("EnableGroup", false)) && notifyOverride == 0);
                 settingsCache.put(dialog_id, value);
             }
             if (!value) {

@@ -3,7 +3,7 @@
 <!--Translation by Borja Campina, Edited by Victor Espinoza and Francisco Vila-->
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">Español</string>
     <string name="LanguageNameInEnglish">Spanish</string>
     <string name="LanguageCode">es</string>
@@ -637,7 +637,7 @@
     <string name="NoUsernameFound">No hay ninguna cuenta de Telegram con este alias.</string>
     <string name="BotCantJoinGroups">Este bot no puede unirse a grupos.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Rápida</string>
     <string name="Page3Title">Gratis</string>
     <string name="Page4Title">Segura</string>

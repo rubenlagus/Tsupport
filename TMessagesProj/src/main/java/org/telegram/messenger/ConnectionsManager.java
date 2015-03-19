@@ -246,13 +246,24 @@ public class ConnectionsManager implements Action.ActionDelegate, TcpConnection.
 
     private void resumeNetworkInternal() {
         if (paused) {
-            lastPauseTime = System.currentTimeMillis();
-            nextSleepTimeout = 30000;
-            FileLog.e("tmessages", "wakeup network in background");
+            // Disabled
         } else if (lastPauseTime != 0) {
             lastPauseTime = System.currentTimeMillis();
             FileLog.e("tmessages", "reset sleep timeout");
         }
+    }
+
+    public boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[]children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
     }
 
     public void resumeNetworkMaybe() {

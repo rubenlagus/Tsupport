@@ -3,7 +3,7 @@
 <!--https://www.transifex.com/projects/p/telegram/language/it/members/-->
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">Italiano</string>
     <string name="LanguageNameInEnglish">Italian</string>
     <string name="LanguageCode">it</string>
@@ -637,7 +637,7 @@
     <string name="NoUsernameFound">Non esiste alcun account Telegram con questo username.</string>
     <string name="BotCantJoinGroups">Questo bot non può unirsi ai gruppi.</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">Veloce</string>
     <string name="Page3Title">Gratuito</string>
     <string name="Page4Title">Sicuro</string>

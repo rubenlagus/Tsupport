@@ -132,6 +132,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.messageReceivedByServer);
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.messageSendError);
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.didSetPasscode);
+            NotificationCenter.getInstance().addObserver(this, NotificationCenter.readChatNotification);
         }
 
 
@@ -159,6 +160,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messageReceivedByServer);
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.messageSendError);
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didSetPasscode);
+            NotificationCenter.getInstance().removeObserver(this, NotificationCenter.readChatNotification);
         }
         delegate = null;
     }

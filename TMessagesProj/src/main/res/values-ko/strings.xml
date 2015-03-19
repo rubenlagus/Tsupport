@@ -3,7 +3,7 @@
 <!--https://www.transifex.com/projects/p/telegram/language/ko/members/-->
 
 <resources>
-    <string name="AppName">텔레그램</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">한국어</string>
     <string name="LanguageNameInEnglish">Korean</string>
     <string name="LanguageCode">ko</string>
@@ -637,7 +637,7 @@
     <string name="NoUsernameFound">입력된 아이디와 일치하는 텔레그램 계정이 없습니다.</string>
     <string name="BotCantJoinGroups">이 봇은 그룹에 참여 할 수 없습니다.</string>
     <!--Intro view-->
-    <string name="Page1Title">텔레그램</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">눈부신 속도</string>
     <string name="Page3Title">완전 무료</string>
     <string name="Page4Title">보안성</string>

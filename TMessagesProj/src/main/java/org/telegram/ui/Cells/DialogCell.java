@@ -8,7 +8,9 @@
 
 package org.telegram.ui.Cells;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -23,6 +25,7 @@ import org.telegram.android.AndroidUtilities;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.android.LocaleController;
 import org.telegram.android.MessageObject;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.android.UserObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.TLRPC;
@@ -302,28 +305,7 @@ public class DialogCell extends BaseCell {
             } else {
                 lastPrintString = null;
                 if (encryptedChat != null) {
-                    currentMessagePaint = messagePrintingPaint;
-                    if (encryptedChat instanceof TLRPC.TL_encryptedChatRequested) {
-                        messageString = LocaleController.getString("EncryptionProcessing", R.string.EncryptionProcessing);
-                    } else if (encryptedChat instanceof TLRPC.TL_encryptedChatWaiting) {
-                        if (user != null && user.first_name != null) {
-                            messageString = LocaleController.formatString("AwaitingEncryption", R.string.AwaitingEncryption, user.first_name);
-                        } else {
-                            messageString = LocaleController.formatString("AwaitingEncryption", R.string.AwaitingEncryption, "");
-                        }
-                    } else if (encryptedChat instanceof TLRPC.TL_encryptedChatDiscarded) {
-                        messageString = LocaleController.getString("EncryptionRejected", R.string.EncryptionRejected);
-                    } else if (encryptedChat instanceof TLRPC.TL_encryptedChat) {
-                        if (encryptedChat.admin_id == UserConfig.getClientUserId()) {
-                            if (user != null && user.first_name != null) {
-                                messageString = LocaleController.formatString("EncryptedChatStartedOutgoing", R.string.EncryptedChatStartedOutgoing, user.first_name);
-                            } else {
-                                messageString = LocaleController.formatString("EncryptedChatStartedOutgoing", R.string.EncryptedChatStartedOutgoing, "");
-                            }
-                        } else {
-                            messageString = LocaleController.getString("EncryptedChatStartedIncoming", R.string.EncryptedChatStartedIncoming);
-                        }
-                    }
+                    // Disabled
                 }
             }
             if (lastMessageDate != 0) {
@@ -751,17 +733,20 @@ public class DialogCell extends BaseCell {
             }
         }
 
+        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
         TLRPC.FileLocation photo = null;
-        if (user != null) {
-            if (user.photo != null) {
-                photo = user.photo.photo_small;
+        if (userImagesPreferences.getBoolean("loadUserImages", false)) {
+            if (user != null) {
+                if (user.photo != null) {
+                    photo = user.photo.photo_small;
+                }
+                avatarDrawable.setInfo(user);
+            } else if (chat != null) {
+                if (chat.photo != null) {
+                    photo = chat.photo.photo_small;
+                }
+                avatarDrawable.setInfo(chat);
             }
-            avatarDrawable.setInfo(user);
-        } else if (chat != null) {
-            if (chat.photo != null) {
-                photo = chat.photo.photo_small;
-            }
-            avatarDrawable.setInfo(chat);
         }
         avatarImage.setImage(photo, "50_50", avatarDrawable, null, false);
 

@@ -3,7 +3,7 @@
 <!--Translation by Khalid Alaraifi-->
 
 <resources>
-    <string name="AppName">Telegram</string>
+    <string name="AppName">Tsupport</string>
     <string name="LanguageName">العربية</string>
     <string name="LanguageNameInEnglish">Arabic</string>
     <string name="LanguageCode">ar</string>
@@ -637,7 +637,7 @@
     <string name="NoUsernameFound">لا يوجد حساب تيليجرام بهذا الاسم.</string>
     <string name="BotCantJoinGroups">هذا البوت لا يستطيع الدخول للمجموعات.</string>
     <!--Intro view-->
-    <string name="Page1Title">تيليجرام</string>
+    <string name="Page1Title">Tsupport</string>
     <string name="Page2Title">سريع</string>
     <string name="Page3Title">مجاني</string>
     <string name="Page4Title">آمن</string>

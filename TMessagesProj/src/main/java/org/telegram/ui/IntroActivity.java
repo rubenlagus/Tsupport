@@ -304,12 +304,5 @@ public class IntroActivity extends Activity {
         @Override
         public void startUpdate(View arg0) {
         }
-
-        @Override
-        public void unregisterDataSetObserver(DataSetObserver observer) {
-            if (observer != null) {
-                super.unregisterDataSetObserver(observer);
-            }
-        }
     }
 }

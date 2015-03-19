@@ -8,7 +8,9 @@
 
 package org.telegram.ui.Cells;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
@@ -24,6 +26,7 @@ import org.telegram.android.AndroidUtilities;
 import org.telegram.android.ImageReceiver;
 import org.telegram.android.LocaleController;
 import org.telegram.android.MessagesController;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.android.UserObject;
 import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.R;
@@ -383,8 +386,11 @@ public class ProfileSearchCell extends BaseCell {
 
 
         lastAvatar = photo;
-        avatarImage.setImage(photo, "50_50", avatarDrawable, null, false);
-
+        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
+        if (userImagesPreferences.getBoolean("loadUserImages", false)) {
+            avatarImage.setImage(photo, "50_50", avatarDrawable, null, false);
+        }
+        
         if (getMeasuredWidth() != 0 || getMeasuredHeight() != 0) {
             buildLayout();
         } else {

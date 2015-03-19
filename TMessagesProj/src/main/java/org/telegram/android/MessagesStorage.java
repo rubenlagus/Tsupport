@@ -16,6 +16,7 @@ import android.util.SparseArray;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
+import org.telegram.SQLite.SQLiteException;
 import org.telegram.SQLite.SQLitePreparedStatement;
 import org.telegram.android.query.BotQuery;
 import org.telegram.android.query.SharedMediaQuery;
@@ -39,10 +40,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.Semaphore;
 
 public class MessagesStorage {
-    private DispatchQueue storageQueue = new DispatchQueue("storageQueue");
+    public DispatchQueue storageQueue = new DispatchQueue("storageQueue");
     private SQLiteDatabase database;
     private File cacheFile;
     private BuffersStorage buffersStorage = new BuffersStorage(false);
@@ -168,6 +170,9 @@ public class MessagesStorage {
                 database.executeFast("CREATE TABLE bot_info(uid INTEGER PRIMARY KEY, info BLOB)").stepThis().dispose();
                 database.executeFast("CREATE TABLE bot_keyboard(uid INTEGER PRIMARY KEY, mid INTEGER, info BLOB)").stepThis().dispose();
                 database.executeFast("CREATE INDEX IF NOT EXISTS bot_keyboard_idx_mid ON bot_keyboard(mid);").stepThis().dispose();
+
+                // Templates
+                database.executeFast("CREATE TABLE IF NOT EXISTS template(key TEXT, value TEXT, PRIMARY KEY(key))").stepThis().dispose();
 
                 //version
                 database.executeFast("PRAGMA user_version = 20").stepThis().dispose();
@@ -371,6 +376,8 @@ public class MessagesStorage {
 
                         database.executeFast("CREATE TABLE IF NOT EXISTS keyvalue(id TEXT PRIMARY KEY, value TEXT)").stepThis().dispose();
 
+                        database.executeFast("CREATE TABLE IF NOT EXISTS template(key TEXT, value TEXT, PRIMARY KEY(key))").stepThis().dispose();
+
                         database.executeFast("PRAGMA user_version = 13").stepThis().dispose();
                         version = 13;
                     }
@@ -458,6 +465,33 @@ public class MessagesStorage {
         });
     }
 
+    public void cleanUpForLoadTSupportUserID() {
+        storageQueue.cleanupQueue();
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+
+            public void run() {
+                lastDateValue = 0;
+                lastSeqValue = 0;
+                lastPtsValue = 0;
+                lastQtsValue = 0;
+                lastSecretVersion = 0;
+                lastSavedSeq = 0;
+                lastSavedPts = 0;
+                lastSavedDate = 0;
+                lastSavedQts = 0;
+                secretPBytes = null;
+                secretG = 0;
+                if (database != null) {
+                    database.close();
+                    database = null;
+                }
+                storageQueue.cleanupQueue();
+                openDatabase();
+            }
+        });
+    }
+
     public void saveSecretParams(final int lsv, final int sg, final byte[] pbytes) {
         storageQueue.postRunnable(new Runnable() {
             @Override
@@ -505,6 +539,98 @@ public class MessagesStorage {
                 }
             }
         });
+    }
+
+
+
+    public void putTemplate(final String key, final String value) {
+        storageQueue.postRunnable(new Runnable() {
+
+            @Override
+            public void run() {
+
+                try {
+                    SQLitePreparedStatement state = database.executeFast("INSERT OR REPLACE INTO template VALUES(?, ?)");
+                    state.bindString(1, key);
+                    state.bindString(2,value);
+                    state.step();
+                    state.dispose();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing==0) {
+                        TemplateSupport.rebuildInstance();
+                    }
+                } catch (Exception e) {
+                    FileLog.e("tsupportTemplates", "Error adding template value");
+                    FileLog.e("tsupportTemplates", e.toString());
+                }
+            }
+        });
+    }
+
+    public void putTemplates(final TreeMap<String,String> templates) {
+        storageQueue.postRunnable(new Runnable() {
+
+            @Override
+            public void run() {
+                for (String key: templates.keySet()) {
+                    try {
+                        SQLitePreparedStatement state = database.executeFast("INSERT OR REPLACE INTO template VALUES(?, ?)");
+
+                        state.bindString(1, key);
+                        state.bindString(2, templates.get(key));
+                        state.step();
+                        state.dispose();
+                    } catch (Exception e) {
+                        FileLog.e("tsupportTemplates", "Error adding template value");
+                        FileLog.e("tsupportTemplates", e.toString());
+                    }
+                }
+                TemplateSupport.modifing--;
+                TemplateSupport.rebuildInstance();
+            }
+        });
+    }
+
+    public void deleteTemplate(final String key) {
+        storageQueue.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    database.executeFast(String.format(Locale.US, "DELETE FROM template WHERE key = '%s'", key)).stepThis().dispose();
+                    TemplateSupport.modifing--;
+                    if (TemplateSupport.modifing == 0)
+                        TemplateSupport.rebuildInstance();
+                } catch (Exception e) {
+                    FileLog.e("tsupportTemplates", e.toString());
+                }
+            }
+        });
+    }
+
+    public void clearTemplates() {
+        try {
+            database.executeFast("TRUNCATE TABLE template").stepThis().dispose();
+            TemplateSupport.modifing--;
+            if (TemplateSupport.modifing == 0)
+                TemplateSupport.rebuildInstance();
+        } catch (Exception e) {
+            FileLog.e("tsupportTemplates", e.toString());
+        }
+    }
+
+    public HashMap<String, String> getTemplates() {
+        HashMap<String, String> templates = new HashMap<String, String>();
+        SQLiteCursor cursor = null;
+        try {
+            cursor = database.queryFinalized("SELECT * FROM template");
+            while (cursor.next()) {
+                templates.put(cursor.stringValue(0), cursor.stringValue(1));
+            }
+        } catch (SQLiteException e) {
+            FileLog.e("tsupportTemplates", e.toString());
+        }
+
+        return templates;
     }
 
     public void setDialogFlags(final long did, final long flags) {
@@ -1492,24 +1618,7 @@ public class MessagesStorage {
     }
 
     public void applyPhoneBookUpdates(final String adds, final String deletes) {
-        if (adds.length() == 0 && deletes.length() == 0) {
-            return;
-        }
-        storageQueue.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (adds.length() != 0) {
-                        database.executeFast(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 0 WHERE sphone IN(%s)", adds)).stepThis().dispose();
-                    }
-                    if (deletes.length() != 0) {
-                        database.executeFast(String.format(Locale.US, "UPDATE user_phones_v6 SET deleted = 1 WHERE sphone IN(%s)", deletes)).stepThis().dispose();
-                    }
-                } catch (Exception e) {
-                    FileLog.e("tmessages", e);
-                }
-            }
-        });
+       // Disabled
     }
 
     public void putCachedPhoneBook(final HashMap<Integer, ContactsController.Contact> contactHashMap) {

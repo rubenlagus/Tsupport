@@ -39,6 +39,7 @@ import org.telegram.android.MessagesController;
 import org.telegram.android.NativeLoader;
 import org.telegram.android.ScreenReceiver;
 import org.telegram.ui.Components.ForegroundDetector;
+import org.telegram.android.TemplateSupport;
 
 import java.io.File;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -133,6 +134,7 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
 
         try {
+            TemplateSupport.getInstance();
             LocaleController.getInstance();
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,13 +193,16 @@ public class ApplicationLoader extends Application {
 
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
-        startPushService();
+        SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
+        if (preferences.getBoolean("pushService", false)) {
+            startPushService();
+        }
     }
 
     public static void startPushService() {
         SharedPreferences preferences = applicationContext.getSharedPreferences("Notifications", MODE_PRIVATE);
 
-        if (preferences.getBoolean("pushService", true)) {
+        if (preferences.getBoolean("pushService", false)) {
             applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
 
             if (android.os.Build.VERSION.SDK_INT >= 19) {

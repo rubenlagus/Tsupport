@@ -524,8 +524,8 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
         fileDecodingQueue = new DispatchQueue("fileDecodingQueue");
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        mobileDataDownloadMask = preferences.getInt("mobileDataDownloadMask", AUTODOWNLOAD_MASK_PHOTO | AUTODOWNLOAD_MASK_AUDIO);
-        wifiDownloadMask = preferences.getInt("wifiDownloadMask", AUTODOWNLOAD_MASK_PHOTO | AUTODOWNLOAD_MASK_AUDIO);
+        mobileDataDownloadMask = preferences.getInt("mobileDataDownloadMask", 0);
+        wifiDownloadMask = preferences.getInt("wifiDownloadMask", 0);
         roamingDownloadMask = preferences.getInt("roamingDownloadMask", 0);
         saveToGallery = preferences.getBoolean("save_gallery", false);
         shuffleMusic = preferences.getBoolean("shuffleMusic", false);
