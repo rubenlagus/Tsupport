@@ -111,8 +111,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int settingsSectionRow2;
     private int enableAnimationsRow;
     private int notificationRow;
-    private int backgroundRow;
+    //private int backgroundRow;
     private int languageRow;
+    private int supportLanguageRow;
     private int privacyRow;
     private int mediaDownloadSection;
     private int mediaDownloadSection2;
@@ -124,8 +125,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
     private int messagesSectionRow2;
     private int textSizeRow;
     private int sendByEnterRow;
-    //private int supportSectionRow;
-    //private int supportSectionRow2;
+    private int supportSectionRow;
+    private int supportSectionRow2;
     //private int askQuestionRow;
     //private int telegramFaqRow;
     private int sendLogsRow;
@@ -145,6 +146,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
     private static final int requestCodeTrello = 569874;
     private final static int logout = 2;
+    private volatile boolean clearingDatabase = false;
 
     private static class LinkMovementMethodMy extends LinkMovementMethod {
         @Override
@@ -230,24 +232,25 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         settingsSectionRow2 = rowCount++;
         notificationRow = rowCount++;
         privacyRow = rowCount++;
-        backgroundRow = rowCount++;
+        //backgroundRow = rowCount++;
         languageRow = rowCount++;
+        supportLanguageRow = rowCount++;
+        templatesRow = rowCount++;
+        downloadUserPhotos = rowCount++;
+        trelloLink = rowCount++;
+        clearCacheRow = rowCount++;
         enableAnimationsRow = rowCount++;
         mediaDownloadSection = rowCount++;
         mediaDownloadSection2 = rowCount++;
         mobileDownloadRow = rowCount++;
         wifiDownloadRow = rowCount++;
         roamingDownloadRow = rowCount++;
-        templatesRow = rowCount++;
-        downloadUserPhotos = rowCount++;
-        trelloLink = rowCount++;
-        clearCacheRow = rowCount++;
         messagesSectionRow = rowCount++;
         messagesSectionRow2 = rowCount++;
         textSizeRow = rowCount++;
         sendByEnterRow = rowCount++;
-        //supportSectionRow = rowCount++;
-        //supportSectionRow2 = rowCount++;
+        supportSectionRow = rowCount++;
+        supportSectionRow2 = rowCount++;
         //askQuestionRow = rowCount++;
         //telegramFaqRow = rowCount++;
         if (BuildVars.DEBUG_VERSION) {
@@ -479,8 +482,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         presentFragment(new NotificationsSettingsActivity());
                     } else if (i == templatesRow) {
                         presentFragment(new TemplatesSettingsActivity());
-                    } else if (i == backgroundRow) {
-                        presentFragment(new WallpapersActivity());
+                    //} else if (i == backgroundRow) {
+                        // Disabled
                     //} else if (i == askQuestionRow) {
                         // Disabled
                     } else if (i == sendLogsRow) {
@@ -513,22 +516,20 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                clearingDatabase = true;
                                 ImageLoader.getInstance().clearMemory();
+                                MessagesStorage.getInstance().cleanUpDatabase();
                                 File dir = AndroidUtilities.getCacheDir();
                                 if (dir != null && dir.isDirectory())
                                     ConnectionsManager.getInstance().deleteDir(dir);
-                                Intent mStartActivity = new Intent(getParentActivity(), LaunchActivity.class);
-                                int mPendingIntentId = 123456;
-                                PendingIntent mPendingIntent = PendingIntent.getActivity(getParentActivity(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
-                                AlarmManager mgr = (AlarmManager)getParentActivity().getSystemService(Context.ALARM_SERVICE);
-                                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
-                                System.exit(0);
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                         showAlertDialog(builder);
                     } else if (i == languageRow) {
                         presentFragment(new LanguageSelectActivity());
+                    } else if (i == supportLanguageRow) {
+                        presentFragment(new SupportLanguageSelectActivity());
                     } else if (i == switchBackendButtonRow) {
                         if (getParentActivity() == null) {
                             return;
@@ -641,10 +642,6 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                                 });
                         builder.setNegativeButton(LocaleController.getString("OK", R.string.OK), null);
                         showAlertDialog(builder);
-                    } else if (i == usernameRow) {
-                        presentFragment(new ChangeUsernameActivity());
-                    } else if (i == numberRow) {
-                        presentFragment(new ChangePhoneHelpActivity());
                     }
                 }
             });
@@ -942,6 +939,16 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 || (mask & MessagesController.UPDATE_MASK_NAME) != 0) {
                 updateUserData();
             }
+        } else if (id == NotificationCenter.databaseDidReset) {
+            if (clearingDatabase) {
+                clearingDatabase = false;
+                Intent mStartActivity = new Intent(getParentActivity(), LaunchActivity.class);
+                int mPendingIntentId = 123456;
+                PendingIntent mPendingIntent = PendingIntent.getActivity(getParentActivity(), mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT);
+                AlarmManager mgr = (AlarmManager) getParentActivity().getSystemService(Context.ALARM_SERVICE);
+                mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
+                System.exit(0);
+            }
         }
     }
 
@@ -1089,11 +1096,11 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
 
         @Override
         public boolean isEnabled(int i) {
-            return i == textSizeRow || i == enableAnimationsRow || i == notificationRow || i == backgroundRow || i == numberRow ||
+            return i == textSizeRow || i == enableAnimationsRow || i == notificationRow || /*i == backgroundRow || i == numberRow ||*/
                     /*i == askQuestionRow ||*/ i == sendLogsRow || i == sendByEnterRow || i == privacyRow || i == wifiDownloadRow ||
-                    i == mobileDownloadRow || i == clearLogsRow || i == roamingDownloadRow || i == languageRow || i == usernameRow ||
+                    i == mobileDownloadRow || i == clearLogsRow || i == roamingDownloadRow || i == languageRow /*|| i == usernameRow */||
                     i == switchBackendButtonRow || /*i == telegramFaqRow ||*/ i == contactsSortRow || i == contactsReimportRow || /*i == saveToGalleryRow ||*/
-                    i == templatesRow || trelloLink == i || i == downloadUserPhotos || i == clearCacheRow;
+                    i == templatesRow || trelloLink == i || i == downloadUserPhotos || i == clearCacheRow || i == supportLanguageRow;
         }
 
         @Override
@@ -1143,6 +1150,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     textCell.setTextAndValue(LocaleController.getString("TextSize", R.string.TextSize), String.format("%d", size), true);
                 } else if (i == languageRow) {
                     textCell.setTextAndValue(LocaleController.getString("Language", R.string.Language), LocaleController.getCurrentLanguageName(), true);
+                } else if (i == supportLanguageRow) {
+                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+                    textCell.setTextAndValue(LocaleController.getString("LanguageSupport", R.string.LanguageSupport), preferences.getString("languageSupport", "en"), true);
                 } else if (i == templatesRow) {
                     textCell.setText(LocaleController.getString("templates", R.string.templates), true);
                 } else if (i == trelloLink) {
@@ -1161,8 +1171,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                     textCell.setTextAndValue(LocaleController.getString("SortBy", R.string.SortBy), value, true);
                 } else if (i == notificationRow) {
                     textCell.setText(LocaleController.getString("NotificationsAndSounds", R.string.NotificationsAndSounds), true);
-                } else if (i == backgroundRow) {
-                    textCell.setText(LocaleController.getString("ChatBackground", R.string.ChatBackground), true);
+                //} else if (i == backgroundRow) {
+                    // Disabled
                 } else if (i == sendLogsRow) {
                     textCell.setText("Send Logs", true);
                 } else if (i == clearLogsRow) {
@@ -1204,8 +1214,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 }
                 if (i == settingsSectionRow2) {
                     ((HeaderCell) view).setText(LocaleController.getString("SETTINGS", R.string.SETTINGS));
-                //} else if (i == supportSectionRow2) {
-                    // Disabled
+                } else if (i == supportSectionRow2) {
+                    ((HeaderCell) view).setText(LocaleController.getString("Support", R.string.Support));
                 } else if (i == messagesSectionRow2) {
                     ((HeaderCell) view).setText(LocaleController.getString("MessagesSettings", R.string.MessagesSettings));
                 } else if (i == mediaDownloadSection2) {
@@ -1296,17 +1306,17 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         public int getItemViewType(int i) {
             if (i == emptyRow || i == overscrollRow) {
                 return 0;
-            } if (i == settingsSectionRow || /*i == supportSectionRow ||*/ i == messagesSectionRow || i == mediaDownloadSection || i == contactsSectionRow) {
+            } if (i == settingsSectionRow || i == supportSectionRow || i == messagesSectionRow || i == mediaDownloadSection || i == contactsSectionRow) {
                 return 1;
             } else if (i == enableAnimationsRow || i == sendByEnterRow || /*i == saveToGalleryRow ||*/ i == downloadUserPhotos) {
                 return 3;
-            } else if (i == notificationRow || i == backgroundRow || /*i == askQuestionRow ||*/ i == sendLogsRow || i == privacyRow || i == clearCacheRow || i == clearLogsRow || i == switchBackendButtonRow || /*i == telegramFaqRow ||*/ i == contactsReimportRow || i == textSizeRow || i == languageRow || i == contactsSortRow) {
+            } else if (i == notificationRow || /*i == backgroundRow || i == askQuestionRow ||*/ i == sendLogsRow || i == privacyRow || i == clearCacheRow || i == clearLogsRow || i == switchBackendButtonRow || /*i == telegramFaqRow ||*/ i == contactsReimportRow || i == textSizeRow || i == languageRow || i == supportLanguageRow || i == contactsSortRow) {
                 return 2;
             } else if (i == versionRow) {
                 return 5;
             } else if (i == wifiDownloadRow || i == mobileDownloadRow || i == roamingDownloadRow || i == numberRow || i == usernameRow) {
                 return 6;
-            } else if (i == settingsSectionRow2 || i == messagesSectionRow2 || /*i == supportSectionRow2 ||*/ i == numberSectionRow || i == mediaDownloadSection2) {
+            } else if (i == settingsSectionRow2 || i == messagesSectionRow2 || i == supportSectionRow2 || i == numberSectionRow || i == mediaDownloadSection2) {
                 return 4;
             } else {
                 return 2;

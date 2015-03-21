@@ -53,6 +53,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.TLObject;
 import org.telegram.messenger.TLRPC;
+import org.telegram.messenger.TsupportApi;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
@@ -106,17 +107,24 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         ApplicationLoader.postInitApplication();
 
         SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
-        Long userId = userNumberPreferences.getLong("userId", new Long(0));
-        if (userId > new Long(0)) {
-        } else{
-            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.clear().commit();
-            MessagesController.getInstance().unregistedPush();
-            MessagesController.getInstance().logOut();
-            UserConfig.clearConfig();
-            ContactsController.getInstance().deleteAllAppAccounts();
-            NotificationCenter.getInstance().postNotificationName(1234);
+        String userId = "";
+        try {
+            userId = userNumberPreferences.getString("userId", "");
+        } catch (ClassCastException e) { // Compatibility with oldfer versions of the app
+            userId = "";
+        }
+        if (userId.compareToIgnoreCase("") !=  0) {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                FileLog.e("tsupport","Sending user");
+                TsupportApi.getInstance().addUser(userId);
+            }
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.clear().commit();
+                UserConfig.clearConfig();
+            }
         }
 
 
@@ -282,19 +290,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 2) {
-                    if (!MessagesController.isFeatureEnabled("chat_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
-                        return;
-                    }
-                    presentFragment(new GroupCreateActivity());
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 3) {
-                    Bundle args = new Bundle();
-                    args.putBoolean("onlyUsers", true);
-                    args.putBoolean("destroyAfterSelect", true);
-                    args.putBoolean("createSecretChat", true);
-                    presentFragment(new ContactsActivity(args));
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 4) {
                     if (!MessagesController.isFeatureEnabled("broadcast_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
                         return;
                     }
@@ -302,29 +297,20 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                     args.putBoolean("broadcast", true);
                     presentFragment(new GroupCreateActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 6) {
+                } else if (position == 3) {
                     presentFragment(new ContactsActivity(null));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 7) {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, ContactsController.getInstance().getInviteText());
-                        startActivityForResult(Intent.createChooser(intent, LocaleController.getString("InviteFriends", R.string.InviteFriends)), 500);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
-                    }
+                } else if (position == 4) {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
+                    MessagesController.getInstance().loadDialogs(0, 0, 110, false);
+                    MessagesController.getInstance().getDifference();
+                    MessagesController.getInstance().reloadDialogs();
+                    MessagesController.getInstance().checkDialogsRead();
+                    Toast.makeText(getApplicationContext(), LocaleController.getString("Refreshing", R.string.Refreshing) , Toast.LENGTH_LONG).show();
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification);
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 8) {
+                } else if (position == 5) {
                     presentFragment(new SettingsActivity());
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 9) {
-                    try {
-                        Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl)));
-                        startActivityForResult(pickIntent, 500);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
-                    }
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }

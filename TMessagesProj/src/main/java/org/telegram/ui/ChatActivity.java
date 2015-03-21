@@ -27,7 +27,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
-import android.text.Html;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.SparseArray;
@@ -42,6 +41,7 @@ import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -104,7 +104,6 @@ import org.telegram.ui.Components.FrameLayoutFixed;
 import org.telegram.ui.Components.LayoutListView;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SizeNotifierRelativeLayout;
-import org.telegram.ui.Components.TimerDrawable;
 import org.telegram.ui.Components.TypingDotsDrawable;
 
 import java.io.File;
@@ -241,7 +240,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     //private final static int share_contact = 13;
     private final static int mute = 14;
     private final static int reply = 15;
-    private final static int issue = 20;
+    private final static int issue_open = 20;
     private final static int issue_solved = 21;
     private final static int conversationOwned = 22;
     private final static int conversationNotOwned = 23;
@@ -641,7 +640,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             }
                         });
                         presentFragment(fragment);
-                    } else if (id == issue) {
+                    } else if (id == issue_open) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
                         String token = preferences.getString("token", "");
                         if (token.compareToIgnoreCase("") == 0) {
@@ -981,7 +980,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             attachItem.addSubItem(attach_video, LocaleController.getString("ChatVideo", R.string.ChatVideo), R.drawable.ic_attach_video);
             attachItem.addSubItem(attach_document, LocaleController.getString("ChatDocument", R.string.ChatDocument), R.drawable.ic_ab_doc);
             //attachItem.addSubItem(attach_location, LocaleController.getString("ChatLocation", R.string.ChatLocation), R.drawable.ic_attach_location);
-            attachItem.addSubItem(issue, LocaleController.getString("openIssues", R.string.openIssues), R.drawable.ic_open_issue);
+            attachItem.addSubItem(issue_open, LocaleController.getString("openIssues", R.string.openIssues), R.drawable.ic_open_issue);
             attachItem.addSubItem(issue_solved, LocaleController.getString("SolvedIssues", R.string.SolvedIssues), R.drawable.ic_closed_issue);
             attachItem.setVisibility(View.INVISIBLE);
 
@@ -990,6 +989,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             menuItem.addSubItem(attach_gallery, LocaleController.getString("ChatGallery", R.string.ChatGallery), R.drawable.ic_attach_gallery);
             menuItem.addSubItem(attach_video, LocaleController.getString("ChatVideo", R.string.ChatVideo), R.drawable.ic_attach_video);
             menuItem.addSubItem(attach_document, LocaleController.getString("ChatDocument", R.string.ChatDocument), R.drawable.ic_ab_doc);
+            menuItem.addSubItem(issue_open, LocaleController.getString("openIssues", R.string.openIssues), R.drawable.ic_open_issue);
+            menuItem.addSubItem(issue_solved, LocaleController.getString("SolvedIssues", R.string.SolvedIssues), R.drawable.ic_closed_issue);
             //menuItem.addSubItem(attach_location, LocaleController.getString("ChatLocation", R.string.ChatLocation), R.drawable.ic_attach_location);
             menuItem.setShowFromBottom(true);
             menuItem.setBackgroundDrawable(null);
@@ -2178,10 +2179,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             timerDrawable.setTime(currentEncryptedChat.ttl);
         }*/
 
-        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
-        if (userImagesPreferences.getBoolean("loadUserImages", false)) {
-            checkAndUpdateAvatar();
-        }
+
+        checkAndUpdateAvatar();
     }
 
     private int updateOnlineCount() {
@@ -2501,9 +2500,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             avatarDrawable = new AvatarDrawable(currentChat);
         }
+        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
+        if (!userImagesPreferences.getBoolean("loadUserImages", false)) {
+            newPhoto = null;
+        }
         if (avatarImageView != null) {
             avatarImageView.setImage(newPhoto, "50_50", avatarDrawable);
         }
+
     }
 
     public boolean openVideoEditor(String videoPath, boolean removeLast) {
@@ -2927,9 +2931,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         @Override
                         public void run() {
                             if (last_message_id != 0) {
-                                MessagesController.getInstance().markDialogAsRead(dialog_id, lastid, last_message_id, 0, last_unread_date_final, wasUnreadFinal, false);
+                                //MessagesController.getInstance().markDialogAsRead(dialog_id, lastid, last_message_id, 0, last_unread_date_final, wasUnreadFinal, false);
                             } else {
-                                MessagesController.getInstance().markDialogAsRead(dialog_id, lastid, minMessageId, 0, maxDate, wasUnreadFinal, false);
+                                //MessagesController.getInstance().markDialogAsRead(dialog_id, lastid, minMessageId, 0, maxDate, wasUnreadFinal, false);
                             }
                         }
                     }, 700);
@@ -2973,10 +2977,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
             if ((updateMask & MessagesController.UPDATE_MASK_AVATAR) != 0 || (updateMask & MessagesController.UPDATE_MASK_CHAT_AVATAR) != 0 || (updateMask & MessagesController.UPDATE_MASK_NAME) != 0) {
-                SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
-                if (userImagesPreferences.getBoolean("loadUserImages", false)) {
-                    checkAndUpdateAvatar();
-                }
+                checkAndUpdateAvatar();
                 updateVisibleRows();
             }
             if ((updateMask & MessagesController.UPDATE_MASK_USER_PRINT) != 0) {
@@ -3061,7 +3062,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithMid = currentMinMsgId;
                         } else {
                             if (messages.size() > 0) {
-                                MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), currentMinMsgId, 0, currentMaxDate, true, false);
+                                //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), currentMinMsgId, 0, currentMaxDate, true, false);
                             }
                         }
                     }
@@ -3161,16 +3162,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             readWithDate = maxDate;
                             readWithMid = minMessageId;
                         } else {
-                            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), minMessageId, 0, maxDate, true, false);
+                            //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), minMessageId, 0, maxDate, true, false);
                         }
                     }
                 }
                 if (updateChat) {
                     updateTitle();
-                    SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
-                    if (userImagesPreferences.getBoolean("loadUserImages", false)) {
-                        checkAndUpdateAvatar();
-                    }
+                    checkAndUpdateAvatar();
                 }
             }
         } else if (id == NotificationCenter.closeChats) {
@@ -3572,7 +3570,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
             readWhenResume = false;
-            MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), readWithMid, 0, readWithDate, true, false);
+            //MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).getId(), readWithMid, 0, readWithDate, true, false);
         }
 
         fixLayout(true);

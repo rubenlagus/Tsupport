@@ -91,60 +91,81 @@ public class ContactsSearchAdapter extends BaseContactsSearchAdapter {
         AndroidUtilities.runOnUIThread(new Runnable() {
             @Override
             public void run() {
-                if (allowUsernameSearch) {
+                if (allowUsernameSearch && !query.startsWith("#tq")) {
                     queryServerSearch(query);
                 }
-                final ArrayList<TLRPC.TL_contact> contactsCopy = new ArrayList<>();
-                contactsCopy.addAll(ContactsController.getInstance().contacts);
+                final ArrayList<TLRPC.User> usersCopy = new ArrayList<>();
+                usersCopy.addAll(MessagesController.getInstance().getUsers().values());
+
                 Utilities.searchQueue.postRunnable(new Runnable() {
                     @Override
                     public void run() {
-                        String search1 = query.trim().toLowerCase();
-                        if (search1.length() == 0) {
-                            updateSearchResults(new ArrayList<TLRPC.User>(), new ArrayList<CharSequence>());
-                            return;
-                        }
-                        String search2 = LocaleController.getInstance().getTranslitString(search1);
-                        if (search1.equals(search2) || search2.length() == 0) {
-                            search2 = null;
-                        }
-                        String search[] = new String[1 + (search2 != null ? 1 : 0)];
-                        search[0] = search1;
-                        if (search2 != null) {
-                            search[1] = search2;
-                        }
-
                         ArrayList<TLRPC.User> resultArray = new ArrayList<>();
                         ArrayList<CharSequence> resultArrayNames = new ArrayList<>();
-
-                        for (TLRPC.TL_contact contact : contactsCopy) {
-                            TLRPC.User user = MessagesController.getInstance().getUser(contact.user_id);
-                            if (user.id == UserConfig.getClientUserId()) {
-                                continue;
+                        FileLog.e("tsearch", query);
+                        if (query.startsWith("#tq")) {
+                            FileLog.e("tsearch", "In search userId");
+                            try {
+                                Integer search = Integer.valueOf(query.replace("#tq", ""));
+                                FileLog.e("tsearch", "Searching: >" + search + "< " + search.getClass().getName());
+                                for (TLRPC.User user : usersCopy) {
+                                    if (user.id == UserConfig.getClientUserId()) {
+                                        continue;
+                                    }
+                                    if (user.id == search) {
+                                        FileLog.e("tsearch", "Found userId > " + Utilities.generateSearchName(user.first_name, user.last_name, ""));
+                                        resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, ""));
+                                        resultArray.add(user);
+                                        break;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                FileLog.e("tmessages", e);
+                            }
+                        } else {
+                            String search1 = query.trim().toLowerCase();
+                            if (search1.length() == 0) {
+                                updateSearchResults(new ArrayList<TLRPC.User>(), new ArrayList<CharSequence>());
+                                return;
+                            }
+                            String search2 = LocaleController.getInstance().getTranslitString(search1);
+                            if (search1.equals(search2) || search2.length() == 0) {
+                                search2 = null;
+                            }
+                            String search[] = new String[1 + (search2 != null ? 1 : 0)];
+                            search[0] = search1;
+                            if (search2 != null) {
+                                search[1] = search2;
                             }
 
-                            String name = ContactsController.formatName(user.first_name, user.last_name).toLowerCase();
-                            String tName = LocaleController.getInstance().getTranslitString(name);
-                            if (name.equals(tName)) {
-                                tName = null;
-                            }
-
-                            int found = 0;
-                            for (String q : search) {
-                                if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
-                                    found = 1;
-                                } else if (user.username != null && user.username.startsWith(q)) {
-                                    found = 2;
+                            for (TLRPC.User user : usersCopy) {
+                                if (user.id == UserConfig.getClientUserId()) {
+                                    continue;
                                 }
 
-                                if (found != 0) {
-                                    if (found == 1) {
-                                        resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, q));
-                                    } else {
-                                        resultArrayNames.add(Utilities.generateSearchName("@" + user.username, null, "@" + q));
+                                String name = ContactsController.formatName(user.first_name, user.last_name).toLowerCase();
+                                String tName = LocaleController.getInstance().getTranslitString(name);
+                                if (name.equals(tName)) {
+                                    tName = null;
+                                }
+
+                                int found = 0;
+                                for (String q : search) {
+                                    if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
+                                        found = 1;
+                                    } else if (user.username != null && user.username.startsWith(q)) {
+                                        found = 2;
                                     }
-                                    resultArray.add(user);
-                                    break;
+
+                                    if (found != 0) {
+                                        if (found == 1) {
+                                            resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, q));
+                                        } else {
+                                            resultArrayNames.add(Utilities.generateSearchName("@" + user.username, null, "@" + q));
+                                        }
+                                        resultArray.add(user);
+                                        break;
+                                    }
                                 }
                             }
                         }

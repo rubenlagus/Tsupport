@@ -735,4 +735,10 @@
     <string name="ReloadDefault">Default</string>
     <string name="ImportTemplates">Import</string>
     <string name="ExportTemplates">Export</string>
+    <string name="defaultTemplatesUptodate">Default templates file are uptodate, no modifications done.</string>
+    <string name="LanguageSupport">Templates Language</string>
+    <string name="changelog_full_title">Templates Change Log</string>
+    <string name="changelog_title">What\'s New</string>
+    <string name="changelog_ok_button">Ok</string>
+    <string name="changelog_show_full">more...</string>
 </resources>

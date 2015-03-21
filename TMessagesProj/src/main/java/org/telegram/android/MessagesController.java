@@ -1511,6 +1511,9 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                     if (error == null) {
                         final TLRPC.messages_Dialogs dialogsRes = (TLRPC.messages_Dialogs) response;
                         processLoadedDialogs(dialogsRes, null, offset, serverOffset, count, false, false);
+                        for (TLRPC.TL_dialog dialog : dialogsRes.dialogs) {
+                            MessagesController.getInstance().loadMessages(dialog.id,20, dialog.top_message, false, -1, 0, 3, -1, -1, false);
+                        }
                     }
                 }
             });
@@ -3853,5 +3856,97 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         }
     }
 
+    public void reloadDialogs() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                TLRPC.TL_messages_getDialogs req = new TLRPC.TL_messages_getDialogs();
+                req.offset = 0;
+                req.max_id = 0;
+                req.limit = 100;
+                ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+                    @Override
+                    public void run(TLObject response, TLRPC.TL_error error) {
+                        if (error == null) {
+                            if (response instanceof TLRPC.TL_messages_dialogs) {
+                                TLRPC.TL_messages_dialogs resp = (TLRPC.TL_messages_dialogs) response;
+                                MessagesController.getInstance().processDialogsUpdate(resp,null);
+                                MessagesStorage.getInstance().putDialogs(resp);
+                            } else {
+                                if (response instanceof TLRPC.TL_messages_dialogsSlice) {
+                                    TLRPC.TL_messages_dialogsSlice resp = (TLRPC.TL_messages_dialogsSlice) response;
+                                    reloadDialogInternal(1);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
 
+    }
+
+    private void reloadDialogInternal(final int numLlamada) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                TLRPC.TL_messages_getDialogs req = new TLRPC.TL_messages_getDialogs();
+                req.offset = 100*numLlamada;
+                req.max_id = 0;
+                req.limit = 100;
+                ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+                    @Override
+                    public void run(TLObject response, TLRPC.TL_error error) {
+                        if (error == null) {
+                            if (response instanceof TLRPC.TL_messages_dialogs) {
+                                TLRPC.TL_messages_dialogs resp = (TLRPC.TL_messages_dialogs) response;
+                                processDialogsUpdate(resp, new ArrayList<TLRPC.EncryptedChat>());
+                            } else {
+                                if (response instanceof TLRPC.TL_messages_dialogsSlice) {
+                                    TLRPC.TL_messages_dialogsSlice resp = (TLRPC.TL_messages_dialogsSlice) response;
+                                    TLRPC.TL_messages_dialogs dialogs = new TLRPC.TL_messages_dialogs();
+                                    dialogs.chats = resp.chats;
+                                    dialogs.messages  = resp.messages;
+                                    dialogs.users = resp.users;
+                                    dialogs.dialogs = resp.dialogs;
+                                    dialogs.count = resp.count;
+                                    processDialogsUpdate(dialogs, new ArrayList<TLRPC.EncryptedChat>());
+                                    MessagesStorage.getInstance().putDialogs(dialogs);
+                                    reloadDialogInternal(numLlamada+1);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    public void checkDialogsRead() {
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(TLRPC.TL_dialog dialog : MessagesController.getInstance().dialogs) {
+                            if (dialog.unread_count > 0) {
+                                MessageObject message = MessagesController.getInstance().dialogMessage.get(dialog.top_message);
+                                if (message == null) {
+                                    continue;
+                                }
+                                if (message.isFromMe()) {
+                                    if (!message.messageText.toString().contains("#tsfBot")) {
+                                        dialog.unread_count = 0;
+                                    }
+                                }
+                            }
+                        }
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesRead);
+                    }
+                });
+            }
+        });
+    }
 }

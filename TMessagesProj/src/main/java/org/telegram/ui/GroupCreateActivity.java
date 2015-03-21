@@ -185,7 +185,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
             ActionBarMenu menu = actionBar.createMenu();
             menu.addItemWithWidth(done_button, R.drawable.ic_done, AndroidUtilities.dp(56));
 
-            searchListViewAdapter = new ContactsSearchAdapter(getParentActivity(), null, false);
+            searchListViewAdapter = new ContactsSearchAdapter(getParentActivity(), null, true);
             searchListViewAdapter.setCheckedMap(selectedContacts);
             searchListViewAdapter.setUseUserCell(true);
             listViewAdapter = new ContactsAdapter(getParentActivity(), true, false, null);
