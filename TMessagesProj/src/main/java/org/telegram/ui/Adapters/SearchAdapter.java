@@ -112,8 +112,7 @@ public class SearchAdapter extends BaseSearchAdapter {
                                         continue;
                                     }
                                     if (user.id == search) {
-                                        FileLog.e("tsearch", "Found userId > " + Utilities.generateSearchName(user.first_name, user.last_name, ""));
-                                        resultArrayNames.add(Utilities.generateSearchName(user.first_name, user.last_name, ""));
+                                        resultArrayNames.add(user.first_name + " " + user.last_name);
                                         resultArray.add(user);
                                         break;
                                     }

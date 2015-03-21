@@ -91,14 +91,8 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             return row < arr.size();
         } else {
             if (section == 0) {
-                if (needPhonebook || isAdmin) {
-                    if (row == 1) {
-                        return false;
-                    }
-                } else {
-                    if (row == 3) {
-                        return false;
-                    }
+                if (row == 1) {
+                    return false;
                 }
                 return true;
             } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
@@ -137,11 +131,7 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             }
         } else {
             if (section == 0) {
-                if (needPhonebook || isAdmin) {
-                    return 2;
-                } else {
-                    return 4;
-                }
+                return 2;
             } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
                 int count = arr.size();
@@ -198,18 +188,8 @@ public class ContactsAdapter extends BaseSectionsAdapter {
                 convertView = new TextCell(mContext);
             }
             TextCell actionCell = (TextCell) convertView;
-            if (needPhonebook) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteFriends", R.string.InviteFriends), R.drawable.menu_invite);
-            } else if (isAdmin) {
-                actionCell.setTextAndIcon(LocaleController.getString("InviteToGroupByLink", R.string.InviteToGroupByLink), R.drawable.menu_invite);
-            } else {
-                if (position == 0) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), R.drawable.menu_newgroup);
-                } else if (position == 1) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), R.drawable.menu_secret);
-                } else if (position == 2) {
-                    actionCell.setTextAndIcon(LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), R.drawable.menu_broadcast);
-                }
+            if (position == 0) {
+                actionCell.setTextAndIcon(LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), R.drawable.menu_broadcast);
             }
         } else if (type == 1) {
             if (convertView == null) {
@@ -253,14 +233,8 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             return position < arr.size() ? 0 : 4;
         } else {
             if (section == 0) {
-                if (needPhonebook || isAdmin) {
-                    if (position == 1) {
-                        return 3;
-                    }
-                } else {
-                    if (position == 3) {
-                        return 3;
-                    }
+                if (position == 1) {
+                    return 3;
                 }
                 return 2;
             } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {

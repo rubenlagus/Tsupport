@@ -52,10 +52,8 @@ public class TemplateView extends LinearLayout {
     public void setTemplates(TreeMap<String, String> newTemplates) {
         templates.clear();
         templatesKeys.clear();
-        for (String key: newTemplates.keySet()) {
-            templatesKeys.add(key);
-            templates.put(key,newTemplates.get(key));
-        }
+        templatesKeys.addAll(newTemplates.keySet());
+        templates.putAll(newTemplates);
         invalidateViews();
     }
 
@@ -187,7 +185,7 @@ public class TemplateView extends LinearLayout {
                             @Override
                             public void onClick(View v) {
                                 if (TemplateView.this.listener != null) {
-                                    TemplateView.this.listener.onTemplateSelected(keyView.getText().toString());
+                                    TemplateView.this.listener.onTemplateSelected(valueView.getText().toString());
                                 }
                             }
                         });

@@ -272,6 +272,7 @@ public class TemplateSupport {
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             }
         });
+
     }
     private void loadTemplates() {
         loadTemplatesInternal();
@@ -324,7 +325,7 @@ public class TemplateSupport {
      */
     public static void loadDefaults() {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        final String fileName = "tl_general_" + preferences.getString("languageSupport", "en").toLowerCase() + ".txt";
+        final String fileName = "tl_general_" + preferences.getString("languageSupport", "en") + ".txt";
         templatesQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -400,9 +401,12 @@ public class TemplateSupport {
      */
     public static void loadDefaultFileInternal(String fileName) {
         SharedPreferences defaulttemplatesQuestionsPreferences = ApplicationLoader.applicationContext.getSharedPreferences(DEFAULTTEMPLATESQUESTIONS, Activity.MODE_PRIVATE);
+        SharedPreferences defaulttemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(DEFAULTTEMPLATES, Activity.MODE_PRIVATE);
         SharedPreferences.Editor defaulttemplatesQuestionsEditor = null;
+        SharedPreferences.Editor defaulttemplatesEditor = null;
         try {
             defaulttemplatesQuestionsEditor = defaulttemplatesQuestionsPreferences.edit();
+            defaulttemplatesEditor = defaulttemplatesPreferences.edit();
             HttpClient httpclient = new DefaultHttpClient();
             HttpGet httppost = new HttpGet(BASEURL + fileName);
             HttpResponse response = httpclient.execute(httppost);
@@ -426,8 +430,6 @@ public class TemplateSupport {
             String question;
             String value;
             Set<String> keySet;
-            Set<String> oldKeys = templates.keySet();
-            Map<String, HashSet<String>> oldTemplatesQuestions = (Map<String, HashSet<String>>) defaulttemplatesQuestionsPreferences.getAll();
             defaulttemplatesQuestionsEditor.clear();
             TreeMap<String, String> newTemplates = new TreeMap<>();
             while(mainMatcher.find()) {
@@ -442,19 +444,14 @@ public class TemplateSupport {
                     String key = keysMatcher.group(0).replace("\n","");
                     if (key.compareToIgnoreCase("") != 0){
                         keySet.add(key);
-                        newTemplates.put(key, value);
+                        defaulttemplatesEditor.putString(key, value);
                     }
                 }
                 if (question != null && question.compareToIgnoreCase("") != 0) {
                     defaulttemplatesQuestionsEditor.putStringSet(question, keySet);
                 }
             }
-            defaulttemplatesQuestionsEditor.commit();
-
             //ArrayList<TemplateNotification> modifiedTemplates = generateTemplatesNotifications(newTemplates, oldTemplatesQuestions);
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated);
-            templates.clear();
-            TemplateSupport.loadTemplatesInternal();
         } catch (FileNotFoundException e) {
             FileLog.e("TemplateSupport", "File not found");
         } catch (IOException e) {
@@ -463,7 +460,13 @@ public class TemplateSupport {
             if (defaulttemplatesQuestionsEditor != null) {
                 defaulttemplatesQuestionsEditor.apply();
             }
+            if (defaulttemplatesEditor != null) {
+                defaulttemplatesEditor.apply();
+            }
         }
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated);
+        templates.clear();
+        TemplateSupport.loadTemplatesInternal();
     }
 
     /**

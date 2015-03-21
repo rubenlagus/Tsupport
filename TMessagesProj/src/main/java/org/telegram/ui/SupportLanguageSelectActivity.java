@@ -25,9 +25,11 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.LocaleController;
+import org.telegram.android.NotificationCenter;
 import org.telegram.android.TemplateSupport;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
@@ -36,7 +38,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.BaseFragment;
 
-public class SupportLanguageSelectActivity extends BaseFragment {
+public class SupportLanguageSelectActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private EditText languageCodeField;
     private View doneButton;
 
@@ -47,7 +49,14 @@ public class SupportLanguageSelectActivity extends BaseFragment {
     }
 
     public boolean onFragmentCreate() {
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.notificationsSettingsUpdated);
         return super.onFragmentCreate();
+    }
+
+    @Override
+    public void onFragmentDestroy() {
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
+        super.onFragmentDestroy();
     }
 
     @Override
@@ -62,13 +71,13 @@ public class SupportLanguageSelectActivity extends BaseFragment {
                     if (id == -1) {
                         finishFragment();
                     } else if (id == done_button) {
-                        if (languageCodeField.length() >= 2) {
+                        if (languageCodeField.length() != 0) {
                             TemplateSupport.getInstance().removeAll();
                             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("languageSupport", languageCodeField.getText().toString());
+                            editor.putString("languageSupport", languageCodeField.getText().toString().toLowerCase().trim());
                             editor.commit();
-                            TemplateSupport.getInstance().loadDefaults();
+                            TemplateSupport.loadDefaults();
                             finishFragment();
                         }
                     }
@@ -138,6 +147,8 @@ public class SupportLanguageSelectActivity extends BaseFragment {
         return fragmentView;
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -153,5 +164,13 @@ public class SupportLanguageSelectActivity extends BaseFragment {
     public void onOpenAnimationEnd() {
         languageCodeField.requestFocus();
         AndroidUtilities.showKeyboard(languageCodeField);
+    }
+
+    @Override
+    public void didReceivedNotification(int id, Object... args) {
+        if (id == NotificationCenter.updateTemplatesNotification) {
+            Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesUpdated", R.string.templatesUpdated), Toast.LENGTH_SHORT).show();
+
+        }
     }
 }
