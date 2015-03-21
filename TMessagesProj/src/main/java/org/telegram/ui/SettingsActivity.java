@@ -221,6 +221,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             }
         };
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.databaseDidReset);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.templatesDidUpdated);
 
         rowCount = 0;
         overscrollRow = rowCount++;
@@ -276,6 +278,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
         MessagesController.getInstance().cancelLoadFullUser(UserConfig.getClientUserId());
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.databaseDidReset);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.templatesDidUpdated);
         avatarUpdater.clear();
     }
 
@@ -449,7 +453,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                     } else if (i == downloadUserPhotos) {
                         SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
-                        boolean userImages = userImagesPreferences.getBoolean("loadUserImages", true);
+                        boolean userImages = userImagesPreferences.getBoolean("loadUserImages", false);
                         SharedPreferences.Editor editor = userImagesPreferences.edit();
                         editor.putBoolean("loadUserImages", !userImages);
                         editor.commit();
@@ -949,6 +953,8 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                 mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, mPendingIntent);
                 System.exit(0);
             }
+        } else if (id == NotificationCenter.templatesDidUpdated) {
+            Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesUpdatedFromServer", R.string.templatesUpdatedFromServer), Toast.LENGTH_SHORT).show();
         }
     }
 

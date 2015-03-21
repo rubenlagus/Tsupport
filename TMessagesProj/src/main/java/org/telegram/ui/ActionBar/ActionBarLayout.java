@@ -549,6 +549,7 @@ public class ActionBarLayout extends FrameLayout {
         if (parentActivity.getCurrentFocus() != null) {
             AndroidUtilities.hideKeyboard(parentActivity.getCurrentFocus());
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.hideEmojiKeyboard);
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.hideTemplatesKeyboard);
         }
         boolean needAnimation = Build.VERSION.SDK_INT > 10 && !forceWithoutAnimation && parentActivity.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE).getBoolean("view_animations", true);
 

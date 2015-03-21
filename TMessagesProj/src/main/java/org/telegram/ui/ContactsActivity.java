@@ -289,38 +289,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         if (row < 0 || section < 0) {
                             return;
                         }
-                        if (!onlyUsers && section == 0) {
-                            if (needPhonebook) {
-                                if (row == 0) {
-                                    try {
-                                        Intent intent = new Intent(Intent.ACTION_SEND);
-                                        intent.setType("text/plain");
-                                        intent.putExtra(Intent.EXTRA_TEXT, ContactsController.getInstance().getInviteText());
-                                        getParentActivity().startActivityForResult(Intent.createChooser(intent, LocaleController.getString("InviteFriends", R.string.InviteFriends)), 500);
-                                    } catch (Exception e) {
-                                        FileLog.e("tmessages", e);
-                                    }
+                        if (section == 0) {
+                            if (row == 0) {
+                                if (!MessagesController.isFeatureEnabled("broadcast_create", ContactsActivity.this)) {
+                                    return;
                                 }
-                            } else {
-                                if (row == 0) {
-                                    if (!MessagesController.isFeatureEnabled("chat_create", ContactsActivity.this)) {
-                                        return;
-                                    }
-                                    presentFragment(new GroupCreateActivity(), false);
-                                } else if (row == 1) {
-                                    Bundle args = new Bundle();
-                                    args.putBoolean("onlyUsers", true);
-                                    args.putBoolean("destroyAfterSelect", true);
-                                    args.putBoolean("createSecretChat", true);
-                                    presentFragment(new ContactsActivity(args), false);
-                                } else if (row == 2) {
-                                    if (!MessagesController.isFeatureEnabled("broadcast_create", ContactsActivity.this)) {
-                                        return;
-                                    }
-                                    Bundle args = new Bundle();
-                                    args.putBoolean("broadcast", true);
-                                    presentFragment(new GroupCreateActivity(args), false);
-                                }
+                                Bundle args = new Bundle();
+                                args.putBoolean("broadcast", true);
+                                presentFragment(new GroupCreateActivity(args), false);
                             }
                         } else {
                             Object item = listViewAdapter.getItem(section, row);

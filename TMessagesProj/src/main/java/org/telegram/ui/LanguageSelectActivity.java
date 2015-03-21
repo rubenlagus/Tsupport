@@ -173,11 +173,9 @@ public class LanguageSelectActivity extends BaseFragment {
                         }
                     }
                     if (localeInfo != null) {
-                        TemplateSupport.getInstance().removeAll();
                         Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesRemoved", R.string.templatesRemoved), Toast.LENGTH_SHORT).show();
                         LocaleController.getInstance().applyLanguage(localeInfo, true);
                         parentLayout.rebuildAllFragmentViews(false);
-                        TemplateSupport.loadDefaults();
                     }
                     finishFragment();
                 }

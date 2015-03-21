@@ -139,6 +139,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.audioDidSent);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.emojiDidLoaded);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.hideEmojiKeyboard);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.hideTemplatesKeyboard);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.audioRouteChanged);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
         parentActivity = context;
@@ -623,11 +624,6 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
     }
 
     public boolean processSendingText(String text) {
-        String templateText = TemplateSupport.getInstance().getTemplate(text); // Check in Template file
-        if (templateText.compareToIgnoreCase("") != 0)
-            text = getTrimmedString(templateText);
-        else
-            text = getTrimmedString(text);
         if (text.length() != 0) {
             Matcher matcher = patternIssue.matcher(text);
             if (matcher.find()) {
@@ -1040,6 +1036,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                             if (sizeNotifierRelativeLayout != null) {
                                 sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
                                 sizeNotifierRelativeLayout.requestLayout();
+                                onWindowSizeChanged(sizeNotifierRelativeLayout.getHeight() - sizeNotifierRelativeLayout.getPaddingBottom());
                             }
                         }
                     });
@@ -1054,7 +1051,9 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             showTemplatePopup(false);
         } else if (!keyboardVisible && keyboardVisible != oldValue && emojiPopup != null && emojiPopup.isShowing()) {
             showEmojiPopup(false);
+            showTemplatePopup(false);
         } else if (!keyboardVisible && keyboardVisible != oldValue && templatePopup != null && templatePopup.isShowing()) {
+            showTemplatePopup(false);
             showEmojiPopup(false);
         }
         onWindowSizeChanged(sizeNotifierRelativeLayout.getHeight() - sizeNotifierRelativeLayout.getPaddingBottom());

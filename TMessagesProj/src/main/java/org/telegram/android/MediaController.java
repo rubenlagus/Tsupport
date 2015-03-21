@@ -1927,10 +1927,10 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
 
     public void checkSaveToGalleryFiles() {
         try {
-            File telegramPath = new File(Environment.getExternalStorageDirectory(), "Telegram");
-            File imagePath = new File(telegramPath, "Telegram Images");
+            File telegramPath = new File(Environment.getExternalStorageDirectory(), "Tsupport");
+            File imagePath = new File(telegramPath, "Tsupport Images");
             imagePath.mkdir();
-            File videoPath = new File(telegramPath, "Telegram Video");
+            File videoPath = new File(telegramPath, "Tsupport Video");
             videoPath.mkdir();
 
             if (saveToGallery) {

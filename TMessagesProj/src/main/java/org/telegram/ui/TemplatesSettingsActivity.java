@@ -353,6 +353,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                 getParentActivity().startActivity(sendIntent);
             }
         } else if (id == NotificationCenter.templatesDidUpdated) {
+            Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesUpdatedFromServer", R.string.templatesUpdatedFromServer), Toast.LENGTH_SHORT).show();
             if (args.length > 0) {
                 /*ArrayList<TemplateSupport.TemplateNotification> notifications = (ArrayList<TemplateSupport.TemplateNotification>) args[0];
                 TemplatesChangeLog cl = new TemplatesChangeLog(getParentActivity(), notifications);
