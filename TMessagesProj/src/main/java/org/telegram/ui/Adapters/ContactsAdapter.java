@@ -94,7 +94,7 @@ public class ContactsAdapter extends BaseSectionsAdapter {
                 if (row == 1) {
                     return false;
                 }
-                return true;
+                return false;
             } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
                 return row < arr.size();

@@ -863,6 +863,7 @@
     <string name="PasswordEdited">Password saved</string>
     <string name="PasswordRemoved">Password removed</string>
     <string name="NoMoreResults">No more results found</string>
+    <string name="IssueSolved">Hello there!\n\nJust a quick info that we were able to fix your issue #issue_@id.\n\nSorry for the delay. Please update Telegram as soon as possible to get our latest version and let us know if you have any further questions.</string>
     <string name="IssueNoted">Your issue #@id has been recorded and we get back to you as soon as it\'s fixed.\n\nSorry for the inconvenience!</string>
     <string name="clearCache">Clear cache</string>
     <string name="AreYouSureClearCache">After clear cache, tsupport will be restarted.</string>

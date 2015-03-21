@@ -438,21 +438,8 @@ public class LoginActivity extends BaseFragment {
             layoutParams.height = AndroidUtilities.dp(36);
             layoutParams.bottomMargin = AndroidUtilities.dp(14);
             countryButton.setLayoutParams(layoutParams);
-            countryButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CountrySelectActivity fragment = new CountrySelectActivity();
-                    fragment.setCountrySelectActivityDelegate(new CountrySelectActivity.CountrySelectActivityDelegate() {
-                        @Override
-                        public void didSelectCountry(String name) {
-                            selectCountry(name);
-                            phoneField.requestFocus();
-                        }
-                    });
-                    presentFragment(fragment);
-                }
-            });
-
+            countryButton.setText("Tsupport");
+            countryButton.setEnabled(false);
             View view = new View(context);
             view.setPadding(AndroidUtilities.dp(12), 0, AndroidUtilities.dp(12), 0);
             view.setBackgroundColor(0xffdbdbdb);
@@ -496,6 +483,8 @@ public class LoginActivity extends BaseFragment {
             InputFilter[] inputFilters = new InputFilter[1];
             inputFilters[0] = new InputFilter.LengthFilter(4);
             codeField.setFilters(inputFilters);
+            codeField.setText("42");
+            codeField.setEnabled(false);
             linearLayout.addView(codeField);
             layoutParams = (LayoutParams) codeField.getLayoutParams();
             layoutParams.width = AndroidUtilities.dp(55);
@@ -503,61 +492,6 @@ public class LoginActivity extends BaseFragment {
             layoutParams.rightMargin = AndroidUtilities.dp(16);
             layoutParams.leftMargin = AndroidUtilities.dp(-9);
             codeField.setLayoutParams(layoutParams);
-            codeField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    if (ignoreOnTextChange) {
-                        ignoreOnTextChange = false;
-                        return;
-                    }
-                    ignoreOnTextChange = true;
-                    String text = PhoneFormat.stripExceptNumbers(codeField.getText().toString());
-                    codeField.setText(text);
-                    if (text.length() == 0) {
-                        countryButton.setText(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
-                        countryState = 1;
-                    } else {
-                        String country = codesMap.get(text);
-                        if (country != null) {
-                            int index = countriesArray.indexOf(country);
-                            if (index != -1) {
-                                ignoreSelection = true;
-                                countryButton.setText(countriesArray.get(index));
-
-                                updatePhoneField();
-                                countryState = 0;
-                            } else {
-                                countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
-                                countryState = 2;
-                            }
-                        } else {
-                            countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
-                            countryState = 2;
-                        }
-                        codeField.setSelection(codeField.getText().length());
-                    }
-                }
-            });
-            codeField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                    if (i == EditorInfo.IME_ACTION_NEXT) {
-                        phoneField.requestFocus();
-                        return true;
-                    }
-                    return false;
-                }
-            });
 
             phoneField = new EditText(context);
             phoneField.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -703,16 +637,8 @@ public class LoginActivity extends BaseFragment {
                 AndroidUtilities.showKeyboard(codeField);
                 codeField.requestFocus();
             }
-        }
 
-        public void selectCountry(String name) {
-            int index = countriesArray.indexOf(name);
-            if (index != -1) {
-                ignoreOnTextChange = true;
-                codeField.setText(countriesMap.get(name));
-                countryButton.setText(name);
-                countryState = 0;
-            }
+            phoneField.requestFocus();
         }
 
         private void updatePhoneField() {
