@@ -55,7 +55,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
     private long reqId = 0;
     private int lastReqId;
     private MessagesActivitySearchAdapterDelegate delegate;
-    private boolean needMessagesSearch;
+    private int needMessagesSearch;
     private boolean messagesSearchEndReached;
     private String lastMessagesSearchString;
     private int lastSearchId = 0;
@@ -66,11 +66,11 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
         public CharSequence name;
     }
 
-    public static interface MessagesActivitySearchAdapterDelegate {
-        public abstract void searchStateChanged(boolean searching);
+    public interface MessagesActivitySearchAdapterDelegate {
+        void searchStateChanged(boolean searching);
     }
 
-    public DialogsSearchAdapter(Context context, boolean messagesSearch) {
+    public DialogsSearchAdapter(Context context, int messagesSearch) {
         mContext = context;
         needMessagesSearch = messagesSearch;
     }
@@ -88,7 +88,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
     }
 
     private void searchMessagesInternal(final String query) {
-        if (!needMessagesSearch) {
+        if (needMessagesSearch == 0) {
             return;
         }
         if (reqId != 0) {
@@ -110,7 +110,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
         req.peer = new TLRPC.TL_inputPeerEmpty();
         req.q = query;
         if (lastMessagesSearchString != null && query.equals(lastMessagesSearchString) && !searchResultMessages.isEmpty()) {
-            req.max_id = searchResultMessages.get(searchResultMessages.size() - 1).messageOwner.id;
+            req.max_id = searchResultMessages.get(searchResultMessages.size() - 1).getId();
         }
         lastMessagesSearchString = query;
         req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
@@ -151,6 +151,9 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
     }
 
     private void searchDialogsInternal(final String query, final boolean serverOnly, final int searchId) {
+        if (needMessagesSearch == 2) {
+            return;
+        }
         MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -178,7 +181,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                     int resultCount = 0;
 
                     HashMap<Long, DialogSearchResult> dialogsResult = new HashMap<>();
-                    SQLiteCursor cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT did, date FROM dialogs ORDER BY date DESC LIMIT 200"));
+                    SQLiteCursor cursor = MessagesStorage.getInstance().getDatabase().queryFinalized("SELECT did, date FROM dialogs ORDER BY date DESC LIMIT 200");
                     while (cursor.next()) {
                         long id = cursor.longValue(0);
                         DialogSearchResult dialogSearchResult = new DialogSearchResult();
@@ -215,6 +218,10 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                         cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT data, status, name FROM users WHERE uid IN(%s)", TextUtils.join(",", usersToLoad)));
                         while (cursor.next()) {
                             String name = cursor.stringValue(2);
+                            String tName = LocaleController.getInstance().getTranslitString(name);
+                            if (name.equals(tName)) {
+                                tName = null;
+                            }
                             String username = null;
                             int usernamePos = name.lastIndexOf(";;;");
                             if (usernamePos != -1) {
@@ -222,7 +229,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                             }
                             int found = 0;
                             for (String q : search) {
-                                if (name.startsWith(q) || name.contains(" " + q)) {
+                                if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
                                     found = 1;
                                 } else if (username != null && username.startsWith(q)) {
                                     found = 2;
@@ -257,8 +264,12 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                         cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT data, name FROM chats WHERE uid IN(%s)", TextUtils.join(",", chatsToLoad)));
                         while (cursor.next()) {
                             String name = cursor.stringValue(1);
+                            String tName = LocaleController.getInstance().getTranslitString(name);
+                            if (name.equals(tName)) {
+                                tName = null;
+                            }
                             for (String q : search) {
-                                if (name.startsWith(q) || name.contains(" " + q)) {
+                                if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
                                     ByteBufferDesc data = MessagesStorage.getInstance().getBuffersStorage().getFreeBuffer(cursor.byteArrayLength(0));
                                     if (data != null && cursor.byteBufferValue(0, data.buffer) != 0) {
                                         TLRPC.Chat chat = (TLRPC.Chat) TLClassStore.Instance().TLdeserialize(data, data.readInt32());
@@ -285,6 +296,10 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                         cursor = MessagesStorage.getInstance().getDatabase().queryFinalized(String.format(Locale.US, "SELECT q.data, u.name, q.user, q.g, q.authkey, q.ttl, u.data, u.status, q.layer, q.seq_in, q.seq_out, q.use_count, q.exchange_id, q.key_date, q.fprint, q.fauthkey, q.khash FROM enc_chats as q INNER JOIN users as u ON q.user = u.uid WHERE q.uid IN(%s)", TextUtils.join(",", encryptedToLoad)));
                         while (cursor.next()) {
                             String name = cursor.stringValue(1);
+                            String tName = LocaleController.getInstance().getTranslitString(name);
+                            if (name.equals(tName)) {
+                                tName = null;
+                            }
 
                             String username = null;
                             int usernamePos = name.lastIndexOf(";;;");
@@ -293,7 +308,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                             }
                             int found = 0;
                             for (String q : search) {
-                                if (name.startsWith(q) || name.contains(" " + q)) {
+                                if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
                                     found = 1;
                                 } else if (username != null && username.startsWith(q)) {
                                     found = 2;
@@ -378,6 +393,10 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                             continue;
                         }
                         String name = cursor.stringValue(2);
+                        String tName = LocaleController.getInstance().getTranslitString(name);
+                        if (name.equals(tName)) {
+                            tName = null;
+                        }
                         String username = null;
                         int usernamePos = name.lastIndexOf(";;;");
                         if (usernamePos != -1) {
@@ -385,7 +404,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                         }
                         int found = 0;
                         for (String q : search) {
-                            if (name.startsWith(q) || name.contains(" " + q)) {
+                            if (name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q))) {
                                 found = 1;
                             } else if (username != null && username.startsWith(q)) {
                                 found = 2;
@@ -472,8 +491,10 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
         if (query == null || query.length() == 0) {
             searchResult.clear();
             searchResultNames.clear();
+            if (needMessagesSearch != 2) {
+                queryServerSearch(null);
+            }
             searchMessagesInternal(null);
-            queryServerSearch(null);
             notifyDataSetChanged();
         } else {
             final int searchId = ++lastSearchId;
@@ -491,7 +512,9 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
                     AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
                         public void run() {
-                            queryServerSearch(query);
+                            if (needMessagesSearch != 2) {
+                                queryServerSearch(query);
+                            }
                             searchMessagesInternal(query);
                         }
                     });
@@ -618,7 +641,7 @@ public class DialogsSearchAdapter extends BaseContactsSearchAdapter {
             }
             ((DialogCell) view).useSeparator = (i != getCount() - 1);
             MessageObject messageObject = (MessageObject)getItem(i);
-            ((DialogCell) view).setDialog(messageObject.getDialogId(), messageObject, false, messageObject.messageOwner.date, 0, false);
+            ((DialogCell) view).setDialog(messageObject.getDialogId(), messageObject, messageObject.messageOwner.date);
         } else if (type == 3) {
             if (view == null) {
                 view = new LoadingCell(mContext);

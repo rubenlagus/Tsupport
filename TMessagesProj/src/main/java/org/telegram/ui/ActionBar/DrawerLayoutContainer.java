@@ -165,6 +165,9 @@ public class DrawerLayoutContainer extends FrameLayout {
     }
 
     public void openDrawer(boolean fast) {
+        if (!allowOpenDrawer) {
+            return;
+        }
         if (AndroidUtilities.isTablet() && parentActionBarLayout != null && parentActionBarLayout.parentActivity != null) {
             AndroidUtilities.hideKeyboard(parentActionBarLayout.parentActivity.getCurrentFocus());
         }
@@ -248,11 +251,15 @@ public class DrawerLayoutContainer extends FrameLayout {
         parentActionBarLayout = layout;
     }
 
-    public void setAllowOpenDrawer(boolean value) {
+    public void setAllowOpenDrawer(boolean value, boolean animated) {
         allowOpenDrawer = value;
         if (!allowOpenDrawer && drawerPosition != 0) {
-            setDrawerPosition(0);
-            onDrawerAnimationEnd(false);
+            if (!animated) {
+                setDrawerPosition(0);
+                onDrawerAnimationEnd(false);
+            } else {
+                closeDrawer(true);
+            }
         }
     }
 

@@ -23,8 +23,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.telegram.android.AndroidUtilities;
+import org.telegram.android.TemplateSupport;
 import org.telegram.messenger.FileLog;
 import org.telegram.android.LocaleController;
 import org.telegram.messenger.R;
@@ -52,7 +54,7 @@ public class LanguageSelectActivity extends BaseFragment {
     public ArrayList<LocaleController.LocaleInfo> searchResult;
 
     @Override
-    public View createView(LayoutInflater inflater, ViewGroup container) {
+    public View createView(LayoutInflater inflater) {
         if (fragmentView == null) {
             searching = false;
             searchWas = false;
@@ -78,7 +80,7 @@ public class LanguageSelectActivity extends BaseFragment {
                 }
 
                 @Override
-                public void onSearchCollapse() {
+                public boolean onSearchCollapse() {
                     search(null);
                     searching = false;
                     searchWas = false;
@@ -86,6 +88,8 @@ public class LanguageSelectActivity extends BaseFragment {
                         emptyTextView.setVisibility(View.GONE);
                         listView.setAdapter(listAdapter);
                     }
+
+                    return true;
                 }
 
                 @Override
@@ -169,6 +173,7 @@ public class LanguageSelectActivity extends BaseFragment {
                         }
                     }
                     if (localeInfo != null) {
+                        Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesRemoved", R.string.templatesRemoved), Toast.LENGTH_SHORT).show();
                         LocaleController.getInstance().applyLanguage(localeInfo, true);
                         parentLayout.rebuildAllFragmentViews(false);
                     }
@@ -285,7 +290,7 @@ public class LanguageSelectActivity extends BaseFragment {
                     return;
                 }
                 long time = System.currentTimeMillis();
-                ArrayList<LocaleController.LocaleInfo> resultArray = new ArrayList<LocaleController.LocaleInfo>();
+                ArrayList<LocaleController.LocaleInfo> resultArray = new ArrayList<>();
 
                 for (LocaleController.LocaleInfo c : LocaleController.getInstance().sortedLanguages) {
                     if (c.name.toLowerCase().startsWith(query) || c.nameEnglish.toLowerCase().startsWith(query)) {

@@ -9,6 +9,7 @@
 package org.telegram.ui;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -57,7 +58,9 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.TLObject;
 import org.telegram.messenger.TLRPC;
+import org.telegram.messenger.TsupportApi;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -103,7 +106,7 @@ public class LoginActivity extends BaseFragment {
     }
 
     @Override
-    public View createView(LayoutInflater inflater, ViewGroup container) {
+    public View createView(LayoutInflater inflater) {
         if (fragmentView == null) {
             actionBar.setTitle(LocaleController.getString("AppName", R.string.AppName));
 
@@ -215,6 +218,7 @@ public class LoginActivity extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        MessagesController.getInstance().getDifference();
         if (!AndroidUtilities.isTablet()) {
             getParentActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
@@ -461,21 +465,8 @@ public class LoginActivity extends BaseFragment {
             layoutParams.rightMargin = AndroidUtilities.dp(20);
             layoutParams.bottomMargin = AndroidUtilities.dp(14);
             countryButton.setLayoutParams(layoutParams);
-            countryButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    CountrySelectActivity fragment = new CountrySelectActivity();
-                    fragment.setCountrySelectActivityDelegate(new CountrySelectActivity.CountrySelectActivityDelegate() {
-                        @Override
-                        public void didSelectCountry(String name) {
-                            selectCountry(name);
-                            phoneField.requestFocus();
-                        }
-                    });
-                    presentFragment(fragment);
-                }
-            });
-
+            countryButton.setText("Tsupport");
+            countryButton.setEnabled(false);
             View view = new View(context);
             view.setPadding(AndroidUtilities.dp(12), 0, AndroidUtilities.dp(12), 0);
             view.setBackgroundColor(0xffdbdbdb);
@@ -520,6 +511,8 @@ public class LoginActivity extends BaseFragment {
             InputFilter[] inputFilters = new InputFilter[1];
             inputFilters[0] = new InputFilter.LengthFilter(4);
             codeField.setFilters(inputFilters);
+            codeField.setText("42");
+            codeField.setEnabled(false);
             linearLayout.addView(codeField);
             layoutParams = (LayoutParams) codeField.getLayoutParams();
             layoutParams.width = AndroidUtilities.dp(55);
@@ -527,61 +520,6 @@ public class LoginActivity extends BaseFragment {
             layoutParams.rightMargin = AndroidUtilities.dp(16);
             layoutParams.leftMargin = AndroidUtilities.dp(-9);
             codeField.setLayoutParams(layoutParams);
-            codeField.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    if (ignoreOnTextChange) {
-                        ignoreOnTextChange = false;
-                        return;
-                    }
-                    ignoreOnTextChange = true;
-                    String text = PhoneFormat.stripExceptNumbers(codeField.getText().toString());
-                    codeField.setText(text);
-                    if (text.length() == 0) {
-                        countryButton.setText(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
-                        countryState = 1;
-                    } else {
-                        String country = codesMap.get(text);
-                        if (country != null) {
-                            int index = countriesArray.indexOf(country);
-                            if (index != -1) {
-                                ignoreSelection = true;
-                                countryButton.setText(countriesArray.get(index));
-
-                                updatePhoneField();
-                                countryState = 0;
-                            } else {
-                                countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
-                                countryState = 2;
-                            }
-                        } else {
-                            countryButton.setText(LocaleController.getString("WrongCountry", R.string.WrongCountry));
-                            countryState = 2;
-                        }
-                        codeField.setSelection(codeField.getText().length());
-                    }
-                }
-            });
-            codeField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                    if (i == EditorInfo.IME_ACTION_NEXT) {
-                        phoneField.requestFocus();
-                        return true;
-                    }
-                    return false;
-                }
-            });
 
             phoneField = new EditText(context);
             phoneField.setInputType(InputType.TYPE_CLASS_PHONE);
@@ -685,6 +623,7 @@ public class LoginActivity extends BaseFragment {
                     codesMap.put(args[0], args[2]);
                     languageMap.put(args[1], args[2]);
                 }
+                reader.close();
             } catch (Exception e) {
                 FileLog.e("tmessages", e);
             }
@@ -729,16 +668,8 @@ public class LoginActivity extends BaseFragment {
                 AndroidUtilities.showKeyboard(codeField);
                 codeField.requestFocus();
             }
-        }
 
-        public void selectCountry(String name) {
-            int index = countriesArray.indexOf(name);
-            if (index != -1) {
-                ignoreOnTextChange = true;
-                codeField.setText(countriesMap.get(name));
-                countryButton.setText(name);
-                countryState = 0;
-            }
+            phoneField.requestFocus();
         }
 
         private void updatePhoneField() {
@@ -829,9 +760,6 @@ public class LoginActivity extends BaseFragment {
                                 final TLRPC.TL_auth_sentCode res = (TLRPC.TL_auth_sentCode)response;
                                 params.putString("phoneHash", res.phone_code_hash);
                                 params.putInt("calltime", res.send_call_timeout * 1000);
-                                if (res.phone_registered) {
-                                    params.putString("registered", "true");
-                                }
                                 setPage(1, true, params, false);
                             } else {
                                 if (error.text != null) {
@@ -898,7 +826,6 @@ public class LoginActivity extends BaseFragment {
 
         private String phoneHash;
         private String requestPhone;
-        private String registered;
         private EditText codeField;
         private TextView confirmTextView;
         private TextView timeText;
@@ -1067,7 +994,6 @@ public class LoginActivity extends BaseFragment {
             String phone = params.getString("phone");
             requestPhone = params.getString("phoneFormated");
             phoneHash = params.getString("phoneHash");
-            registered = params.getString("registered");
             time = params.getInt("calltime");
 
             if (phone == null) {
@@ -1229,19 +1155,30 @@ public class LoginActivity extends BaseFragment {
                                 MessagesController.getInstance().cleanUp();
                                 UserConfig.setCurrentUser(res.user);
                                 UserConfig.saveConfig(true);
+                                SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+                                userNumberEditor.putString("userId", requestPhone.replace("+",""));
+                                userNumberEditor.commit();
                                 MessagesStorage.getInstance().cleanUp(true);
                                 ArrayList<TLRPC.User> users = new ArrayList<>();
                                 users.add(res.user);
+                                TsupportApi.getInstance().addUser(requestPhone.replace("+",""));
                                 MessagesStorage.getInstance().putUsersAndChats(users, null, true, true);
                                 MessagesController.getInstance().putUser(res.user, false);
                                 ContactsController.getInstance().checkAppAccount();
                                 MessagesController.getInstance().getBlockedUsers(true);
                                 needFinishActivity();
                                 ConnectionsManager.getInstance().initPushConnection();
+                                Utilities.stageQueue.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ConnectionsManager.getInstance().updateDcSettings(0);
+                                    }
+                                });
                             } else {
                                 lastError = error.text;
 
-                                if (error.text.contains("PHONE_NUMBER_UNOCCUPIED") && registered == null) {
+                                if (error.text.contains("PHONE_NUMBER_UNOCCUPIED")) {
                                     Bundle params = new Bundle();
                                     params.putString("phoneFormated", requestPhone);
                                     params.putString("phoneHash", phoneHash);
@@ -1541,6 +1478,12 @@ public class LoginActivity extends BaseFragment {
                                 MessagesController.getInstance().getBlockedUsers(true);
                                 needFinishActivity();
                                 ConnectionsManager.getInstance().initPushConnection();
+                                Utilities.stageQueue.postRunnable(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ConnectionsManager.getInstance().updateDcSettings(0);
+                                    }
+                                });
                             } else {
                                 if (error.text.contains("PHONE_NUMBER_INVALID")) {
                                     needShowAlert(LocaleController.getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));

@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -47,7 +48,6 @@ public class ActionBar extends FrameLayout {
 
     private boolean allowOverlayTitle;
     private CharSequence lastTitle;
-    private boolean showingOverlayTitle;
     private boolean castShadows = true;
 
     protected boolean isSearchFieldVisible;
@@ -91,9 +91,9 @@ public class ActionBar extends FrameLayout {
 
         if (titleTextView != null && titleTextView.getVisibility() == VISIBLE) {
             if (!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                titleTextView.setTextSize(18);
+                titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             } else {
-                titleTextView.setTextSize(20);
+                titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             }
 
             layoutParams = (LayoutParams) titleTextView.getLayoutParams();
@@ -106,9 +106,9 @@ public class ActionBar extends FrameLayout {
         }
         if (subTitleTextView != null && subTitleTextView.getVisibility() == VISIBLE) {
             if (!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                subTitleTextView.setTextSize(14);
+                subTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             } else {
-                subTitleTextView.setTextSize(16);
+                subTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             }
 
             layoutParams = (LayoutParams) subTitleTextView.getLayoutParams();
@@ -136,7 +136,7 @@ public class ActionBar extends FrameLayout {
         }
 
         if (menu != null) {
-            maxTextWidth = Math.min(maxTextWidth, width - menu.getMeasuredWidth() - AndroidUtilities.dp(16));
+            maxTextWidth = Math.min(maxTextWidth, width - menu.getMeasuredWidth() - AndroidUtilities.dp(16) - x);
         }
 
         if (titleTextView != null && titleTextView.getVisibility() == VISIBLE) {
@@ -173,7 +173,7 @@ public class ActionBar extends FrameLayout {
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)menu.getLayoutParams();
         layoutParams.width = isSearchFieldVisible ? LayoutParams.MATCH_PARENT : LayoutParams.WRAP_CONTENT;
         layoutParams.height = height;
-        layoutParams.leftMargin = isSearchFieldVisible ? AndroidUtilities.dp(54) : 0;
+        layoutParams.leftMargin = isSearchFieldVisible ? AndroidUtilities.dp(AndroidUtilities.isTablet() ? 74 : 66) : 0;
         layoutParams.topMargin = occupyStatusBar ? AndroidUtilities.statusBarHeight : 0;
         menu.setLayoutParams(layoutParams);
         menu.measure(width, height);
@@ -366,7 +366,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         actionMode.setVisibility(VISIBLE);
-        if (actionModeTop != null) {
+        if (occupyStatusBar && actionModeTop != null) {
             actionModeTop.setVisibility(VISIBLE);
         }
         if (titleFrameLayout != null) {
@@ -382,7 +382,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         actionMode.setVisibility(GONE);
-        if (actionModeTop != null) {
+        if (occupyStatusBar && actionModeTop != null) {
             actionModeTop.setVisibility(GONE);
         }
         if (titleFrameLayout != null) {
@@ -418,6 +418,13 @@ public class ActionBar extends FrameLayout {
         menu.closeSearchField();
     }
 
+    public void openSearchField(String text) {
+        if (isSearchFieldVisible || menu == null) {
+            return;
+        }
+        menu.openSearchField(text);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int actionBarHeight = AndroidUtilities.getCurrentActionBarHeight();
@@ -445,10 +452,9 @@ public class ActionBar extends FrameLayout {
     }
 
     public void setTitleOverlayText(String text) {
-        if (showingOverlayTitle == (text != null) || !allowOverlayTitle || parentFragment.parentLayout == null) {
+        if (!allowOverlayTitle || parentFragment.parentLayout == null) {
             return;
         }
-        showingOverlayTitle = text != null;
         CharSequence textToSet = text != null ? text : lastTitle;
         if (textToSet != null && titleTextView == null) {
             createTitleTextView();
@@ -473,6 +479,9 @@ public class ActionBar extends FrameLayout {
 
     public void setOccupyStatusBar(boolean value) {
         occupyStatusBar = value;
+        if (actionMode != null) {
+            actionMode.setPadding(0, occupyStatusBar ? AndroidUtilities.statusBarHeight : 0, 0, 0);
+        }
     }
 
     public boolean getOccupyStatusBar() {

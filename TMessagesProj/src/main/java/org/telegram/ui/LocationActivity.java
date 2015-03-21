@@ -65,8 +65,8 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     private final static int map_list_menu_satellite = 3;
     private final static int map_list_menu_hybrid = 4;
 
-    public static interface LocationActivityDelegate {
-        public abstract void didSelectLocation(double latitude, double longitude);
+    public interface LocationActivityDelegate {
+        void didSelectLocation(double latitude, double longitude);
     }
 
     @Override
@@ -88,10 +88,13 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         if (mapView != null) {
             mapView.onDestroy();
         }
+        if (avatarImageView != null) {
+            avatarImageView.setImageDrawable(null);
+        }
     }
 
     @Override
-    public View createView(LayoutInflater inflater, ViewGroup container) {
+    public View createView(LayoutInflater inflater) {
         if (fragmentView == null) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             actionBar.setAllowOverlayTitle(true);
@@ -139,9 +142,9 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             item.addSubItem(map_list_menu_hybrid, LocaleController.getString("Hybrid", R.string.Hybrid), 0);
 
             if (messageObject != null) {
-                fragmentView = inflater.inflate(R.layout.location_view_layout, container, false);
+                fragmentView = inflater.inflate(R.layout.location_view_layout, null, false);
             } else {
-                fragmentView = inflater.inflate(R.layout.location_attach_layout, container, false);
+                fragmentView = inflater.inflate(R.layout.location_attach_layout, null, false);
             }
 
             avatarImageView = (BackupImageView)fragmentView.findViewById(R.id.location_avatar_view);
@@ -268,7 +271,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     private void updateUserData() {
         if (messageObject != null && avatarImageView != null) {
             int fromId = messageObject.messageOwner.from_id;
-            if (messageObject.messageOwner instanceof TLRPC.TL_messageForwarded) {
+            if (messageObject.isForwarded()) {
                 fromId = messageObject.messageOwner.fwd_from_id;
             }
             TLRPC.User user = MessagesController.getInstance().getUser(fromId);
@@ -279,6 +282,8 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 }
                 avatarImageView.setImage(photo, null, new AvatarDrawable(user));
                 nameTextView.setText(ContactsController.formatName(user.first_name, user.last_name));
+            } else {
+                avatarImageView.setImageDrawable(null);
             }
         }
     }

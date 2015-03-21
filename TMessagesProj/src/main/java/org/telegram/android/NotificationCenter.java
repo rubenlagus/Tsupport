@@ -48,6 +48,10 @@ public class NotificationCenter {
     public static final int updateMessageMedia = totalEvents++;
     public static final int recentImagesDidLoaded = totalEvents++;
     public static final int replaceMessagesObjects = totalEvents++;
+    public static final int didSetPasscode = totalEvents++;
+    public static final int screenStateChanged = totalEvents++;
+    public static final int appSwitchedToForeground = totalEvents++;
+    public static final int didLoadedReplyMessages = totalEvents++;
 
     public static final int httpFileDidLoaded = totalEvents++;
     public static final int httpFileDidFailedLoad = totalEvents++;
@@ -84,6 +88,19 @@ public class NotificationCenter {
     public static final int audioDidStarted = totalEvents++;
     public static final int audioRouteChanged = totalEvents++;
 
+    // Tsupport
+    public static final int readChatNotification = totalEvents++;
+    public static final int updateTemplatesNotification = totalEvents++;
+    public static final int exportTemplates = totalEvents++;
+    public static final int hideTemplatesKeyboard = totalEvents++;
+    public static final int conversationOwned = totalEvents++;
+    public static final int conversationNotOwned = totalEvents++;
+    public static final int conversationOwnedDeleted = totalEvents++;
+    public static final int trelloLoaded = totalEvents++;
+    public static final int databaseDidReset = totalEvents++;
+    public static final int templatesDidUpdated = totalEvents++;
+
+    //
     final private HashMap<Integer, ArrayList<Object>> observers = new HashMap<>();
 
     final private HashMap<Integer, Object> removeAfterBroadcast = new HashMap<>();
@@ -106,7 +123,7 @@ public class NotificationCenter {
     }
 
     public interface NotificationCenterDelegate {
-        public abstract void didReceivedNotification(int id, Object... args);
+        void didReceivedNotification(int id, Object... args);
     }
 
     public void postNotificationName(int id, Object... args) {

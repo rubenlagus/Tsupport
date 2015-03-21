@@ -9,11 +9,13 @@
 package org.telegram.messenger;
 
 public class BuildVars {
-    public static boolean DEBUG_VERSION = false;
-    public static int APP_ID = 0; //obtain your own APP_ID at https://core.telegram.org/api/obtaining_api_id
-    public static String APP_HASH = ""; //obtain your own APP_HASH at https://core.telegram.org/api/obtaining_api_id
-    public static String HOCKEY_APP_HASH = "your-hockeyapp-api-key-here";
-    public static String GCM_SENDER_ID = "760348033672";
-    public static String SEND_LOGS_EMAIL = "email@gmail.com";
-    public static String BING_SEARCH_KEY = ""; //obtain your own KEY at https://www.bing.com/dev/en-us/dev-center
+    public static boolean DEBUG_VERSION = true;
+    public static int APP_ID = 0; // YOUR API ID
+    public static String APP_HASH = "YOUR-API-HASH";
+    public static String HOCKEY_APP_HASH = "YOUR-HOCKEY-HASH";
+
+    public static String GCM_SENDER_ID = "YOUR-GCM-SENDER-ID";
+    public static String SEND_LOGS_EMAIL = "rubenlagus92@gmail.com";
+    public static String TRELLO_API_KEY = "YOUR-TRELLO-API-KEY";
+    public static String BING_SEARCH_KEY = "YOUR-BING-SEARCH-KEY";
 }
