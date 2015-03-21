@@ -291,12 +291,12 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         }
                         if (section == 0) {
                             if (row == 0) {
-                                if (!MessagesController.isFeatureEnabled("broadcast_create", ContactsActivity.this)) {
+                                /*if (!MessagesController.isFeatureEnabled("broadcast_create", ContactsActivity.this)) {
                                     return;
                                 }
                                 Bundle args = new Bundle();
                                 args.putBoolean("broadcast", true);
-                                presentFragment(new GroupCreateActivity(args), false);
+                                presentFragment(new GroupCreateActivity(args), false);*/
                             }
                         } else {
                             Object item = listViewAdapter.getItem(section, row);

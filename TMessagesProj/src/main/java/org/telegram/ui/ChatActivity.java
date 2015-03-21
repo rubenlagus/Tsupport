@@ -3801,8 +3801,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 items = new CharSequence[]{LocaleController.getString("Reply", R.string.Reply), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Delete", R.string.Delete)};
                                 options = new int[]{8, 2, 1};
                             } else if (type == 3) {
-                                items = new CharSequence[]{LocaleController.getString("Reply", R.string.Reply), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete)};
-                                options = new int[]{8, 2, 3, 1};
+                                items = new CharSequence[]{LocaleController.getString("Reply", R.string.Reply), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
+                                options = new int[]{8, 2, 3, 1, 10};
                             } else if (type == 4) {
                                 if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     items = new CharSequence[]{LocaleController.getString("Reply", R.string.Reply), LocaleController.getString("ShareFile", R.string.ShareFile), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Delete", R.string.Delete)};
@@ -3822,8 +3822,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 items = new CharSequence[]{LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Delete", R.string.Delete)};
                                 options = new int[]{2, 1};
                             } else if (type == 3) {
-                                items = new CharSequence[]{LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete)};
-                                options = new int[]{2, 3, 1};
+                                items = new CharSequence[]{LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
+                                options = new int[]{2, 3, 1, 10};
                             } else if (type == 4) {
                                 if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     items = new CharSequence[]{LocaleController.getString("ShareFile", R.string.ShareFile), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Delete", R.string.Delete)};
@@ -3844,8 +3844,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             items = new CharSequence[]{LocaleController.getString("Delete", R.string.Delete)};
                             options = new int[]{1};
                         } else if (type == 3) {
-                            items = new CharSequence[]{LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete)};
-                            options = new int[]{3, 1};
+                            items = new CharSequence[]{LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
+                            options = new int[]{3, 1, 10};
                         } else if (type == 4) {
                             if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                 items = new CharSequence[]{LocaleController.getString("ShareFile", R.string.ShareFile), LocaleController.getString("Delete", R.string.Delete)};
@@ -4031,6 +4031,25 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             builder.setView(input);
             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
 
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String key = input.getText().toString();
+                    FileLog.d("tsupport", "Key: " + key + "--> Value: " + value);
+                    if (key.compareToIgnoreCase("") != 0) {
+                        TemplateSupport.getInstance().putTemplate(key, value);
+                    }
+                }
+            });
+            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+            showAlertDialog(builder);
+        } else if (option == 10) {
+            final String value = selectedObject.messageText.toString();
+            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+            builder.setMessage(LocaleController.getString("insertKey", R.string.insertKey));
+            builder.setInverseBackgroundForced(true);
+            final EditText input = new EditText(getParentActivity());
+            builder.setView(input);
+            builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String key = input.getText().toString();
                     FileLog.d("tsupport", "Key: " + key + "--> Value: " + value);

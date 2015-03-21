@@ -290,12 +290,12 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 2) {
-                    if (!MessagesController.isFeatureEnabled("broadcast_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
+                    /*if (!MessagesController.isFeatureEnabled("broadcast_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
                         return;
                     }
                     Bundle args = new Bundle();
                     args.putBoolean("broadcast", true);
-                    presentFragment(new GroupCreateActivity(args));
+                    presentFragment(new GroupCreateActivity(args));*/
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (position == 3) {
                     presentFragment(new ContactsActivity(null));

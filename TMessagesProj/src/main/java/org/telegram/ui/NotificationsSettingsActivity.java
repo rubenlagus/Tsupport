@@ -189,10 +189,10 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
                         if (i == messageAlertRow) {
-                            enabled = preferences.getBoolean("EnableAll", true);
+                            enabled = preferences.getBoolean("EnableAll", false);
                             editor.putBoolean("EnableAll", !enabled);
                         } else if (i == groupAlertRow) {
-                            enabled = preferences.getBoolean("EnableGroup", true);
+                            enabled = preferences.getBoolean("EnableGroup", false);
                             editor.putBoolean("EnableGroup", !enabled);
                         }
                         editor.commit();
@@ -201,10 +201,10 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
                         if (i == messagePreviewRow) {
-                            enabled = preferences.getBoolean("EnablePreviewAll", true);
+                            enabled = preferences.getBoolean("EnablePreviewAll", false);
                             editor.putBoolean("EnablePreviewAll", !enabled);
                         } else if (i == groupPreviewRow) {
-                            enabled = preferences.getBoolean("EnablePreviewGroup", true);
+                            enabled = preferences.getBoolean("EnablePreviewGroup", false);
                             editor.putBoolean("EnablePreviewGroup", !enabled);
                         }
                         editor.commit();
@@ -280,19 +280,19 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else if (i == inappSoundRow) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        enabled = preferences.getBoolean("EnableInAppSounds", true);
+                        enabled = preferences.getBoolean("EnableInAppSounds", false);
                         editor.putBoolean("EnableInAppSounds", !enabled);
                         editor.commit();
                     } else if (i == inappVibrateRow) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        enabled = preferences.getBoolean("EnableInAppVibrate", true);
+                        enabled = preferences.getBoolean("EnableInAppVibrate", false);
                         editor.putBoolean("EnableInAppVibrate", !enabled);
                         editor.commit();
                     } else if (i == inappPreviewRow) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        enabled = preferences.getBoolean("EnableInAppPreview", true);
+                        enabled = preferences.getBoolean("EnableInAppPreview", false);
                         editor.putBoolean("EnableInAppPreview", !enabled);
                         editor.commit();
                     } else if (i == inappPriorityRow) {
@@ -312,7 +312,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else if (i == badgeNumberRow) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = preferences.edit();
-                        enabled = preferences.getBoolean("badgeNumber", true);
+                        enabled = preferences.getBoolean("badgeNumber", false);
                         editor.putBoolean("badgeNumber", !enabled);
                         editor.commit();
                         NotificationsController.getInstance().setBadgeEnabled(!enabled);
@@ -668,19 +668,19 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                 if (i == messageAlertRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableAll", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableAll", false), true);
                 } else if (i == groupAlertRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableGroup", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableGroup", false), true);
                 } else if (i == messagePreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewAll", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewAll", false), true);
                 } else if (i == groupPreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewGroup", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewGroup", false), true);
                 } else if (i == inappSoundRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppSounds", R.string.InAppSounds), preferences.getBoolean("EnableInAppSounds", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppSounds", R.string.InAppSounds), preferences.getBoolean("EnableInAppSounds", false), true);
                 } else if (i == inappVibrateRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppVibrate", R.string.InAppVibrate), preferences.getBoolean("EnableInAppVibrate", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppVibrate", R.string.InAppVibrate), preferences.getBoolean("EnableInAppVibrate", false), true);
                 } else if (i == inappPreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppPreview", R.string.InAppPreview), preferences.getBoolean("EnableInAppPreview", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppPreview", R.string.InAppPreview), preferences.getBoolean("EnableInAppPreview", false), true);
                 } else if (i == inappPriorityRow) {
                     checkCell.setTextAndCheck(LocaleController.getString("NotificationsPriority", R.string.NotificationsPriority), preferences.getBoolean("EnableInAppPriority", false), false);
                 // } else if (i == contactJoinedRow) {
@@ -690,7 +690,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                 } else if (i == notificationsServiceRow) {
                     checkCell.setTextAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), preferences.getBoolean("pushService", false), false);
                 } else if (i == badgeNumberRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("BadgeNumber", R.string.BadgeNumber), preferences.getBoolean("badgeNumber", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("BadgeNumber", R.string.BadgeNumber), preferences.getBoolean("badgeNumber", false), true);
                 }
             } else if (type == 2) {
                 if (view == null) {
@@ -739,9 +739,9 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     textCell.setMultilineDetail(false);
                     int value = 0;
                     if (i == messageVibrateRow) {
-                        value = preferences.getInt("vibrate_messages", 0);
+                        value = preferences.getInt("vibrate_messages", 2);
                     } else if (i == groupVibrateRow) {
-                        value = preferences.getInt("vibrate_group", 0);
+                        value = preferences.getInt("vibrate_group", 2);
                     }
                     if (value == 0) {
                         textCell.setTextAndValue(LocaleController.getString("Vibrate", R.string.Vibrate), LocaleController.getString("Default", R.string.Default), true);
@@ -754,7 +754,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     }
                 } else if (i == repeatRow) {
                     textCell.setMultilineDetail(false);
-                    int minutes = preferences.getInt("repeat_messages", 60);
+                    int minutes = preferences.getInt("repeat_messages", 0);
                     String value;
                     if (minutes == 0) {
                         value = LocaleController.getString("RepeatNotificationsNever", R.string.RepeatNotificationsNever);
@@ -768,9 +768,9 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     textCell.setMultilineDetail(false);
                     int value = 0;
                     if (i == messagePriorityRow) {
-                        value = preferences.getInt("priority_messages", 1);
+                        value = preferences.getInt("priority_messages", 0);
                     } else if (i == groupPriorityRow) {
-                        value = preferences.getInt("priority_group", 1);
+                        value = preferences.getInt("priority_group", 0);
                     }
                     if (value == 0) {
                         textCell.setTextAndValue(LocaleController.getString("NotificationsPriority", R.string.NotificationsPriority), LocaleController.getString("NotificationsPriorityDefault", R.string.NotificationsPriorityDefault), false);

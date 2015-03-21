@@ -37,7 +37,7 @@ public class DrawerLayoutAdapter extends BaseAdapter {
 
     @Override
     public boolean isEnabled(int i) {
-        return !(i == 0 || i == 1);
+        return !(i == 0 || i == 1 || i == 2);
     }
 
     @Override

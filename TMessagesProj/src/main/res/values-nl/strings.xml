@@ -711,7 +711,7 @@
     <string name="IssueNoted">Je probleem met #issue_@id is opgenomen in ons systeem, we nemen contact met je op zodra het probleem is verholpen.\n\nExcuses voor het ongemak!</string>
     <string name="IssueSolved">Hallo!\n\nEven een kort berichtje om door te geven dat we je probleem #issue_@id hebben weten op te lossen.\n\nExcuses voor het geleden ongemak. Zou je Telegram willen updaten naar de meest recente versie en contact met ons opnemen als je verdere vragen hebt?</string>
     <string name="clearCache">Cache opschonen</string>
-    <string name="AreYouSureClearCache">Na het opschonen van de cache zal Tsupport opnieuw worden gestart.</string>
+    <string name="AreYouSureClearCache">Na het opschonen van de cache zal Tsupport opnieuw worden opgestart.</string>
     <string name="downloadUserPhotos">Gebruikersfoto\'s</string>
     <string name="exportTemplates">Je templates worden geëxporteerd, daarna kun je ze overal heen sturen. Dit proces kan even duren, wees geduldig.</string>
     <string name="exporting">Bezig met Exporteren...</string>
@@ -735,12 +735,12 @@
     <string name="ReloadDefault">Standaard</string>
     <string name="ImportTemplates">Importeren</string>
     <string name="ExportTemplates">Exporteren</string>
-    <string name="defaultTemplatesUptodate">Default templates file are uptodate, no modifications done.</string>
-    <string name="LanguageSupport">Templates Language</string>
-    <string name="changelog_full_title">Templates Change Log</string>
-    <string name="changelog_title">What\'s New</string>
+    <string name="defaultTemplatesUptodate">De meest recente standaardtemplates zijn al geladen. </string>
+    <string name="LanguageSupport">Templates taal</string>
+    <string name="changelog_full_title">Template wijzigingen</string>
+    <string name="changelog_title">Nieuw:</string>
     <string name="changelog_ok_button">Ok</string>
-    <string name="changelog_show_full">more...</string>
-    <string name="templatesUpdated">Templates have been updated</string>
-    <string name="templatesUpdatedFromServer">Offical templates have been downloaded</string>
+    <string name="changelog_show_full">meer... </string>
+    <string name="templatesUpdated">Templates zijn geüpdatet</string>
+    <string name="templatesUpdatedFromServer">Officiële templates zijn gedownload</string>
 </resources>
