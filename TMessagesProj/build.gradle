@@ -9,6 +9,32 @@ dependencies {
     compile 'com.google.android.gms:play-services:3.2.+'
     compile 'net.hockeyapp.android:HockeySDK:3.5.+'
     compile 'com.googlecode.mp4parser:isoparser:1.0.+'
+    compile 'com.android.support:recyclerview-v7:+'
+
+    // Libraries for Servers
+    compile files('libs/ownedConversation.jar')
+    compile files('libs/users.jar')
+    // Add the Google API client library
+
+    compile('com.google.api-client:google-api-client:1.17.0-rc') {
+        // Exclude artifacts that the Android SDK/Runtime provides.
+        exclude(group: 'xpp3', module: 'xpp3')
+        exclude(group: 'org.apache.httpcomponents', module: 'httpclient')
+        exclude(group: 'junit', module: 'junit')
+        exclude(group: 'com.google.android', module: 'android')
+        exclude(group: 'com.google.android', module: 'support-v4')
+    }
+    compile('com.google.api-client:google-api-client-android:1.17.0-rc') {
+        // Exclude play services, since we're not using this yet.
+        exclude(group: 'com.google.android.google-play-services', module: 'google-play-services')
+    }
+    // Android extensions for Google HTTP Client.
+    compile('com.google.http-client:google-http-client-android:1.17.0-rc') {
+        exclude(group: 'com.google.android', module: 'android')
+    }
+    // This is used by the Google HTTP client library.
+    compile 'com.google.guava:guava-jdk5:17.0'
+
 }
 
 android {
@@ -22,17 +48,17 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('config/android.jks')
-            storePassword 'rbermudez'
-            keyAlias 'release'
-            keyPassword 'rbermudez'
+            storeFile file('config/keystore_debug.jks')
+            storePassword 'storePassword'
+            keyAlias 'keyAlias'
+            keyPassword 'keyPassword'
         }
 
         release {
-            storeFile file('config/android.jks')
-            storePassword 'rbermudez'
-            keyAlias 'release'
-            keyPassword 'rbermudez'
+            storeFile file('config/keystore_release.jks')
+            storePassword 'storePassword'
+            keyAlias 'keyAlias'
+            keyPassword 'keyPassword'
         }
     }
 
@@ -58,7 +84,7 @@ android {
 
     sourceSets.main {
         jniLibs.srcDir 'libs'
-        jni.srcDirs = [] //disable automatic ndk-build call
+        jni.srcDirs = []
     }
 
     sourceSets.debug {
@@ -74,7 +100,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "org.tsupport.messenger"
+        applicationId "org.telegram.tsupport"
         minSdkVersion 11
         targetSdkVersion 22
         versionCode 580
