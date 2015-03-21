@@ -733,20 +733,22 @@ public class DialogCell extends BaseCell {
             }
         }
 
-        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
         TLRPC.FileLocation photo = null;
-        if (userImagesPreferences.getBoolean("loadUserImages", false)) {
-            if (user != null) {
-                if (user.photo != null) {
-                    photo = user.photo.photo_small;
-                }
-                avatarDrawable.setInfo(user);
-            } else if (chat != null) {
-                if (chat.photo != null) {
-                    photo = chat.photo.photo_small;
-                }
-                avatarDrawable.setInfo(chat);
+        if (user != null) {
+            if (user.photo != null) {
+                photo = user.photo.photo_small;
             }
+            avatarDrawable.setInfo(user);
+        } else if (chat != null) {
+            if (chat.photo != null) {
+                photo = chat.photo.photo_small;
+            }
+            avatarDrawable.setInfo(chat);
+        }
+
+        SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
+        if (!userImagesPreferences.getBoolean("loadUserImages", false)) {
+            photo = null;
         }
         avatarImage.setImage(photo, "50_50", avatarDrawable, null, false);
 

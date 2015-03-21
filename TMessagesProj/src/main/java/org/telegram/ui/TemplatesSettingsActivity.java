@@ -29,10 +29,17 @@ import android.widget.Toast;
 
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.LocaleController;
+import org.telegram.android.MediaController;
+import org.telegram.android.MessageObject;
+import org.telegram.android.MessagesStorage;
 import org.telegram.android.NotificationCenter;
+import org.telegram.android.NotificationsController;
 import org.telegram.android.TemplateSupport;
+import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
+import org.telegram.messenger.TLRPC;
+import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
@@ -65,9 +72,9 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateInterfaces);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.updateTemplatesNotification);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.exportTemplates);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.templatesDidUpdated);
         loadTemplates();
         return true;
     }
@@ -75,9 +82,9 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateInterfaces);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.updateTemplatesNotification);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.exportTemplates);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.templatesDidUpdated);
 
     }
 
@@ -114,7 +121,12 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                                 TemplateSupport.loadDefaults();
                             }
                         });
-                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                updateView();
+                            }
+                        });
                         showAlertDialog(builder);
                         emptyView.setVisibility(View.GONE);
                         listView.setVisibility(View.GONE);
@@ -140,7 +152,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                TemplateSupport.getInstance().exportAll();
+                                TemplateSupport.getInstance().exportTemplates();
                                 Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("exporting", R.string.exporting), Toast.LENGTH_LONG);
                                 toast.show();
                             }
@@ -291,6 +303,10 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                 return str1.compareTo(str2);
             }
         });
+        updateView();
+    }
+
+    private void updateView() {
         AndroidUtilities.runOnUIThread(new Runnable() {
 
             @Override
@@ -336,6 +352,12 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
 
                 getParentActivity().startActivity(sendIntent);
             }
+        } else if (id == NotificationCenter.templatesDidUpdated) {
+            if (args.length > 0) {
+                /*ArrayList<TemplateSupport.TemplateNotification> notifications = (ArrayList<TemplateSupport.TemplateNotification>) args[0];
+                TemplatesChangeLog cl = new TemplatesChangeLog(getParentActivity(), notifications);
+                cl.getFullLogDialog().show();*/
+            }
         }
     }
 
@@ -363,7 +385,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                 }
             }
         });
-        TemplateSupport.loadFile(path, false);
+        TemplateSupport.loadFile(path);
     }
 
     @Override

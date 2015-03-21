@@ -10,13 +10,20 @@ package org.telegram.ui;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.telegram.android.AndroidUtilities;
@@ -75,11 +82,43 @@ public class ChangeTemplateActivity extends BaseFragment {
 
             ActionBarMenu menu = actionBar.createMenu();
             doneButton = menu.addItemWithWidth(done_button, R.drawable.ic_done, AndroidUtilities.dp(56));
-            /*
-            fragmentView = inflater.inflate(R.layout.settings_change_template_layout, container, false);
 
-            keyField = (EditText)fragmentView.findViewById(R.id.key_field);
+            fragmentView = new ScrollView(getParentActivity());
+            ScrollView scrollView = (ScrollView) fragmentView;
+            ScrollView.LayoutParams scrollViewLayout = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT,ScrollView.LayoutParams.MATCH_PARENT);
+            scrollView.setLayoutParams(scrollViewLayout);
+
+            LinearLayout linearLayout = new LinearLayout(getParentActivity());
+            scrollView.addView(linearLayout);
+            FrameLayout.LayoutParams linearLayoutParams = (FrameLayout.LayoutParams) linearLayout.getLayoutParams();
+            linearLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            linearLayoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
+            linearLayout.setLayoutParams(linearLayoutParams);
+            linearLayout.setOrientation(LinearLayout.VERTICAL);
+            linearLayout.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(8), AndroidUtilities.dp(16), AndroidUtilities.dp(0));
+
+
+            keyField = new EditText(getParentActivity());
+            linearLayout.addView(keyField);
+            keyField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+            keyField.setHintTextColor(0xff979797);
             keyField.setHint(LocaleController.getString("templateKey", R.string.templateKey));
+            keyField.setMaxLines(1);
+            keyField.setSingleLine(true);
+            keyField.setTypeface(null, Typeface.BOLD);
+            keyField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
+            keyField.setTextColor(0xff212121);
+            keyField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            keyField.setPadding(AndroidUtilities.dp(15), AndroidUtilities.dp(0), AndroidUtilities.dp(15), AndroidUtilities.dp(15));
+            AndroidUtilities.clearCursorDrawable(keyField);
+            keyField.setGravity(LocaleController.isRTL ? Gravity.END : Gravity.START);
+
+            LinearLayout.LayoutParams keyFieldLayoutParams = (LinearLayout.LayoutParams) keyField.getLayoutParams();
+            keyFieldLayoutParams.topMargin = AndroidUtilities.dp(15);
+            keyFieldLayoutParams.gravity = Gravity.CENTER_VERTICAL;
+            keyFieldLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            keyFieldLayoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            keyField.setLayoutParams(keyFieldLayoutParams);
             keyField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -91,8 +130,29 @@ public class ChangeTemplateActivity extends BaseFragment {
                     return false;
                 }
             });
-            valueField = (EditText)fragmentView.findViewById(R.id.value_field);
+
+            valueField = new EditText(getParentActivity());
+            linearLayout.addView(valueField);
+            valueField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+            valueField.setHintTextColor(0xff979797);
             valueField.setHint(LocaleController.getString("templateValue", R.string.templateValue));
+            valueField.setMaxLines(15);
+            valueField.setMinLines(5);
+            valueField.setSingleLine(false);
+            valueField.setInputType(valueField.getInputType() |InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            valueField.setTextColor(0xff212121);
+            valueField.setBackgroundDrawable(null);
+            valueField.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            valueField.setPadding(AndroidUtilities.dp(15), AndroidUtilities.dp(0), AndroidUtilities.dp(15), AndroidUtilities.dp(15));
+            AndroidUtilities.clearCursorDrawable(valueField);
+            valueField.setGravity(Gravity.BOTTOM);
+
+            LinearLayout.LayoutParams valueFieldLayoutParams = (LinearLayout.LayoutParams) valueField.getLayoutParams();
+            valueFieldLayoutParams.topMargin = AndroidUtilities.dp(10);
+            valueFieldLayoutParams.gravity = Gravity.CENTER_VERTICAL;
+            valueFieldLayoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            valueFieldLayoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            valueField.setLayoutParams(valueFieldLayoutParams);
             valueField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -117,7 +177,7 @@ public class ChangeTemplateActivity extends BaseFragment {
                 valueField.setText(value);
                 if(keyExists)
                     valueField.setSelection(valueField.length());
-            }*/
+            }
         } else {
             ViewGroup parent = (ViewGroup)fragmentView.getParent();
             if (parent != null) {

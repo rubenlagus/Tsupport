@@ -890,4 +890,10 @@
     <!--update text-->
     <string name="updateText">Telegram for Android has been updated. New in version 3.1:\n\n- Search for messages inside a specific chat.\n- Fully redesigned attachment menu. Send contacts and audio files straight from the attachment menu.\n- Improved in-app media playback (YouTube, Vimeo, SoundCloud etc.), new player for large audio files.\n\nMore about this update:\nhttps://telegram.org/blog/search-and-media</string>
     <string name="updateBuild">577</string>
+    <string name="defaultTemplatesUptodate">Default templates file are uptodate, no modifications done.</string>
+    <string name="LanguageSupport">Templates Language</string>
+    <string name="changelog_full_title">Templates Change Log</string>
+    <string name="changelog_title">What\'s New</string>
+    <string name="changelog_ok_button">Ok</string>
+    <string name="changelog_show_full">more...</string>
 </resources>

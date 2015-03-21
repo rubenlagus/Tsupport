@@ -44,6 +44,16 @@ public class TrelloSupport {
     private static final String webogramId = "5413f3adf0f537c87a136ac3";
     private static final String globalId = "542576c9918041a6c8d7f193";
 
+    public static final String fixedLabel = "5465f5d474d650d5679ca481";
+    public static final String featureLabel = "5465f5d474d650d5679ca486";
+    public static final String confirmedLabel = "5465f5d474d650d5679ca484";
+    public static final String moreDetailsLabel = "5465f5d474d650d5679ca483";
+    public static final String fixedInBetaLabel = "5465f5d474d650d5679ca485";
+    public static final String trendingLabel = "54cf9787002d2a2f320539ed";
+    public static final String reviewedAndReportedLabel = "54cf995c246ea238324800d1";
+    public static final String awaitingReviewLabel = "5465f5d474d650d5679ca482";
+    public static final String toDeleteLabel = "54da1e83ad5be04dbb34d8ed";
+
     private static long lastLoad = 0;
 
     private String token = "";
@@ -172,16 +182,17 @@ public class TrelloSupport {
                         } else {
                             for (int j = 0; j < labels.length(); j++) {
                                 JSONObject label = labels.getJSONObject(j);
-                                if (label.getString("color").compareToIgnoreCase("green") == 0) {
+                                String labelId = label.getString("id");
+                                if (labelId.compareToIgnoreCase(fixedLabel) == 0 || labelId.compareToIgnoreCase(fixedInBetaLabel) == 0) {
                                     closedIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
-                                } else if (label.getString("color").compareToIgnoreCase("blue") != 0) {
+                                } else if (labelId.compareToIgnoreCase(toDeleteLabel) != 0) {
                                     openIssuesTemp.put(jsonObject.getString("shortLink"), preline + " " + jsonObject.getString("name"));
                                 }
                             }
                         }
                     }
 
-                    openIssuesList = new ArrayList<Map.Entry<String,String>>(openIssuesTemp.entrySet());
+                    openIssuesList = new ArrayList<>(openIssuesTemp.entrySet());
 
                     Collections.sort(openIssuesList, new Comparator<Map.Entry<String, String>>() {
                         // Note: this comparator imposes orderings that are inconsistent with equals.

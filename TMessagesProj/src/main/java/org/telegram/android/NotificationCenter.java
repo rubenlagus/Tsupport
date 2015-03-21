@@ -110,7 +110,9 @@ public class NotificationCenter {
     public static final int conversationNotOwned = totalEvents++;
     public static final int conversationOwnedDeleted = totalEvents++;
     public static final int trelloLoaded = totalEvents++;
-
+    public static final int databaseDidReset = totalEvents++;
+    public static final int templatesDidUpdated = totalEvents++;
+    
     private HashMap<Integer, ArrayList<Object>> observers = new HashMap<>();
     private HashMap<Integer, Object> removeAfterBroadcast = new HashMap<>();
     private HashMap<Integer, Object> addAfterBroadcast = new HashMap<>();

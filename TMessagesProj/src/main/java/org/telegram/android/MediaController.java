@@ -673,7 +673,7 @@ public class MediaController implements NotificationCenter.NotificationCenterDel
         cancelVideoConvert(null);
     }
 
-    protected int getAutodownloadMask() {
+    public int getAutodownloadMask() {
         int mask = 0;
         if ((mobileDataDownloadMask & AUTODOWNLOAD_MASK_PHOTO) != 0 || (wifiDownloadMask & AUTODOWNLOAD_MASK_PHOTO) != 0 || (roamingDownloadMask & AUTODOWNLOAD_MASK_PHOTO) != 0) {
             mask |= AUTODOWNLOAD_MASK_PHOTO;
