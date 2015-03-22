@@ -437,7 +437,6 @@ public class TemplateSupport {
                 value = mainMatcher.group(2) != null ? mainMatcher.group(2) : mainMatcher.group(5);
                 question = mainMatcher.group(3);
                 value = value.replaceAll("\\n{3,}", "\\n\\n").replaceAll("^\\s*","").replaceAll("\\s*$","");
-
                 Matcher keysMatcher = KEYSPATTERN.matcher(keys);
                 keySet = new HashSet<>();
                 while(keysMatcher.find()) {

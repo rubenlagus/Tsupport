@@ -1666,6 +1666,35 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         }
     }
 
+    public void loadDialogs(final int offset, final int serverOffset, int max_id, final int count, boolean fromCache) {
+        if (loadingDialogs) {
+            return;
+        }
+        loadingDialogs = true;
+        NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
+
+        if (fromCache) {
+            MessagesStorage.getInstance().getDialogs(offset, serverOffset, count);
+        } else {
+            TLRPC.TL_messages_getDialogs req = new TLRPC.TL_messages_getDialogs();
+            req.offset = serverOffset;
+            req.limit = count;
+            req.max_id = max_id;
+            ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
+                @Override
+                public void run(TLObject response, TLRPC.TL_error error) {
+                    if (error == null) {
+                        final TLRPC.messages_Dialogs dialogsRes = (TLRPC.messages_Dialogs) response;
+                        processLoadedDialogs(dialogsRes, null, offset, serverOffset, count, false, false);
+                        for (TLRPC.TL_dialog dialog : dialogsRes.dialogs) {
+                            MessagesController.getInstance().loadMessages(dialog.id,20, dialog.top_message, false, -1, 0, 3, -1, -1, false);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
     private void applyDialogsNotificationsSettings(ArrayList<TLRPC.TL_dialog> dialogs) {
         SharedPreferences.Editor editor = null;
         for (TLRPC.TL_dialog dialog : dialogs) {
@@ -4175,6 +4204,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                             } else {
                                 if (response instanceof TLRPC.TL_messages_dialogsSlice) {
                                     TLRPC.TL_messages_dialogsSlice resp = (TLRPC.TL_messages_dialogsSlice) response;
+                                    MessagesController.getInstance().processDialogsUpdate(resp, null);
+                                    MessagesStorage.getInstance().putDialogs(resp);
                                     reloadDialogInternal(1);
                                 }
                             }
@@ -4200,18 +4231,13 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         if (error == null) {
                             if (response instanceof TLRPC.TL_messages_dialogs) {
                                 TLRPC.TL_messages_dialogs resp = (TLRPC.TL_messages_dialogs) response;
-                                processDialogsUpdate(resp, new ArrayList<TLRPC.EncryptedChat>());
+                                processDialogsUpdate(resp, null);
+                                MessagesStorage.getInstance().putDialogs(resp);
                             } else {
                                 if (response instanceof TLRPC.TL_messages_dialogsSlice) {
                                     TLRPC.TL_messages_dialogsSlice resp = (TLRPC.TL_messages_dialogsSlice) response;
-                                    TLRPC.TL_messages_dialogs dialogs = new TLRPC.TL_messages_dialogs();
-                                    dialogs.chats = resp.chats;
-                                    dialogs.messages  = resp.messages;
-                                    dialogs.users = resp.users;
-                                    dialogs.dialogs = resp.dialogs;
-                                    dialogs.count = resp.count;
-                                    processDialogsUpdate(dialogs, new ArrayList<TLRPC.EncryptedChat>());
-                                    MessagesStorage.getInstance().putDialogs(dialogs);
+                                    processDialogsUpdate(resp, null);
+                                    MessagesStorage.getInstance().putDialogs(resp);
                                     reloadDialogInternal(numLlamada+1);
                                 }
                             }
