@@ -477,6 +477,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             MessagesController.getInstance().loadDialogs(0,0, (new Long(dialog_id)).intValue(), 100, false);
         }
 
+        if (!MessagesController.getInstance().dialogs_dict.containsKey(dialog_id)){
+            MessagesController.getInstance().loadDialogs(0,0, (new Long(dialog_id)).intValue(), 100, false);
+        }
+
         super.onFragmentCreate();
 
         if (currentEncryptedChat == null && !isBroadcast) {
