@@ -1,7 +1,7 @@
 ## Telegram Support Messenger for Android
 
 [Telegram](http://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the source code for *Tsupport App for Android*.
+This repo contains the source code for [Tsupport App for Android](https://play.google.com/store/apps/details?id=org.telegram.tsupport)..
 
 ##Creating your Telegram Application
 

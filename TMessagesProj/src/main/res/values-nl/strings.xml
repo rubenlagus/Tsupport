@@ -898,4 +898,7 @@
     <string name="changelog_show_full">meer... </string>
     <string name="templatesUpdated">Templates zijn geüpdatet</string>
     <string name="templatesUpdatedFromServer">Officiële templates zijn gedownload</string>
+    <string name="FileNotCorrectFormat">File could not be loaded, please check that it has the correct format (KEY-VALUE)</string>
+    <string name="FileNotFound">Selected file could not be found</string>
+    <string name="NetworkErrorTemplates">There was an error loading the file, please try again.</string>
 </resources>
