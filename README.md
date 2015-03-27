@@ -32,4 +32,4 @@ Import the root folder into your IDE (tested on Android Studio), then run projec
 Translations are in [Transifex](https://www.transifex.com/organization/Tsupport/dashboard/tsupport). Please use it.
 
 ### Based on
-Original [Telegram App for Android](https://play.google.com/store/apps/details?id=org.tdesktop.messenger)
+Original [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger)
