@@ -209,7 +209,7 @@ public class ChangeTemplateActivity extends BaseFragment {
         if (keyField.getText() == null || valueField.getText() == null || keyField.getText().length() <= 0 || valueField.getText().length() <= 0) {
             return;
         }
-        TemplateSupport.getInstance().putTemplate(keyField.getText().toString(), valueField.getText().toString());
+        TemplateSupport.putTemplate(keyField.getText().toString(), valueField.getText().toString());
     }
 
     @Override

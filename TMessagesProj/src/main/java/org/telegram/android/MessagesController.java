@@ -375,7 +375,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         MediaController.getInstance().cleanup();
         NotificationsController.getInstance().cleanup();
         SendMessagesHelper.getInstance().cleanUp();
-        SecretChatHelper.getInstance().cleanUp();
         StickersQuery.cleanup();
 
         dialogs_dict.clear();
@@ -1063,10 +1062,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         MessagesStorage.getInstance().updateDialogsWithDeletedMessages(messages, true);
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.messagesDeleted, messages);
 
-        if (randoms != null && encryptedChat != null && !randoms.isEmpty()) {
-            SecretChatHelper.getInstance().sendMessagesDeleteMessage(encryptedChat, randoms, null);
-        }
-
         ArrayList<Integer> toSend = new ArrayList<>();
         for (Integer mid : messages) {
             if (mid > 0) {
@@ -1164,11 +1159,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 }
             });
         } else {
-            if (onlyHistory) {
-                SecretChatHelper.getInstance().sendClearHistoryMessage(getEncryptedChat(high_id), null);
-            } else {
-                SecretChatHelper.getInstance().declineSecretChat(high_id);
-            }
+            // Disabled
         }
     }
 
@@ -1921,14 +1912,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                         }
                         putUsers(dialogsRes.users, isCache);
                         putChats(dialogsRes.chats, isCache);
-                        if (encChats != null) {
-                            for (TLRPC.EncryptedChat encryptedChat : encChats) {
-                                if (encryptedChat instanceof TLRPC.TL_encryptedChat && AndroidUtilities.getMyLayerVersion(encryptedChat.layer) < SecretChatHelper.CURRENT_SECRET_CHAT_LAYER) {
-                                    SecretChatHelper.getInstance().sendNotifyLayerMessage(encryptedChat, null);
-                                }
-                                putEncryptedChat(encryptedChat, true);
-                            }
-                        }
                         loadingDialogs = false;
                         totalDialogsCount = arg1;
 
@@ -2012,23 +1995,8 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     }
 
     public void markMessageAsRead(final long dialog_id, final long random_id, int ttl) {
-        if (random_id == 0 || dialog_id == 0 || ttl <= 0) {
-            return;
-        }
-        int lower_part = (int) dialog_id;
-        int high_id = (int) (dialog_id >> 32);
-        if (lower_part != 0) {
-            return;
-        }
-        TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
-        if (chat == null) {
-            return;
-        }
-        ArrayList<Long> random_ids = new ArrayList<>();
-        random_ids.add(random_id);
-        SecretChatHelper.getInstance().sendMessagesReadMessage(chat, random_ids, null);
-        int time = ConnectionsManager.getInstance().getCurrentTime();
-        MessagesStorage.getInstance().createTaskForSecretChat(chat.id, time, time, 0, random_ids);
+        // Disabled
+        return;
     }
 
     public void markDialogAsRead(final long dialog_id, final int max_id, final int max_positive_id, final int offset, final int max_date, final boolean was, final boolean popup) {
@@ -2104,50 +2072,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                 });
             }
         } else {
-            if (max_date == 0) {
-                return;
-            }
-            TLRPC.EncryptedChat chat = getEncryptedChat(high_id);
-            if (chat.auth_key != null && chat.auth_key.length > 1 && chat instanceof TLRPC.TL_encryptedChat) {
-                TLRPC.TL_messages_readEncryptedHistory req = new TLRPC.TL_messages_readEncryptedHistory();
-                req.peer = new TLRPC.TL_inputEncryptedChat();
-                req.peer.chat_id = chat.id;
-                req.peer.access_hash = chat.access_hash;
-                req.max_date = max_date;
-
-                ConnectionsManager.getInstance().performRpc(req, new RPCRequest.RPCRequestDelegate() {
-                    @Override
-                    public void run(TLObject response, TLRPC.TL_error error) {
-                        //MessagesStorage.getInstance().processPendingRead(dialog_id, max_id, max_date, true);
-                    }
-                });
-            }
-            MessagesStorage.getInstance().processPendingRead(dialog_id, max_id, max_date, false);
-
-            MessagesStorage.getInstance().getStorageQueue().postRunnable(new Runnable() {
-                @Override
-                public void run() {
-                    AndroidUtilities.runOnUIThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            NotificationsController.getInstance().processReadMessages(null, dialog_id, max_date, 0, popup);
-                            TLRPC.TL_dialog dialog = dialogs_dict.get(dialog_id);
-                            if (dialog != null) {
-                                dialog.unread_count = 0;
-                                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateInterfaces, UPDATE_MASK_READ_DIALOG_MESSAGE);
-                            }
-                            HashMap<Long, Integer> dialogsToUpdate = new HashMap<>();
-                            dialogsToUpdate.put(dialog_id, 0);
-                            NotificationsController.getInstance().processDialogsUpdateRead(dialogsToUpdate);
-                        }
-                    });
-                }
-            });
-
-            if (chat.ttl > 0 && was) {
-                int serverTime = Math.max(ConnectionsManager.getInstance().getCurrentTime(), max_date);
-                MessagesStorage.getInstance().createTaskForSecretChat(chat.id, serverTime, serverTime, 0, null);
-            }
+            // Disabled
         }
     }
 
@@ -2807,15 +2732,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                 public void run() {
                                     if (!res.new_messages.isEmpty() || !res.new_encrypted_messages.isEmpty()) {
                                         final HashMap<Long, ArrayList<MessageObject>> messages = new HashMap<>();
-                                        for (TLRPC.EncryptedMessage encryptedMessage : res.new_encrypted_messages) {
-                                            ArrayList<TLRPC.Message> decryptedMessages = SecretChatHelper.getInstance().decryptMessage(encryptedMessage);
-                                            if (decryptedMessages != null && !decryptedMessages.isEmpty()) {
-                                                for (TLRPC.Message message : decryptedMessages) {
-                                                    res.new_messages.add(message);
-                                                }
-                                            }
-                                        }
-
                                         ImageLoader.saveMessagesThumbs(res.new_messages);
 
                                         final ArrayList<MessageObject> pushMessages = new ArrayList<>();
@@ -2884,8 +2800,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
                                                 MessagesStorage.getInstance().commitTransaction(false);
                                             }
                                         });
-
-                                        SecretChatHelper.getInstance().processPendingEncMessages();
                                     }
 
                                     if (!res.other_updates.isEmpty()) {
@@ -3243,7 +3157,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         } else if (updates instanceof UserActionUpdatesPts) {
             MessagesStorage.lastPtsValue = updates.pts;
         }
-        SecretChatHelper.getInstance().processPendingEncMessages();
         if (!fromQueue) {
             if (needGetDiff) {
                 getDifference();
@@ -3535,55 +3448,11 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             } else if (update instanceof TLRPC.TL_updateNewGeoChatMessage) {
                 //DEPRECATED
             } else if (update instanceof TLRPC.TL_updateNewEncryptedMessage) {
-                ArrayList<TLRPC.Message> decryptedMessages = SecretChatHelper.getInstance().decryptMessage(((TLRPC.TL_updateNewEncryptedMessage) update).message);
-                if (decryptedMessages != null && !decryptedMessages.isEmpty()) {
-                    int cid = ((TLRPC.TL_updateNewEncryptedMessage) update).message.chat_id;
-                    long uid = ((long) cid) << 32;
-                    ArrayList<MessageObject> arr = messages.get(uid);
-                    if (arr == null) {
-                        arr = new ArrayList<>();
-                        messages.put(uid, arr);
-                    }
-                    for (TLRPC.Message message : decryptedMessages) {
-                        ImageLoader.saveMessageThumbs(message);
-                        messagesArr.add(message);
-                        MessageObject obj = new MessageObject(message, usersDict, true);
-                        arr.add(obj);
-                        pushMessages.add(obj);
-                    }
-                }
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateEncryptedChatTyping) {
-                TLRPC.EncryptedChat encryptedChat = getEncryptedChatDB(update.chat_id);
-                if (encryptedChat != null) {
-                    update.user_id = encryptedChat.user_id;
-                    long uid = ((long) update.chat_id) << 32;
-                    ArrayList<PrintingUser> arr = printingUsers.get(uid);
-                    if (arr == null) {
-                        arr = new ArrayList<>();
-                        printingUsers.put(uid, arr);
-                    }
-                    boolean exist = false;
-                    for (PrintingUser u : arr) {
-                        if (u.userId == update.user_id) {
-                            exist = true;
-                            u.lastTime = currentTime;
-                            u.action = new TLRPC.TL_sendMessageTypingAction();
-                            break;
-                        }
-                    }
-                    if (!exist) {
-                        PrintingUser newUser = new PrintingUser();
-                        newUser.userId = update.user_id;
-                        newUser.lastTime = currentTime;
-                        newUser.action = new TLRPC.TL_sendMessageTypingAction();
-                        arr.add(newUser);
-                        printChanged = true;
-                    }
-                    onlinePrivacy.put(update.user_id, ConnectionsManager.getInstance().getCurrentTime());
-                }
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateEncryptedMessagesRead) {
-                markAsReadEncrypted.put(update.chat_id, Math.max(update.max_date, update.date));
-                tasks.add((TLRPC.TL_updateEncryptedMessagesRead) update);
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateChatParticipantAdd) {
                 MessagesStorage.getInstance().updateChatInfo(update.chat_id, update.user_id, false, update.inviter_id, update.version);
             } else if (update instanceof TLRPC.TL_updateChatParticipantDelete) {
@@ -3591,7 +3460,7 @@ public class MessagesController implements NotificationCenter.NotificationCenter
             } else if (update instanceof TLRPC.TL_updateDcOptions) {
                 ConnectionsManager.getInstance().updateDcSettings(0);
             } else if (update instanceof TLRPC.TL_updateEncryption) {
-                SecretChatHelper.getInstance().processUpdateEncryption((TLRPC.TL_updateEncryption) update, usersDict);
+                // Disabled
             } else if (update instanceof TLRPC.TL_updateUserBlocked) {
                 final TLRPC.TL_updateUserBlocked finalUpdate = (TLRPC.TL_updateUserBlocked) update;
                 if (finalUpdate.blocked) {
@@ -3942,11 +3811,6 @@ public class MessagesController implements NotificationCenter.NotificationCenter
         if (!deletedMessages.isEmpty()) {
             MessagesStorage.getInstance().markMessagesAsDeleted(deletedMessages, true);
             MessagesStorage.getInstance().updateDialogsWithDeletedMessages(deletedMessages, true);
-        }
-        if (!tasks.isEmpty()) {
-            for (TLRPC.TL_updateEncryptedMessagesRead update : tasks) {
-                MessagesStorage.getInstance().createTaskForSecretChat(update.chat_id, update.max_date, update.date, 1, null);
-            }
         }
 
         return true;

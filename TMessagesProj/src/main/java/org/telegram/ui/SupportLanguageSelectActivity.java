@@ -72,7 +72,7 @@ public class SupportLanguageSelectActivity extends BaseFragment implements Notif
                         finishFragment();
                     } else if (id == done_button) {
                         if (languageCodeField.length() != 0) {
-                            TemplateSupport.getInstance().removeAll();
+                            TemplateSupport.removeDefaultTemplates();
                             SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("languageSupport", languageCodeField.getText().toString().toLowerCase().trim());

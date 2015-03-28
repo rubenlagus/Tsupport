@@ -20,11 +20,12 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
-import android.view.ContextThemeWrapper;
 import android.webkit.WebView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.telegram.android.LocaleController;
-import org.telegram.android.TemplateSupport;
 import org.telegram.messenger.R;
 
 import java.io.BufferedReader;
@@ -35,37 +36,59 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class TemplatesChangeLog {
 
+    private static final String TYPEADD = "ADDEDTEMPLATE";
+    private static final String TYPEUPDATE = "UPDATEDTEMPLATE";
+    private static final String TYPEREMOVE = "DELETEDTEMPLATE";
+
     private static final String firstPart = "<html>\n" +
             "  <head>\n" +
             "    <style type='text/css'>\n" +
-            "      a            { color:#a0a0e0 }\n" +
-            "      div.title    { \n" +
-            "          color:#C0F0C0; \n" +
-            "          font-size:1.2em; \n" +
-            "          font-weight:bold; \n" +
-            "          margin-top:1em; \n" +
-            "          margin-bottom:0.5em; \n" +
-            "          text-align:center }\n" +
-            "      div.subtitle { \n" +
-            "          color:#C0F0C0; \n" +
-            "          font-size:0.8em; \n" +
-            "          margin-bottom:1em; \n" +
-            "          text-align:center }\n" +
-            "      div.freetext { color:#F0F0F0 }\n" +
-            "      div.list     { color:#C0C0F0 }\n" +
+            "a { color: #a0a0e0 }\n" +
+            "\tdiv.title {\n" +
+            "\t\tcolor: #48C;\n" +
+            "\t\tfont-size: 1.3em;\n" +
+            "\t\tfont-weight: bold;\n" +
+            "\t\tmargin: 1em 0 -0.3em 0;\n" +
+            "\t\ttext-align: center;\n" +
+            "\t\tborder-bottom: 1.5px solid #7AE;\n" +
+            "\t}\n" +
+            "\tdiv.subtitle {\n" +
+            "\t\tcolor: #59D;\n" +
+            "\t\tfont-size: 1em;\n" +
+            "\t\ttext-align: center;\n" +
+            "\t\tmargin-top: 1.2em;\n" +
+            "\t\ttext-shadow: 0 0 0.5px #7AD;\n" +
+            "\t}\n" +
+            "\tdiv.list {\n" +
+            "\t\tcolor: #555;\n" +
+            "\t\tfont-size: 0.9em;\n" +
+            "\t\ttext-align: left;\n" +
+            "\t\tmargin-top: -0.5em;\n" +
+            "\t}\n" +
+            "\tdiv.list ul {\n" +
+            "\t\tpadding: 0 2em 0 2em;\n" +
+            "\t}\n" +
+            "\tdiv.freetext {\n" +
+            "\t\tcolor: #888;\n" +
+            "\t\tfont-size: 0.9em;\n" +
+            "\t\tmargin-top: -0.5em;\n" +
+            "\t\tpadding: 0 2em 0 2em;\n" +
+            "\t\ttext-align: justify;\n" +
+            "\t}" +
             "    </style>\n" +
             "  </head>\n" +
-            "  <body>";
+            "  <body>\n\n";
 
     private static final String lastPart = " </body>\n" +
             "</html>";
 
     private final Context context;
-    private ArrayList<TemplateSupport.TemplateNotification> notifications = new ArrayList<TemplateSupport.TemplateNotification>();
+    private JSONArray notifications = new JSONArray();
     private String thisVersion;
 
     // this is the key for storing the version name in SharedPreferences
@@ -78,8 +101,9 @@ public class TemplatesChangeLog {
      * SharedPreferences
      *
      * @param context
+     * @param notifications
      */
-    public TemplatesChangeLog(Context context, ArrayList<TemplateSupport.TemplateNotification> notifications) {
+    public TemplatesChangeLog(Context context, JSONArray notifications) {
         this(context, PreferenceManager.getDefaultSharedPreferences(context));
         this.notifications = notifications;
     }
@@ -172,38 +196,76 @@ public class TemplatesChangeLog {
     }
 
     public String getChangeLog() {
-        String changelog = firstPart;
-        String added = "% ADDED\n";
-        String updated = "% UPDATED\n";
-        String removed = "% REMOVED\n";
 
-        if (notifications.isEmpty()) {
-            for (TemplateSupport.TemplateNotification notification : notifications) {
-                switch (notification.type) {
-                    case TemplateSupport.ADDEDTEMPLATE:
-                        added += "- QUESTION: " + notification.question + "\n";
-                        added += "- KEYS: " + notification.keys + "\n";
-                        added += "! " + notification.value + "\n";
-                        break;
-                    case TemplateSupport.UPDATEDTEMPLATE:
-                        updated += "- QUESTION: " + notification.question + "\n";
-                        updated += "- KEYS: " + notification.keys + "\n";
-                        updated += "! " + notification.value + "\n";
-                        break;
-                    case TemplateSupport.REMOVEDTEMPLATE:
-                        removed += "- QUESTION: " + notification.question + "\n";
-                        removed += "- KEYS: " + notification.keys + "\n";
-                        removed += "! " + notification.value + "\n";
-                        break;
+        String changelog = "";
+        try {
+            changelog = firstPart;
+            String addedTitle = "% ADDED\n";
+            String updatedTitle = "% UPDATED\n";
+            String removedTitle = "% REMOVED\n";
+            List<String> added = new ArrayList<>();
+            List<String> updated = new ArrayList<>();
+            List<String> removed = new ArrayList<>();
+
+            JSONObject templateLog;
+            JSONObject template;
+            String change;
+            if (notifications.length() > 0) {
+                for (int i = 0; i < notifications.length(); i++) {
+                    templateLog = notifications.getJSONObject(i);
+                    template = templateLog.getJSONObject("template");
+                    switch (templateLog.getString("type")) {
+                        case TYPEADD:
+                            change = "";
+                            change += "_" + template.getString("question") + "\n";
+                            change += "* KEYS: " + template.getString("keys") + "\n";
+                            change += "! " +template.getString("value") + "\n";
+                            added.add(change);
+                            added.add("\n");
+                            break;
+                        case TYPEUPDATE:
+                            change = "";
+                            change += "_" + template.getString("question") + "\n";
+                            change += "* KEYS: " + template.getString("keys") + "\n";
+                            change += "! " + template.getString("value") + "\n";
+                            updated.add(change);
+                            updated.add("\n");
+                            break;
+                        case TYPEREMOVE:
+                            change = "";
+                            change += "_" + template.getString("question") + "\n";
+                            change += "* KEYS: " + template.getString("keys") + "\n";
+                            change += "! " + template.getString("value") + "\n";
+                            removed.add(change);
+                            removed.add("\n");
+                            break;
+                    }
                 }
+                if (!added.isEmpty()) {
+                    changelog += addedTitle + "\n";
+                    for (String string : added) {
+                        changelog += string + "\n";
+                    }
+                }
+                if (!updated.isEmpty()) {
+                    changelog += "\n\n" + updatedTitle + "\n";
+                    for (String string : updated) {
+                        changelog += string + "\n";
+                    }
+                }
+                if (!removed.isEmpty()) {
+                    changelog += "\n\n" + removedTitle + "\n";
+                    for (String string : removed) {
+                        changelog += string + "\n";
+                    }
+                }
+            } else {
+                changelog += LocaleController.getString("defaultTemplatesUptodate", R.string.defaultTemplatesUptodate);
             }
-            changelog += added + "\n";
-            changelog += updated + "\n";
-            changelog += removed + "\n";
-        } else {
-            changelog += LocaleController.getString("defaultTemplatesUptodate", R.string.defaultTemplatesUptodate);
+            changelog += "\n\n" + lastPart;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        changelog += "\n" + lastPart;
         return changelog;
     }
 

@@ -98,7 +98,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             item.addSubItem(add_template, LocaleController.getString("AddTemplate", R.string.AddTemplate), R.drawable.addmember);
             item.addSubItem(reload_default, LocaleController.getString("ReloadDefault", R.string.ReloadDefault), R.drawable.ic_refresh);
             item.addSubItem(import_templates, LocaleController.getString("ImportTemplates", R.string.ImportTemplates), R.drawable.ic_ab_doc);
-            item.addSubItem(export_templates, LocaleController.getString("ExportTemplates", R.string.ExportTemplates), R.drawable.ic_external_storage);
+            item.addSubItem(export_templates, LocaleController.getString("ExportTemplates", R.string.ExportTemplates), R.drawable.ic_export);
             actionBar.setTitle(LocaleController.getString("templates", R.string.templates));
 
             actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -152,7 +152,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                TemplateSupport.getInstance().exportTemplates();
+                                TemplateSupport.exportTemplates();
                                 Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("exporting", R.string.exporting), Toast.LENGTH_LONG);
                                 toast.show();
                             }
@@ -251,7 +251,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (i == 0) {
-                                TemplateSupport.getInstance().removeTemplate(selectedTemplateKey);
+                                TemplateSupport.removeTemplate(selectedTemplateKey);
                                 templates.remove(selectedTemplateKey);
                                 templatesKeys.remove(i);
                                 listViewAdapter.notifyDataSetChanged();
@@ -353,11 +353,8 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                 getParentActivity().startActivity(sendIntent);
             }
         } else if (id == NotificationCenter.templatesDidUpdated) {
-            Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesUpdatedFromServer", R.string.templatesUpdatedFromServer), Toast.LENGTH_SHORT).show();
-            if (args.length > 0) {
-                /*ArrayList<TemplateSupport.TemplateNotification> notifications = (ArrayList<TemplateSupport.TemplateNotification>) args[0];
-                TemplatesChangeLog cl = new TemplatesChangeLog(getParentActivity(), notifications);
-                cl.getFullLogDialog().show();*/
+            if (args.length == 0) {
+                Toast.makeText(getParentActivity().getApplicationContext(), LocaleController.getString("templatesUpdatedFromServer", R.string.templatesUpdatedFromServer), Toast.LENGTH_SHORT).show();
             }
         }
     }

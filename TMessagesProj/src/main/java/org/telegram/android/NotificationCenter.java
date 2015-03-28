@@ -112,6 +112,7 @@ public class NotificationCenter {
     public static final int trelloLoaded = totalEvents++;
     public static final int databaseDidReset = totalEvents++;
     public static final int templatesDidUpdated = totalEvents++;
+    public static final int errorTemplates = totalEvents++;
     
     private HashMap<Integer, ArrayList<Object>> observers = new HashMap<>();
     private HashMap<Integer, Object> removeAfterBroadcast = new HashMap<>();

@@ -134,7 +134,6 @@ public class ApplicationLoader extends Application {
         applicationInited = true;
 
         try {
-            TemplateSupport.getInstance();
             LocaleController.getInstance();
         } catch (Exception e) {
             e.printStackTrace();
