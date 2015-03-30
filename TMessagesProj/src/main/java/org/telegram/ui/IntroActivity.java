@@ -235,8 +235,6 @@ public class IntroActivity extends Activity {
             }
             justCreated = false;
         }
-        AndroidUtilities.checkForCrashes(this);
-        AndroidUtilities.checkForUpdates(this);
     }
 
     @Override

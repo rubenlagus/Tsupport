@@ -38,12 +38,12 @@ public class DrawerLayoutAdapter extends BaseAdapter {
 
     @Override
     public boolean isEnabled(int i) {
-        return !(i == 0 || i == 1 || i == 2);
+        return !(i == 0 || i == 1);
     }
 
     @Override
     public int getCount() {
-        return UserConfig.isClientActivated() ? 6 : 0;
+        return UserConfig.isClientActivated() ? 5 : 0;
     }
 
     @Override
@@ -79,12 +79,10 @@ public class DrawerLayoutAdapter extends BaseAdapter {
             }
             DrawerActionCell actionCell = (DrawerActionCell) view;
             if (i == 2) {
-                actionCell.setTextAndIcon(LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), R.drawable.menu_broadcast);
-            } else if (i == 3) {
                 actionCell.setTextAndIcon(LocaleController.getString("Users", R.string.Users), R.drawable.menu_contacts);
-            } else if (i == 4) {
+            } else if (i == 3) {
                 actionCell.setTextAndIcon(LocaleController.getString("Refresh", R.string.Refresh), R.drawable.ic_refresh);
-            } else if (i == 5) {
+            } else if (i == 4) {
                 actionCell.setTextAndIcon(LocaleController.getString("Settings", R.string.Settings), R.drawable.menu_settings);
             }
         }

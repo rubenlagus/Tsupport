@@ -839,7 +839,7 @@
     <!--Tsupport-->
     <string name="loaddefaulttemplates">¿Deseas usar las plantillas por defecto (si se le enviaron al desarrollador)?</string>
     <string name="saveToTemplates">Guardar plantilla</string>
-    <string name="insertKey">Inserte la clave para la plantilla</string>
+    <string name="insertKey">Inserta una clave para esta plantilla</string>
     <string name="templates">Plantillas</string>
     <string name="noTemplates">No se han encontrado plantillas</string>
     <string name="deleteTemplateText">Manten pulsada una plantilla para eliminarla.</string>
@@ -863,12 +863,18 @@
     <string name="PasswordEdited">Contraseña guardada</string>
     <string name="PasswordRemoved">Contraseña eliminada</string>
     <string name="NoMoreResults">Ningún resultado más</string>
-    <string name="IssueNoted">Muchas Gracias, hemos reportado este fallo.\n\nEl código del problema es: #issue_@id\n\nAsí, si tenemos alguna novedad o necesitamos más datos, te lo haremos saber.\n\nSentimos los inconvenientes que pueda causarte. Por el momento, desgraciadamente, no tenemos una vía de solución inmediata a este problema.</string>
+  <string name="IssueNoted">Muchas Gracias, hemos reportado este fallo.
+
+El código del problema es: #issue_@id
+
+Así, si tenemos alguna novedad o necesitamos más datos, te lo haremos saber.
+
+Sentimos los inconvenientes que pueda causarte. Por el momento, desgraciadamente, no tenemos una vía de solución inmediata a este problema.</string>
     <string name="IssueSolved">¡Buenas! Sólo comentarte que hemos podido arreglar tu error #issue_@id.\n\nPerdón por el retraso. Por favor, actualiza Telegram en cuanto puedas para obtener la última versión y no dudes en comentarnos cualquier otro problema que tengas.</string>
     <string name="clearCache">Borrar la caché</string>
-    <string name="AreYouSureClearCache">Tras borrar la caché, Tsupport se reiniciará.</string>
-    <string name="downloadUserPhotos">Fotos de los usuarios</string>
-    <string name="exportTemplates">Se van a exportar tus plantillas, después podrás enviarlas donde quieras. Esto puede tardar un rato, ten paciencia.</string>
+    <string name="AreYouSureClearCache">Tras borrar la caché, TSupport se reiniciará.</string>
+    <string name="downloadUserPhotos">Fotos de perfil</string>
+    <string name="exportTemplates">Se van a exportar tus plantillas, después podrás enviarlas donde quieras. Puede tardar un rato, ten paciencia.</string>
     <string name="exporting">Exportando...</string>
     <string name="linkTrello">Enlazar con Trello</string>
     <string name="trelloTokenExists">El acceso a Trello ya ha sido concedido.</string>
@@ -878,11 +884,11 @@
     <string name="openIssues">Problemas abiertos</string>
     <string name="SolvedIssues">Problemas cerrados</string>
     <string name="noIssues">No se han encontrado problemas</string>
-    <string name="trelloTokenNeeded">Se necesita el Token de acceso de Trello. Ve a Ajustes-&gt;Enlazar con Trello</string>
-    <string name="AreYouSentIssue">¿Estás seguro que quieres enviar el problema: @title@?</string>
-    <string name="AreYouSentClosedIssue">¿Estás seguro que quieres enviar el problema resuelto: @title@?</string>
+    <string name="trelloTokenNeeded">Es necesario el acceso a Trello. Ve a Ajustes &gt; Enlazar con Trello</string>
+    <string name="AreYouSentIssue">¿Seguro que quieres enviar el problema: @title@?</string>
+    <string name="AreYouSentClosedIssue">¿Seguro que quieres enviar el problema resuelto: @title@?</string>
     <string name="Users">Usuarios</string>
-    <string name="AssignConversation">Asignar Conversación</string>
+    <string name="AssignConversation">Asignar conversación</string>
     <string name="UnassingConversation">Desligar conversación</string>
     <string name="Refresh">Actualizar</string>
     <string name="Refreshing">Actualizando</string>
@@ -890,15 +896,17 @@
     <string name="ReloadDefault">Por defecto</string>
     <string name="ImportTemplates">Importar</string>
     <string name="ExportTemplates">Exportar</string>
-    <string name="defaultTemplatesUptodate">Default templates file are uptodate, no modifications done.</string>
-    <string name="LanguageSupport">Templates Language</string>
-    <string name="changelog_full_title">Templates Change Log</string>
-    <string name="changelog_title">What\'s New</string>
-    <string name="changelog_ok_button">Ok</string>
-    <string name="changelog_show_full">more...</string>
-    <string name="templatesUpdated">Templates have been updated</string>
-    <string name="templatesUpdatedFromServer">Offical templates have been downloaded</string>
+    <string name="defaultTemplatesUptodate">El archivo de plantillas por defecto está actualizado.</string>
+    <string name="LanguageSupport">Idioma de plantillas</string>
+    <string name="changelog_full_title">Novedades en las plantillas</string>
+    <string name="changelog_title">Novedades</string>
+    <string name="changelog_ok_button">OK</string>
+    <string name="changelog_show_full">más...</string>
+    <string name="templatesUpdated">Las plantillas se han actualizado</string>
+    <string name="templatesUpdatedFromServer">Se han descargado las plantillas oficiales</string>
     <string name="FileNotCorrectFormat">File could not be loaded, please check that it has the correct format (KEY-VALUE)</string>
     <string name="FileNotFound">Selected file could not be found</string>
     <string name="NetworkErrorTemplates">There was an error loading the file, please try again.</string>
+    <string name="clearrAllTempaltes">Are you sure you want to remove all saved templates (Default templates will be loaded after the process)</string>
+    <string name="NoUsers">No users yet</string>
 </resources>

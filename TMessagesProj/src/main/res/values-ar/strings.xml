@@ -901,4 +901,6 @@
     <string name="FileNotCorrectFormat">File could not be loaded, please check that it has the correct format (KEY-VALUE)</string>
     <string name="FileNotFound">Selected file could not be found</string>
     <string name="NetworkErrorTemplates">There was an error loading the file, please try again.</string>
+    <string name="clearrAllTempaltes">Are you sure you want to remove all saved templates (Default templates will be loaded after the process)</string>
+    <string name="NoUsers">No users yet</string>
 </resources>

@@ -217,7 +217,7 @@ public class TemplatesChangeLog {
                     switch (templateLog.getString("type")) {
                         case TYPEADD:
                             change = "";
-                            change += "_" + template.getString("question") + "\n";
+                            change += "_ " + template.getString("question") + "\n";
                             change += "* KEYS: " + template.getString("keys") + "\n";
                             change += "! " +template.getString("value") + "\n";
                             added.add(change);
@@ -225,7 +225,7 @@ public class TemplatesChangeLog {
                             break;
                         case TYPEUPDATE:
                             change = "";
-                            change += "_" + template.getString("question") + "\n";
+                            change += "_ " + template.getString("question") + "\n";
                             change += "* KEYS: " + template.getString("keys") + "\n";
                             change += "! " + template.getString("value") + "\n";
                             updated.add(change);
@@ -233,7 +233,7 @@ public class TemplatesChangeLog {
                             break;
                         case TYPEREMOVE:
                             change = "";
-                            change += "_" + template.getString("question") + "\n";
+                            change += "_ " + template.getString("question") + "\n";
                             change += "* KEYS: " + template.getString("keys") + "\n";
                             change += "! " + template.getString("value") + "\n";
                             removed.add(change);
@@ -260,7 +260,7 @@ public class TemplatesChangeLog {
                     }
                 }
             } else {
-                changelog += LocaleController.getString("defaultTemplatesUptodate", R.string.defaultTemplatesUptodate);
+                changelog += "_ " + LocaleController.getString("defaultTemplatesUptodate", R.string.defaultTemplatesUptodate);
             }
             changelog += "\n\n" + lastPart;
         } catch (JSONException e) {

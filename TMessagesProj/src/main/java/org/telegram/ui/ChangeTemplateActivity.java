@@ -72,7 +72,9 @@ public class ChangeTemplateActivity extends BaseFragment {
                     if (id == -1) {
                         finishFragment();
                     } else if (id == done_button) {
-                        if (keyField.getText().length() != 0 && valueField.getText().length() != 0) {
+                        String keyText = keyField.getText().toString().trim();
+                        String valueText = valueField.getText().toString();
+                        if (keyText.length() != 0 && valueText.length() != 0 && !TemplateSupport.isDefault(keyText)) {
                             saveTemplate();
                             finishFragment();
                         }
@@ -123,8 +125,10 @@ public class ChangeTemplateActivity extends BaseFragment {
                 @Override
                 public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                     if (i == EditorInfo.IME_ACTION_NEXT) {
-                        valueField.requestFocus();
-                        valueField.setSelection(valueField.length());
+                        if (!TemplateSupport.isDefault(keyField.getText().toString().trim().toLowerCase())) {
+                            valueField.requestFocus();
+                            valueField.setSelection(valueField.length());
+                        }
                         return true;
                     }
                     return false;
@@ -164,19 +168,18 @@ public class ChangeTemplateActivity extends BaseFragment {
                 }
             });
 
-            if (key != null && key.compareToIgnoreCase("")!=0) { // If key has content
+            if (key != null && key.length() != 0) { // If key has content
                 keyField.setText(key);  // Set text in textfield
                 keyField.setEnabled(false); // Disable field
                 keyExists = true;
-            }
-            else { // If key hasn't
-                keyField.setSelection(keyField.length()); // Can edit
+            } else { // If key hasn't
                 keyExists = false;
             }
-            if (value != null && value.compareToIgnoreCase("") != 0) {
+            if (value != null && value.length() != 0) {
                 valueField.setText(value);
-                if(keyExists)
-                    valueField.setSelection(valueField.length());
+                if (TemplateSupport.isDefault(key)) {
+                    valueField.setEnabled(false);
+                }
             }
         } else {
             ViewGroup parent = (ViewGroup)fragmentView.getParent();
@@ -193,34 +196,37 @@ public class ChangeTemplateActivity extends BaseFragment {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         boolean animations = preferences.getBoolean("view_animations", false);
         if (!animations) {
-            if (!keyExists) {
-                keyField.requestFocus();
-                AndroidUtilities.showKeyboard(keyField);
-            }
-            else {
-                valueField.requestFocus();
-                AndroidUtilities.showKeyboard(valueField);
+            if (!TemplateSupport.isDefault(keyField.getText().toString().trim().toLowerCase())) {
+                if (!keyExists) {
+                    keyField.requestFocus();
+                    AndroidUtilities.showKeyboard(keyField);
+                } else {
+                    valueField.requestFocus();
+                    AndroidUtilities.showKeyboard(valueField);
+                }
             }
         }
     }
 
     private void saveTemplate() {
-        FileLog.e("tsupport", "Key: " + keyField.getText().toString() + " --> Value: " + valueField.getText().toString());
-        if (keyField.getText() == null || valueField.getText() == null || keyField.getText().length() <= 0 || valueField.getText().length() <= 0) {
+        String keyText = keyField.getText().toString().trim();
+        String valueText = valueField.getText().toString();
+        if (keyText.length() <= 0 || valueText.length() <= 0) {
             return;
         }
-        TemplateSupport.putTemplate(keyField.getText().toString(), valueField.getText().toString());
+        TemplateSupport.putTemplate(keyText.toLowerCase(), valueText);
     }
 
     @Override
     public void onOpenAnimationEnd() {
-        if (!keyExists) {
-            keyField.requestFocus();
-            AndroidUtilities.showKeyboard(keyField);
-        }
-        else {
-            valueField.requestFocus();
-            AndroidUtilities.showKeyboard(valueField);
+        if (!TemplateSupport.isDefault(keyField.getText().toString().trim().toLowerCase())) {
+            if (!keyExists) {
+                keyField.requestFocus();
+                AndroidUtilities.showKeyboard(keyField);
+            } else {
+                valueField.requestFocus();
+                AndroidUtilities.showKeyboard(valueField);
+            }
         }
     }
 }

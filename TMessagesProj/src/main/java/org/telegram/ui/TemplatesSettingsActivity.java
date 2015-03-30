@@ -29,23 +29,18 @@ import android.widget.Toast;
 
 import org.telegram.android.AndroidUtilities;
 import org.telegram.android.LocaleController;
-import org.telegram.android.MediaController;
-import org.telegram.android.MessageObject;
-import org.telegram.android.MessagesStorage;
 import org.telegram.android.NotificationCenter;
-import org.telegram.android.NotificationsController;
 import org.telegram.android.TemplateSupport;
-import org.telegram.messenger.ConnectionsManager;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
-import org.telegram.messenger.TLRPC;
-import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.Adapters.BaseFragmentAdapter;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.Cells.TextColorCell;
 import org.telegram.ui.Cells.TextInfoCell;
+import org.telegram.ui.Cells.TextSettingsCell;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,16 +53,16 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     private ListAdapter listViewAdapter;
     private FrameLayout progressView;
     private boolean loading;
-    private boolean loaded;
     private TextView emptyView;
-    private ArrayList<String> templatesKeys = new ArrayList<String>();
-    private TreeMap<String, String> templates = new TreeMap<String, String>();
+    private ArrayList<String> templatesKeys = new ArrayList<>();
+    private TreeMap<String, String> templates = new TreeMap<>();
     private String selectedTemplateKey;
 
     private final static int add_template = 1;
     private final static int reload_default = 2;
     private final static int import_templates = 3;
     private final static int export_templates = 4;
+    private final static int delete_all_templates = 5;
 
     @Override
     public boolean onFragmentCreate() {
@@ -99,6 +94,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             item.addSubItem(reload_default, LocaleController.getString("ReloadDefault", R.string.ReloadDefault), R.drawable.ic_refresh);
             item.addSubItem(import_templates, LocaleController.getString("ImportTemplates", R.string.ImportTemplates), R.drawable.ic_ab_doc);
             item.addSubItem(export_templates, LocaleController.getString("ExportTemplates", R.string.ExportTemplates), R.drawable.ic_export);
+            item.addSubItem(delete_all_templates, LocaleController.getString("ClearButton", R.string.ClearButton), R.drawable.ic_ab_fwd_delete);
             actionBar.setTitle(LocaleController.getString("templates", R.string.templates));
 
             actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -154,6 +150,20 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 TemplateSupport.exportTemplates();
                                 Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("exporting", R.string.exporting), Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+                        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                        showAlertDialog(builder);
+                    } else if (id == delete_all_templates) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                        builder.setMessage(LocaleController.getString("clearrAllTempaltes", R.string.clearrAllTempaltes));
+                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                TemplateSupport.removeAll();
+                                Toast toast = Toast.makeText(getParentActivity(), LocaleController.getString("templatesRemoved", R.string.templatesRemoved), Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
@@ -238,7 +248,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    if (i >= templates.size() || getParentActivity() == null) {
+                    if (i >= templates.size() || getParentActivity() == null || TemplateSupport.isDefault(templatesKeys.get(i))) {
                         return true;
                     }
                     selectedTemplateKey = templatesKeys.get(i);
@@ -288,6 +298,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             }
         });
     }
+
     private void loadTemplates() {
         if (loading) {
             return;
@@ -295,8 +306,8 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
         loading = true;
         templates.clear();
         templatesKeys.clear();
-        templates.putAll(TemplateSupport.templates);
-        templatesKeys.addAll(TemplateSupport.templates.keySet());
+        templates.putAll(TemplateSupport.allTemplates);
+        templatesKeys.addAll(TemplateSupport.allTemplates.keySet());
         Collections.sort(templatesKeys, new Comparator<String>() {
             @Override
             public int compare(String str1, String str2) {
@@ -411,6 +422,9 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     }
 
     private class ListAdapter extends BaseFragmentAdapter {
+        private static final int REDCOLOR = 0xffff0000;
+        private static final int GREENCOLOR = 0xff00ff00;
+
         private Context mContext;
 
         public ListAdapter(Context context) {
@@ -424,7 +438,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
 
         @Override
         public boolean isEnabled(int i) {
-            return i != templates.size();
+            return (i != templates.size());
         }
 
         @Override
@@ -455,23 +469,16 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             int type = getItemViewType(i);
             if (type == 0) {
                 if (view == null) {
-                    LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    view = li.inflate(R.layout.settings_template_row_layout, null);
-                }
-
-                if (templatesKeys.size() == 0) {
-                    return view;
+                    view = new TextColorCell(mContext);
                 }
                 if (templatesKeys.get(i) != null) {
-                    TextView textView = (TextView)view.findViewById(R.id.info_text_view);
-                    if (textView != null) {
-                        try {
-                            textView.setText(templatesKeys.get(i));
-                        } catch (Exception e) {
-                            FileLog.d("tsupport", "Exception: " + e);
-                        }
+                    if (TemplateSupport.isDefault(templatesKeys.get(i))) {
+                        ((TextColorCell) view).setTextAndColor(templatesKeys.get(i), REDCOLOR, true);
+                    } else {
+                        ((TextColorCell) view).setTextAndColor(templatesKeys.get(i), GREENCOLOR, true);
                     }
                 }
+                return view;
             } else if (type == 1) {
                 if (view == null) {
                     view = new TextInfoCell(mContext);

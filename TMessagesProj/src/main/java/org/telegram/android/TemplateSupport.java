@@ -2,13 +2,11 @@ package org.telegram.android;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -23,24 +21,19 @@ import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -86,85 +79,47 @@ public class TemplateSupport {
     private static final String CUSTOMTEMPLATES = "templatesCustom";
 
     /**
-     * Templates regex patern
-     */
-    //private static final Pattern TEMPLATESPATTERN = Pattern.compile("(?:\\{KEYS\\}\\n?([^{]+)\\n+\\{VALUE\\}\\n?([^{]+)\\n?|\\{QUESTION\\}\\n?([^{]+)\\n+\\{KEYS\\}\\n?([^{]+)\\n+\\{VALUE\\}\\n?([^{]+)\\n?)");
-
-    /**
-     * Templates regex patern
-     */
-    //private static final Pattern KEYSPATTERN = Pattern.compile("((\\w+))");
-
-    /**
      * Static Map to keep pairs kay-values with the templates.
      */
-    public static TreeMap<String,String> templates = new TreeMap<String, String>();
+    public static TreeMap<String,String> allTemplates = new TreeMap<>();
+    public static TreeMap<String,String> defaultTemplates = new TreeMap<>();
 
     static {
-        if (templates == null) {
-            templates = new TreeMap<>();
+        if (allTemplates == null) {
+            allTemplates = new TreeMap<>();
         }
-        templates.clear();
+        if (defaultTemplates == null) {
+            defaultTemplates = new TreeMap<>();
+        }
         loadTemplates();
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
     }
 
-    private static void saveCustomTemplates(final TreeMap<String,String> newTemplates) {
-        SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
-        SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
-        for (Map.Entry<String, String> entry: newTemplates.entrySet()) {
-            customTemplatesEditor.putString(entry.getKey(), entry.getValue());
-            templates.put(entry.getKey(), entry.getValue());
-        }
-        customTemplatesEditor.commit();
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
-    }
-
+    /**
+     * Save a custom template
+     * @param key Key of the new template
+     * @param value Value of the new template
+     */
     private static void saveCustomTemplate(String key, String value) {
         SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
         SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
         customTemplatesEditor.putString(key, value);
-        templates.put(key, value);
+        allTemplates.put(key, value);
         customTemplatesEditor.commit();
         NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
 
     }
 
-    private static String saveDefaultTemplate(String key, String value, SharedPreferences sharedPreferences) {
-        String notification = "";
-        boolean toSave = false;
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        if (sharedPreferences.contains(key)) {
-            if (sharedPreferences.getString(key, "").compareToIgnoreCase(value) != 0) {
-                toSave = true;
-            }
-        } else {
-            toSave = true;
-        }
-
-        if (toSave) {
-            editor.putString(key, value);
-            editor.apply();
-        }
-        return notification;
-    }
-
-    private static ArrayList<String> saveDefaultTemplates(TreeMap<String, String> newTemlates, SharedPreferences sharedPreferences) {
-        ArrayList<String> notifications = new ArrayList<>();
-
-        for (Map.Entry<String, String> entry: newTemlates.entrySet()) {
-            notifications.add(saveDefaultTemplate(entry.getKey(), entry.getValue(), sharedPreferences));
-        }
-
-        return notifications;
-    }
-
+    /**
+     * Delete a template
+     * @param key Key of the template to delete
+     */
     private static void deleteTemplate(final String key) {
         SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
         if (customTemplatesPreferences.contains(key)) {
             SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
             customTemplatesEditor.remove(key);
-            templates.remove(key);
+            allTemplates.remove(key);
             customTemplatesEditor.commit();
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
         } else {
@@ -172,22 +127,28 @@ public class TemplateSupport {
             if (defaultTemplatesPreferences.contains(key)) {
                 SharedPreferences.Editor defaultTemplatesEditor = defaultTemplatesPreferences.edit();
                 defaultTemplatesEditor.remove(key);
-                templates.remove(key);
+                allTemplates.remove(key);
                 defaultTemplatesEditor.commit();
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             }
         }
     }
 
+    /**
+     * Remove all custom templates
+     */
     private static void clearCustomTemplates() {
         SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
         SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
         customTemplatesEditor.clear();
         customTemplatesEditor.commit();
-        templates.clear();
+        allTemplates.clear();
         loadTemplatesInternal();
     }
 
+    /**
+     * Remove all default templates
+     */
     private static void clearDefaultTemplates() {
         SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(DEFAULTTEMPLATES, Activity.MODE_PRIVATE);
         SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
@@ -197,29 +158,40 @@ public class TemplateSupport {
         SharedPreferences.Editor customTemplatesQuestionsEditor = customTemplatesQuestionsPreferences.edit();
         customTemplatesQuestionsEditor.clear();
         customTemplatesQuestionsEditor.apply();
-        templates.clear();
+        allTemplates.clear();
+        defaultTemplates.clear();
         loadTemplatesInternal();
     }
 
+    /**
+     * Load templates internal steps
+     */
     private static void loadTemplatesInternal() {
         templatesQueue.postRunnable(new Runnable() {
             @Override
             public void run() {
+                allTemplates.clear();
+                defaultTemplates.clear();
                 SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
                 Map<String, String> customTemplates = (Map<String, String>) customTemplatesPreferences.getAll();
                 for (Map.Entry<String, String> entry: customTemplates.entrySet()) {
-                    templates.put(entry.getKey(), entry.getValue());
+                    allTemplates.put(entry.getKey(), entry.getValue());
                 }
                 SharedPreferences defaultTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(DEFAULTTEMPLATES, Activity.MODE_PRIVATE);
-                Map<String, String> defaultTemplates = (Map<String, String>) defaultTemplatesPreferences.getAll();
-                for (Map.Entry<String, String> entry: defaultTemplates.entrySet()) {
-                    templates.put(entry.getKey(), entry.getValue());
+                Map<String, String> defaultTemplatesNew = (Map<String, String>) defaultTemplatesPreferences.getAll();
+                for (Map.Entry<String, String> entry: defaultTemplatesNew.entrySet()) {
+                    allTemplates.put(entry.getKey(), entry.getValue());
+                    defaultTemplates.put(entry.getKey(), entry.getValue());
                 }
                 NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
             }
         });
 
     }
+
+    /**
+     * Load template from memory
+     */
     private static void loadTemplates() {
         loadTemplatesInternal();
     }
@@ -231,8 +203,8 @@ public class TemplateSupport {
      */
     public static String getTemplate(String key) {
         String cleanKey = key.replace("..","").replace("(","");
-        if (templates.containsKey(cleanKey)) {
-            return templates.get(cleanKey);
+        if (allTemplates.containsKey(cleanKey)) {
+            return allTemplates.get(cleanKey);
         }
         return "";
     }
@@ -283,16 +255,6 @@ public class TemplateSupport {
                 fileContent.append(new String(buffer, 0, n));
             }
 
-            /*BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
-            String fileString = "";
-            if (br.ready()) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    fileString += line;
-                    fileString += "\n";
-                }
-            }*/
-
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost(BASEURL + "process");
             httppost.addHeader(HEADER_CONTENT_TYPE, "text/plain; charset=UTF-8");
@@ -302,16 +264,6 @@ public class TemplateSupport {
 
             BufferedHttpEntity buf = new BufferedHttpEntity(ht);
             InputStream resultStream = buf.getContent();
-
-            /*BufferedReader resultBr = new BufferedReader(new InputStreamReader(resultStream));
-            String resultString = "";
-            if (resultBr.ready()) {
-                String line;
-                while ((line = resultBr.readLine()) != null) {
-                    resultString += line;
-                    resultString += "\n";
-                }
-            }*/
 
             StringBuffer responseContent = new StringBuffer("");
 
@@ -333,14 +285,13 @@ public class TemplateSupport {
                 value = template.getString("value");
                 keys = template.getJSONArray("keys");
                 for (int j=0; j < keys.length(); j++) {
-                    key = keys.getString(j);
-                    if (key != null && key.compareToIgnoreCase("") != 0){
+                    key = keys.getString(j).toLowerCase();
+                    if (key != null && key.length() != 0 && isDefault(key)){
                         customtemplatesEditor.putString(key, value);
                     }
                 }
             }
             customtemplatesEditor.commit();
-            templates.clear();
             loadTemplates();
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
         } catch (JSONException | InvalidObjectException e) {
@@ -405,18 +356,18 @@ public class TemplateSupport {
                 keySet = new HashSet<>();
                 for (int j=0; j < keys.length(); j++) {
                     key = keys.getString(j);
-                    if (key != null && key.compareToIgnoreCase("") != 0){
+                    if (key != null && key.length() != 0){
                         keySet.add(key);
                         defaulttemplatesEditor.putString(key, value);
                     }
                 }
-                if (question != null && question.compareToIgnoreCase("") != 0) {
+                if (question != null && question.length() != 0) {
                     defaulttemplatesQuestionsEditor.putStringSet(question, keySet);
                 }
             }
             updateMaxHash(languageCode);
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated);
-            templates.clear();
+            allTemplates.clear();
             TemplateSupport.loadTemplatesInternal();
         } catch (FileNotFoundException e) {
             FileLog.e("TemplateSupport", "File not found");
@@ -434,6 +385,10 @@ public class TemplateSupport {
         }
     }
 
+    /**
+     * Update hash of last template file that was fetched from server
+     * @param languageCode Language of the file
+     */
     private static void updateMaxHash(String languageCode) {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = null;
@@ -468,6 +423,10 @@ public class TemplateSupport {
         }
     }
 
+    /**
+     * Load differences from server
+     * @param languageCode Language code to query
+     */
     public static void loadDifferences(final String languageCode) {
         templatesQueue.postRunnable(new Runnable() {
             @Override
@@ -526,19 +485,19 @@ public class TemplateSupport {
                     keySet = new HashSet<>();
                     for (int j = 0; j < keys.length(); j++) {
                         key = keys.getString(j);
-                        if (key != null && key.compareToIgnoreCase("") != 0) {
+                        if (key != null && key.length()!= 0) {
                             keySet.add(key);
                             defaulttemplatesEditor.putString(key, value);
                         }
                     }
-                    if (question != null && question.compareToIgnoreCase("") != 0) {
+                    if (question != null && question.length() != 0) {
                         defaulttemplatesQuestionsEditor.putStringSet(question, keySet);
                     }
                 }
             }
             updateMaxHash(languageCode);
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated, jsonArray);
-            templates.clear();
+            allTemplates.clear();
             TemplateSupport.loadTemplatesInternal();
         } catch (FileNotFoundException e) {
             FileLog.e("TemplateSupport", "File not found");
@@ -579,7 +538,7 @@ public class TemplateSupport {
      * @return TreeMap with the templates as <key,value>
      */
     public static TreeMap<String, String> getAll() {
-        return templates;
+        return allTemplates;
     }
 
     /**
@@ -588,6 +547,7 @@ public class TemplateSupport {
     public static void removeAll() {
         clearCustomTemplates();
         clearDefaultTemplates();
+        loadDefaults();
     }
 
     /**
@@ -604,6 +564,9 @@ public class TemplateSupport {
         exportCustomTemplates();
     }
 
+    /**
+     * Export all templates to a file
+     */
     private static void exportCustomTemplates() {
         File file;
         File root = Environment.getExternalStorageDirectory();
@@ -615,12 +578,12 @@ public class TemplateSupport {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(file);
-                for (String key : templates.keySet()) {
+                for (String key : allTemplates.keySet()) {
                     out.write("{KEYS}\n".getBytes());
                     out.write(key.getBytes());
                     out.write("\n\n".getBytes());
                     out.write("{VALUE}\n".getBytes());
-                    out.write(templates.get(key).getBytes());
+                    out.write(allTemplates.get(key).getBytes());
                     out.write("\n\n\n".getBytes());
                 }
             } catch (IOException e) {
@@ -638,5 +601,14 @@ public class TemplateSupport {
 
             NotificationCenter.getInstance().postNotificationName(NotificationCenter.exportTemplates, uri);
         }
+    }
+
+    /**
+     * Check if a template key belong to one of the default templates
+     * @param key Key to be checked
+     * @return true if it is default, false otherwise
+     */
+    public static boolean isDefault(String key) {
+        return defaultTemplates.containsKey(key);
     }
 }

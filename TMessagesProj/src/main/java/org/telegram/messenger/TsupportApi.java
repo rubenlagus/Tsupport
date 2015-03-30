@@ -33,7 +33,7 @@ public class TsupportApi {
     }
 
     public static TsupportApi getInstance() {
-        if (userId.compareToIgnoreCase("") == 0) {
+        if (userId.length() == 0) {
             SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
             userId = userNumberPreferences.getString("userId", "");
             if (userId.startsWith("42410"))
@@ -61,7 +61,7 @@ public class TsupportApi {
             else
                 country = "OT"; // Other
         }
-        if (RSA.compareToIgnoreCase("") == 0) {
+        if (RSA.length() == 0) {
             SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
             RSA = userNumberPreferences.getString("RSA", "");
         }
@@ -86,7 +86,7 @@ public class TsupportApi {
 
                     @Override
                     protected void onPostExecute(String result) {
-                        if (result != null && result.compareToIgnoreCase("") != 0){
+                        if (result != null && result.length() != 0){
                             SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = userNumberPreferences.edit();
                             editor.putString("RSA", result);

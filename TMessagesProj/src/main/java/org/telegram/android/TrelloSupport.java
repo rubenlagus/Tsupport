@@ -110,7 +110,7 @@ public class TrelloSupport {
 
     public static TrelloSupport getInstance() {
         TrelloSupport localInstance = Instance;
-        if (localInstance != null && localInstance.getToken().compareToIgnoreCase("") == 0)
+        if (localInstance != null && localInstance.getToken().length() == 0)
             localInstance = null;
         if (localInstance == null) {
             synchronized (TrelloSupport.class) {

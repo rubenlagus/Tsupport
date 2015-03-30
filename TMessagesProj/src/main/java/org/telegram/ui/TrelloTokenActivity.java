@@ -11,6 +11,7 @@ import android.webkit.WebViewClient;
 
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.R;
 
 import java.text.Normalizer;
 import java.util.regex.Matcher;
@@ -88,6 +89,7 @@ public class TrelloTokenActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_TMessages);
 
         final WebView webview= new WebView(this);
         WebSettings settings = webview.getSettings();
@@ -113,7 +115,7 @@ public class TrelloTokenActivity extends Activity {
                         webview.loadUrl("javascript:window.HtmlViewer.showHTML" +
                                 "('<html>'+document.getElementsByTagName('pre')[0].innerHTML+'</html>');");
                     }
-                } else if (url.compareTo("") == 0){
+                } else if (url.length() == 0){
                     endActivity("", false);
                     FileLog.d("tsupportTrello", "Request not approved: " + url);
                 } else {
