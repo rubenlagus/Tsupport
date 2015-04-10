@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,13 +45,10 @@ import java.util.TreeMap;
  * @date 28/07/14
  */
 public class TemplateSupport {
-    /**
-     * Types of operations with default templates
-     */
-    public static final int ADDEDTEMPLATE = 1;
-    public static final int REMOVEDTEMPLATE = 2;
-    public static final int UPDATEDTEMPLATE = 3;
 
+    /**
+     * Header content type for Http requests
+     */
     private final static String HEADER_CONTENT_TYPE = "Content-Type";
 
     /**
@@ -101,12 +99,14 @@ public class TemplateSupport {
      * @param value Value of the new template
      */
     private static void saveCustomTemplate(String key, String value) {
-        SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
-        SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
-        customTemplatesEditor.putString(key, value);
-        allTemplates.put(key, value);
-        customTemplatesEditor.commit();
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+        if (!isDefault(key)) {
+            SharedPreferences customTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(CUSTOMTEMPLATES, Activity.MODE_PRIVATE);
+            SharedPreferences.Editor customTemplatesEditor = customTemplatesPreferences.edit();
+            customTemplatesEditor.putString(key, value);
+            allTemplates.put(key, value);
+            customTemplatesEditor.commit();
+            NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+        }
 
     }
 
@@ -263,16 +263,9 @@ public class TemplateSupport {
             HttpEntity ht = response.getEntity();
 
             BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-            InputStream resultStream = buf.getContent();
+            String responseContent = EntityUtils.toString(buf, "UTF-8");
 
-            StringBuffer responseContent = new StringBuffer("");
-
-            while ((n = resultStream.read(buffer)) != -1)
-            {
-                responseContent.append(new String(buffer, 0, n));
-            }
-
-            JSONArray jsonArray = new JSONArray(responseContent.toString());
+            JSONArray jsonArray = new JSONArray(responseContent);
             if (jsonArray.length() == 0) {
                 throw new InvalidObjectException("File not valid");
             }
@@ -286,7 +279,7 @@ public class TemplateSupport {
                 keys = template.getJSONArray("keys");
                 for (int j=0; j < keys.length(); j++) {
                     key = keys.getString(j).toLowerCase();
-                    if (key != null && key.length() != 0 && isDefault(key)){
+                    if (key != null && key.length() != 0 && !isDefault(key)){
                         customtemplatesEditor.putString(key, value);
                     }
                 }
@@ -330,17 +323,9 @@ public class TemplateSupport {
             HttpEntity ht = response.getEntity();
 
             BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-            InputStream inputStream = buf.getContent();
+            String responseContent = EntityUtils.toString(buf, "UTF-8");
 
-            StringBuffer responseContent = new StringBuffer("");
-            byte[] buffer = new byte[1024];
-            int n;
-            while ((n = inputStream.read(buffer)) != -1)
-            {
-                responseContent.append(new String(buffer, 0, n));
-            }
-
-            JSONArray jsonArray = new JSONArray(responseContent.toString());
+            JSONArray jsonArray = new JSONArray(responseContent);
 
             String value;
             String question;
@@ -399,17 +384,9 @@ public class TemplateSupport {
             HttpEntity ht = response.getEntity();
 
             BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-            InputStream inputStream = buf.getContent();
+            String responseContent = EntityUtils.toString(buf, "UTF-8");
 
-            StringBuffer responseContent = new StringBuffer("");
-            byte[] buffer = new byte[1024];
-            int n;
-            while ((n = inputStream.read(buffer)) != -1)
-            {
-                responseContent.append(new String(buffer, 0, n));
-            }
-
-            JSONObject jsonObject = new JSONObject(responseContent.toString());
+            JSONObject jsonObject = new JSONObject(responseContent);
             String hash = jsonObject.getString("hash");
             editor = preferences.edit();
             editor.putString("templatesHash", hash);
@@ -458,17 +435,9 @@ public class TemplateSupport {
                 HttpEntity ht = response.getEntity();
 
                 BufferedHttpEntity buf = new BufferedHttpEntity(ht);
-                InputStream inputStream = buf.getContent();
+                String responseContent = EntityUtils.toString(buf, "UTF-8");
 
-                StringBuffer responseContent = new StringBuffer("");
-                byte[] buffer = new byte[1024];
-                int n;
-                while ((n = inputStream.read(buffer)) != -1)
-                {
-                    responseContent.append(new String(buffer, 0, n));
-                }
-
-                jsonArray = new JSONArray(responseContent.toString());
+                jsonArray = new JSONArray(responseContent);
                 String value;
                 String question;
                 String key;
