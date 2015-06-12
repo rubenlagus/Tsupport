@@ -84,7 +84,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     }
 
     @Override
-    public View createView(LayoutInflater inflater) {
+    public View createView(Context context, LayoutInflater inflater) {
         if (fragmentView == null) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             actionBar.setAllowOverlayTitle(true);

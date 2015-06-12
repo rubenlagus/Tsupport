@@ -9,6 +9,7 @@
 package org.telegram.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -61,7 +62,7 @@ public class ChangeTemplateActivity extends BaseFragment {
     }
 
     @Override
-    public View createView(LayoutInflater inflater) {
+    public View createView(Context context, LayoutInflater inflater) {
         if (fragmentView == null) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             actionBar.setAllowOverlayTitle(true);

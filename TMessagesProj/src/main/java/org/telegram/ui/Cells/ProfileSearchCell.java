@@ -384,11 +384,13 @@ public class ProfileSearchCell extends BaseCell {
             lastName = chat.title;
         }
 
-        lastAvatar = photo;
         SharedPreferences userImagesPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userImages", Activity.MODE_PRIVATE);
-        if (userImagesPreferences.getBoolean("loadUserImages", false)) {
-            avatarImage.setImage(photo, "50_50", avatarDrawable, null, false);
+        if (!userImagesPreferences.getBoolean("loadUserImages", false)) {
+            photo = null;
         }
+
+        lastAvatar = photo;
+        avatarImage.setImage(photo, "50_50", avatarDrawable, false);
 
         if (getMeasuredWidth() != 0 || getMeasuredHeight() != 0) {
             buildLayout();

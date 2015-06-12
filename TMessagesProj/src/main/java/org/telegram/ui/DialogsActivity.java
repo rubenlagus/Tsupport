@@ -116,6 +116,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             dialogsType = arguments.getInt("dialogsType", 0);
             selectAlertString = arguments.getString("selectAlertString");
             selectAlertStringGroup = arguments.getString("selectAlertStringGroup");
+            searchString = arguments.getString("searchString");
             addToGroupAlertString = arguments.getString("addToGroupAlertString");
         }
 

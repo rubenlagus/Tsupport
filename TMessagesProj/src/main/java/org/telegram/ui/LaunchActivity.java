@@ -1410,8 +1410,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         } else {
             passcodeView.onResume();
         }
-        AndroidUtilities.checkForCrashes(this);
-        AndroidUtilities.checkForUpdates(this);
         ApplicationLoader.mainInterfacePaused = false;
         ConnectionsManager.getInstance().setAppPaused(false, false);
         updateCurrentConnectionState();
@@ -1564,8 +1562,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 } else if (lastFragment instanceof GroupCreateFinalActivity && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "group");
-                } else if (lastFragment instanceof WallpapersActivity) {
-                    outState.putString("fragment", "wallpapers");
+                //} else if (lastFragment instanceof WallpapersActivity) {
+                //    outState.putString("fragment", "wallpapers");
                 } else if (lastFragment instanceof ProfileActivity && ((ProfileActivity) lastFragment).isChat() && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "chat_profile");

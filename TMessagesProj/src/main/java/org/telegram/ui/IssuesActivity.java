@@ -77,7 +77,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
     }
 
     @Override
-    public View createView(LayoutInflater inflater) {
+    public View createView(Context context, LayoutInflater inflater) {
         if (fragmentView == null) {
             ActionBarMenu menu = actionBar.createMenu();
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
