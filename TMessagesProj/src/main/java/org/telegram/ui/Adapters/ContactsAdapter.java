@@ -66,12 +66,16 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             }
             return null;
         } else {
-            if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
-                ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
-                if (position < arr.size()) {
-                    return MessagesController.getInstance().getUser(arr.get(position).user_id);
-                }
+            if (section == 0) {
                 return null;
+            } else {
+                if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+                    ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
+                    if (position < arr.size()) {
+                        return MessagesController.getInstance().getUser(arr.get(position).user_id);
+                    }
+                    return null;
+                }
             }
         }
         if (needPhonebook) {
@@ -86,7 +90,12 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
             return row < arr.size();
         } else {
-            if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+            if (section == 0) {
+                if (row == 1) {
+                    return false;
+                }
+                return false;
+            } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
                 return row < arr.size();
             }
@@ -121,10 +130,12 @@ public class ContactsAdapter extends BaseSectionsAdapter {
                 return count;
             }
         } else {
-            if (section < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
-                ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
+            if (section == 0) {
+                return 2;
+            } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+                ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
                 int count = arr.size();
-                if (section != (ContactsController.getInstance().sortedUsersSectionsArray.size() - 1) || needPhonebook) {
+                if (section - 1 != (ContactsController.getInstance().sortedUsersSectionsArray.size() - 1) || needPhonebook) {
                     count++;
                 }
                 return count;
@@ -148,7 +159,9 @@ public class ContactsAdapter extends BaseSectionsAdapter {
                 ((LetterSectionCell) convertView).setLetter("");
             }
         } else {
-            if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+            if (section == 0) {
+                ((LetterSectionCell) convertView).setLetter("");
+            } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ((LetterSectionCell) convertView).setLetter(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
             } else {
                 ((LetterSectionCell) convertView).setLetter("");
@@ -168,7 +181,15 @@ public class ContactsAdapter extends BaseSectionsAdapter {
         } else if (type == 3) {
             if (convertView == null) {
                 convertView = new GreySectionCell(mContext);
-                ((GreySectionCell) convertView).setText(LocaleController.getString("Users", R.string.Users).toUpperCase());
+                ((GreySectionCell) convertView).setText(LocaleController.getString("Contacts", R.string.Contacts).toUpperCase());
+            }
+        } else if (type == 2) {
+            if (convertView == null) {
+                convertView = new TextCell(mContext);
+            }
+            TextCell actionCell = (TextCell) convertView;
+            if (position == 0) {
+                actionCell.setTextAndIcon(LocaleController.getString("NewBroadcastList", R.string.NewBroadcastList), R.drawable.menu_broadcast);
             }
         } else if (type == 1) {
             if (convertView == null) {
@@ -211,7 +232,12 @@ public class ContactsAdapter extends BaseSectionsAdapter {
             ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section));
             return position < arr.size() ? 0 : 4;
         } else {
-            if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
+            if (section == 0) {
+                if (position == 1) {
+                    return 3;
+                }
+                return 2;
+            } else if (section - 1 < ContactsController.getInstance().sortedUsersSectionsArray.size()) {
                 ArrayList<TLRPC.TL_contact> arr = ContactsController.getInstance().usersSectionsDict.get(ContactsController.getInstance().sortedUsersSectionsArray.get(section - 1));
                 return position < arr.size() ? 0 : 4;
             }

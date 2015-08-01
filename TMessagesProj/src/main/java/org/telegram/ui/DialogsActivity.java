@@ -76,13 +76,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private ProgressBar progressView;
     private LinearLayout emptyView;
     private ActionBarMenuItem passcodeItem;
-    private ImageView floatingButton;
-
-    private int prevPosition;
-    private int prevTop;
-    private boolean scrollUpdated;
-    private boolean floatingHidden;
-    private final AccelerateDecelerateInterpolator floatingInterpolator = new AccelerateDecelerateInterpolator();
 
     private String selectAlertString;
     private String selectAlertStringGroup;
@@ -188,9 +181,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         progressView.setVisibility(View.GONE);
                         emptyView.setVisibility(View.GONE);
                     }
-                    if (!onlySelect) {
-                        floatingButton.setVisibility(View.GONE);
-                    }
+                    emptyView.setVisibility(View.INVISIBLE);
                 }
                 updatePasscodeButton();
             }
@@ -216,12 +207,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     } else {
                         progressView.setVisibility(View.GONE);
                         listView.setEmptyView(emptyView);
-                    }
-                    if (!onlySelect) {
-                        floatingButton.setVisibility(View.VISIBLE);
-                        floatingHidden = true;
-                        ViewProxy.setTranslationY(floatingButton, AndroidUtilities.dp(100));
-                        hideFloatingButton(false);
                     }
                     if (listView.getAdapter() != dialogsAdapter) {
                         listView.setAdapter(dialogsAdapter);
@@ -307,6 +292,43 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             listView.setVerticalScrollbarPosition(LocaleController.isRTL ? ListView.SCROLLBAR_POSITION_LEFT : ListView.SCROLLBAR_POSITION_RIGHT);
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        listView.setOnItemClickListener(new RecyclerListView.OnItemClickListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+        emptyView = fragmentView.findViewById(R.id.list_empty_view);
+        emptyView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
+
+        TextView textView = (TextView) fragmentView.findViewById(R.id.list_empty_view_text1);
+        textView.setText(LocaleController.getString("NoChats", R.string.NoChats));
+        textView = (TextView) fragmentView.findViewById(R.id.list_empty_view_text2);
+        String help = LocaleController.getString("NoChatsHelp", R.string.NoChatsHelp);
+        if (AndroidUtilities.isTablet() && !AndroidUtilities.isSmallTablet()) {
+            help = help.replace("\n", " ");
+        }
+        textView.setText(help);
+        textView = (TextView) fragmentView.findViewById(R.id.search_empty_text);
+        textView.setText(LocaleController.getString("NoResult", R.string.NoResult));
+
+        if (MessagesController.getInstance().loadingDialogs && MessagesController.getInstance().dialogs.isEmpty()) {
+            searchEmptyView.setVisibility(View.INVISIBLE);
+            emptyView.setVisibility(View.INVISIBLE);
+            progressView.setVisibility(View.VISIBLE);
+            listView.setEmptyView(progressView);
+        } else {
+            listView.setEmptyView(emptyView);
+            searchEmptyView.setVisibility(View.INVISIBLE);
+            progressView.setVisibility(View.INVISIBLE);
+        }
+
         listView.setOnItemClickListener(new RecyclerListView.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -584,29 +606,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         MessagesController.getInstance().loadDialogs(MessagesController.getInstance().dialogs.size(), MessagesController.getInstance().dialogsServerOnly.size(), 100, true);
                     }
                 }
-
-                if (floatingButton.getVisibility() != View.GONE) {
-                    final View topChild = recyclerView.getChildAt(0);
-                    int firstViewTop = 0;
-                    if (topChild != null) {
-                        firstViewTop = topChild.getTop();
-                    }
-                    boolean goingDown;
-                    boolean changed = true;
-                    if (prevPosition == firstVisibleItem) {
-                        final int topDelta = prevTop - firstViewTop;
-                        goingDown = firstViewTop < prevTop;
-                        changed = Math.abs(topDelta) > 1;
-                    } else {
-                        goingDown = firstVisibleItem > prevPosition;
-                    }
-                    if (changed && scrollUpdated) {
-                        hideFloatingButton(goingDown);
-                    }
-                    prevPosition = firstVisibleItem;
-                    prevTop = firstViewTop;
-                    scrollUpdated = true;
-                }
             }
         });
 
@@ -667,22 +666,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (!onlySelect && floatingButton != null) {
-            floatingButton.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    ViewProxy.setTranslationY(floatingButton, floatingHidden ? AndroidUtilities.dp(100) : 0);
-                    floatingButton.setClickable(!floatingHidden);
-                    if (floatingButton != null) {
-                        if (Build.VERSION.SDK_INT < 16) {
-                            floatingButton.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                        } else {
-                            floatingButton.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        }
-                    }
-                }
-            });
-        }
     }
 
     @Override
@@ -781,17 +764,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         } else {
             passcodeItem.setVisibility(View.GONE);
         }
-    }
-
-    private void hideFloatingButton(boolean hide) {
-        if (floatingHidden == hide) {
-            return;
-        }
-        floatingHidden = hide;
-        ObjectAnimatorProxy animator = ObjectAnimatorProxy.ofFloatProxy(floatingButton, "translationY", floatingHidden ? AndroidUtilities.dp(100) : 0).setDuration(300);
-        animator.setInterpolator(floatingInterpolator);
-        floatingButton.setClickable(!hide);
-        animator.start();
     }
 
     private void updateVisibleRows(int mask) {

@@ -81,9 +81,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
     private int inappPreviewRow;
     private int inchatSoundRow;
     private int inappPriorityRow;
-    private int eventsSectionRow2;
-    private int eventsSectionRow;
-    private int contactJoinedRow;
     private int otherSectionRow2;
     private int otherSectionRow;
     private int badgeNumberRow;
@@ -134,9 +131,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         } else {
             inappPriorityRow = -1;
         }
-        eventsSectionRow2 = rowCount++;
-        eventsSectionRow = rowCount++;
-        contactJoinedRow = rowCount++;
         otherSectionRow2 = rowCount++;
         otherSectionRow = rowCount++;
         badgeNumberRow = rowCount++;
@@ -192,10 +186,10 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     if (i == messageAlertRow) {
-                        enabled = preferences.getBoolean("EnableAll", true);
+                        enabled = preferences.getBoolean("EnableAll", false);
                         editor.putBoolean("EnableAll", !enabled);
                     } else if (i == groupAlertRow) {
-                        enabled = preferences.getBoolean("EnableGroup", true);
+                        enabled = preferences.getBoolean("EnableGroup", false);
                         editor.putBoolean("EnableGroup", !enabled);
                     }
                     editor.commit();
@@ -204,10 +198,10 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
                     if (i == messagePreviewRow) {
-                        enabled = preferences.getBoolean("EnablePreviewAll", true);
+                        enabled = preferences.getBoolean("EnablePreviewAll", false);
                         editor.putBoolean("EnablePreviewAll", !enabled);
                     } else if (i == groupPreviewRow) {
-                        enabled = preferences.getBoolean("EnablePreviewGroup", true);
+                        enabled = preferences.getBoolean("EnablePreviewGroup", false);
                         editor.putBoolean("EnablePreviewGroup", !enabled);
                     }
                     editor.commit();
@@ -283,25 +277,25 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                 } else if (i == inappSoundRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("EnableInAppSounds", true);
+                    enabled = preferences.getBoolean("EnableInAppSounds", false);
                     editor.putBoolean("EnableInAppSounds", !enabled);
                     editor.commit();
                 } else if (i == inappVibrateRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("EnableInAppVibrate", true);
+                    enabled = preferences.getBoolean("EnableInAppVibrate", false);
                     editor.putBoolean("EnableInAppVibrate", !enabled);
                     editor.commit();
                 } else if (i == inappPreviewRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("EnableInAppPreview", true);
+                    enabled = preferences.getBoolean("EnableInAppPreview", false);
                     editor.putBoolean("EnableInAppPreview", !enabled);
                     editor.commit();
                 } else if (i == inchatSoundRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("EnableInChatSound", true);
+                    enabled = preferences.getBoolean("EnableInChatSound", false);
                     editor.putBoolean("EnableInChatSound", !enabled);
                     editor.commit();
                     NotificationsController.getInstance().setInChatSoundEnabled(!enabled);
@@ -310,13 +304,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     SharedPreferences.Editor editor = preferences.edit();
                     enabled = preferences.getBoolean("EnableInAppPriority", false);
                     editor.putBoolean("EnableInAppPriority", !enabled);
-                    editor.commit();
-                } else if (i == contactJoinedRow) {
-                    SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("EnableContactJoined", true);
-                    MessagesController.getInstance().enableJoined = !enabled;
-                    editor.putBoolean("EnableContactJoined", !enabled);
                     editor.commit();
                 } else if (i == androidAutoAlertRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
@@ -327,13 +314,13 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                 } else if (i == badgeNumberRow) {
                     SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = preferences.edit();
-                    enabled = preferences.getBoolean("badgeNumber", true);
+                    enabled = preferences.getBoolean("badgeNumber", false);
                     editor.putBoolean("badgeNumber", !enabled);
                     editor.commit();
                     NotificationsController.getInstance().setBadgeEnabled(!enabled);
                 } else if (i == notificationsServiceRow) {
                     final SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
-                    enabled = preferences.getBoolean("pushService", true);
+                    enabled = preferences.getBoolean("pushService", false);
                     if (!enabled) {
                         final SharedPreferences.Editor editor = preferences.edit();
                         editor.putBoolean("pushService", !enabled);
@@ -629,8 +616,8 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         @Override
         public boolean isEnabled(int i) {
             return !(i == messageSectionRow || i == groupSectionRow || i == inappSectionRow ||
-                    i == eventsSectionRow || i == otherSectionRow || i == resetSectionRow ||
-                    i == messageSectionRow2 || i == eventsSectionRow2 || i == groupSectionRow2 ||
+                    i == otherSectionRow || i == resetSectionRow ||
+                    i == messageSectionRow2 || i == groupSectionRow2 ||
                     i == inappSectionRow2 || i == otherSectionRow2 || i == resetSectionRow2);
         }
 
@@ -667,8 +654,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     ((HeaderCell) view).setText(LocaleController.getString("GroupNotifications", R.string.GroupNotifications));
                 } else if (i == inappSectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("InAppNotifications", R.string.InAppNotifications));
-                } else if (i == eventsSectionRow) {
-                    ((HeaderCell) view).setText(LocaleController.getString("Events", R.string.Events));
                 } else if (i == otherSectionRow) {
                     ((HeaderCell) view).setText(LocaleController.getString("NotificationsOther", R.string.NotificationsOther));
                 } else if (i == resetSectionRow) {
@@ -682,31 +667,29 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
                 if (i == messageAlertRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableAll", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableAll", false), true);
                 } else if (i == groupAlertRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableGroup", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("Alert", R.string.Alert), preferences.getBoolean("EnableGroup", false), true);
                 } else if (i == messagePreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewAll", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewAll", false), true);
                 } else if (i == groupPreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewGroup", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("MessagePreview", R.string.MessagePreview), preferences.getBoolean("EnablePreviewGroup", false), true);
                 } else if (i == inappSoundRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppSounds", R.string.InAppSounds), preferences.getBoolean("EnableInAppSounds", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppSounds", R.string.InAppSounds), preferences.getBoolean("EnableInAppSounds", false), true);
                 } else if (i == inappVibrateRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppVibrate", R.string.InAppVibrate), preferences.getBoolean("EnableInAppVibrate", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppVibrate", R.string.InAppVibrate), preferences.getBoolean("EnableInAppVibrate", false), true);
                 } else if (i == inappPreviewRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InAppPreview", R.string.InAppPreview), preferences.getBoolean("EnableInAppPreview", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InAppPreview", R.string.InAppPreview), preferences.getBoolean("EnableInAppPreview", false), true);
                 } else if (i == inappPriorityRow) {
                     checkCell.setTextAndCheck(LocaleController.getString("NotificationsPriority", R.string.NotificationsPriority), preferences.getBoolean("EnableInAppPriority", false), false);
-                } else if (i == contactJoinedRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("ContactJoined", R.string.ContactJoined), preferences.getBoolean("EnableContactJoined", true), false);
                 } else if (i == androidAutoAlertRow) {
-                    checkCell.setTextAndCheck("Android Auto", preferences.getBoolean("EnableAutoNotifications", false), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("Pebble", R.string.Pebble), preferences.getBoolean("EnablePebbleNotifications", false), true);
                 } else if (i == notificationsServiceRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), preferences.getBoolean("pushService", true), false);
+                    checkCell.setTextAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), preferences.getBoolean("pushService", false), false);
                 } else if (i == badgeNumberRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("BadgeNumber", R.string.BadgeNumber), preferences.getBoolean("badgeNumber", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("BadgeNumber", R.string.BadgeNumber), preferences.getBoolean("badgeNumber", false), true);
                 } else if (i == inchatSoundRow) {
-                    checkCell.setTextAndCheck(LocaleController.getString("InChatSound", R.string.InChatSound), preferences.getBoolean("EnableInChatSound", true), true);
+                    checkCell.setTextAndCheck(LocaleController.getString("InChatSound", R.string.InChatSound), preferences.getBoolean("EnableInChatSound", false), true);
                 }
             } else if (type == 2) {
                 if (view == null) {
@@ -772,7 +755,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     }
                 } else if (i == repeatRow) {
                     textCell.setMultilineDetail(false);
-                    int minutes = preferences.getInt("repeat_messages", 60);
+                    int minutes = preferences.getInt("repeat_messages", 0);
                     String value;
                     if (minutes == 0) {
                         value = LocaleController.getString("RepeatNotificationsNever", R.string.RepeatNotificationsNever);
@@ -786,9 +769,9 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     textCell.setMultilineDetail(false);
                     int value = 0;
                     if (i == messagePriorityRow) {
-                        value = preferences.getInt("priority_messages", 1);
+                        value = preferences.getInt("priority_messages", 0);
                     } else if (i == groupPriorityRow) {
-                        value = preferences.getInt("priority_group", 1);
+                        value = preferences.getInt("priority_group", 0);
                     }
                     if (value == 0) {
                         textCell.setTextAndValue(LocaleController.getString("NotificationsPriority", R.string.NotificationsPriority), LocaleController.getString("NotificationsPriorityDefault", R.string.NotificationsPriorityDefault), false);
@@ -822,17 +805,17 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         @Override
         public int getItemViewType(int i) {
             if (i == messageSectionRow || i == groupSectionRow || i == inappSectionRow ||
-                    i == eventsSectionRow || i == otherSectionRow || i == resetSectionRow) {
+                    i == otherSectionRow || i == resetSectionRow) {
                 return 0;
             } else if (i == messageAlertRow || i == messagePreviewRow || i == groupAlertRow ||
                     i == groupPreviewRow || i == inappSoundRow || i == inappVibrateRow ||
-                    i == inappPreviewRow || i == contactJoinedRow ||
+                    i == inappPreviewRow || i == androidAutoAlertRow ||
                     i == notificationsServiceRow || i == badgeNumberRow || i == inappPriorityRow ||
                     i == inchatSoundRow || i == androidAutoAlertRow) {
                 return 1;
             } else if (i == messageLedRow || i == groupLedRow) {
                 return 3;
-            } else if (i == messageSectionRow2 || i == eventsSectionRow2 || i == groupSectionRow2 ||
+            } else if (i == messageSectionRow2 || i == groupSectionRow2 ||
                     i == inappSectionRow2 || i == otherSectionRow2 || i == resetSectionRow2) {
                 return 4;
             } else {

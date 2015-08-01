@@ -502,8 +502,30 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }*/
                 } else if (i == privacyRow) {
                     presentFragment(new PrivacySettingsActivity());
+                }else if (i == clearCacheRow) {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                    builder.setMessage(LocaleController.getString("AreYouSureClearCache", R.string.AreYouSureClearCache));
+                    builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            clearingDatabase = true;
+                            ImageLoader.getInstance().clearMemory();
+                            MessagesStorage.getInstance().cleanUpDatabase();
+                            File dir = AndroidUtilities.getCacheDir();
+                            if (dir != null && dir.isDirectory())
+                                ConnectionsManager.getInstance().deleteDir(dir);
+                        }
+                    });
+                    builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+                    showAlertDialog(builder);
                 } else if (i == languageRow) {
                     presentFragment(new LanguageSelectActivity());
+                } else if (i == supportLanguageRow) {
+                    presentFragment(new SupportLanguageSelectActivity());
                 } else if (i == switchBackendButtonRow) {
                     if (getParentActivity() == null) {
                         return;

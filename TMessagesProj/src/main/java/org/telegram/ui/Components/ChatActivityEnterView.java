@@ -1420,6 +1420,38 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                 }
             }
         }
+        if (templatePopup != null && templatePopup.isShowing()) {
+            int newHeight = 0;
+            if (isWidthGreater) {
+                newHeight = keyboardHeightLand;
+            } else {
+                newHeight = keyboardHeight;
+            }
+            final WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) templatePopup.getContentView().getLayoutParams();
+            FileLog.e("tmessages", "update template height to = " + newHeight);
+            if (layoutParams.width != AndroidUtilities.displaySize.x || layoutParams.height != newHeight) {
+                /*if (Build.VERSION.SDK_INT >= 21) {
+                    if (!keyboardVisible) {
+                        emojiPopup.update(this, 0, 0, -1, -1);
+                    } else {
+                        emojiPopup.update(this, 0, -newHeight - getHeight(), -1, -1);
+                    }
+                }*/
+                layoutParams.width = AndroidUtilities.displaySize.x;
+                layoutParams.height = newHeight;
+                WindowManager wm = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Activity.WINDOW_SERVICE);
+                if (wm != null) {
+                    wm.updateViewLayout(templatePopup.getContentView(), layoutParams);
+                    if (!keyboardVisible) {
+                        if (sizeNotifierRelativeLayout != null) {
+                            sizeNotifierRelativeLayout.setPadding(0, 0, 0, layoutParams.height);
+                            sizeNotifierRelativeLayout.requestLayout();
+                            onWindowSizeChanged(sizeNotifierRelativeLayout.getHeight() - sizeNotifierRelativeLayout.getPaddingBottom());
+                        }
+                    }
+                }
+            }
+        }
 
         if (lastSizeChangeValue1 == height && lastSizeChangeValue2 == isWidthGreater) {
             onWindowSizeChanged();

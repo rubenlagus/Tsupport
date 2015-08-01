@@ -483,7 +483,7 @@ public class LoginActivity extends BaseFragment {
             InputFilter[] inputFilters = new InputFilter[1];
             inputFilters[0] = new InputFilter.LengthFilter(4);
             codeField.setFilters(inputFilters);
-            codeField.setText("42");
+            codeField.setText("34");
             codeField.setEnabled(false);
             linearLayout.addView(codeField);
             layoutParams = (LayoutParams) codeField.getLayoutParams();

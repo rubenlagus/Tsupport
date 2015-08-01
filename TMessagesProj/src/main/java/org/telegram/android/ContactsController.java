@@ -938,7 +938,7 @@ public class ContactsController {
 
     public long addContactToPhoneBook(TLRPC.User user, boolean check) {
         return 0L;
-        // Disabled
+        // Disabledg
     }
 
     private void deleteContactFromPhoneBook(int uid) {

@@ -40,12 +40,14 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.telegram.android.AndroidUtilities;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.android.ContactsController;
 import org.telegram.android.MessagesController;
 import org.telegram.android.MessagesStorage;
 import org.telegram.android.SendMessagesHelper;
+import org.telegram.android.TemplateSupport;
 import org.telegram.android.UserObject;
 import org.telegram.android.query.StickersQuery;
 import org.telegram.messenger.ApplicationLoader;
@@ -57,6 +59,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.RPCRequest;
 import org.telegram.messenger.TLObject;
 import org.telegram.messenger.TLRPC;
+import org.telegram.messenger.TsupportApi;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.ActionBar.ActionBarLayout;
@@ -67,6 +70,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.PasscodeView;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -110,6 +114,28 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ApplicationLoader.postInitApplication();
+
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        String userId = "";
+        try {
+            userId = userNumberPreferences.getString("userId", "");
+        } catch (ClassCastException e) { // Compatibility with oldfer versions of the app
+            userId = "";
+        }
+        if (userId.length() !=  0) {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                FileLog.e("tsupport","Sending user");
+                TsupportApi.getInstance().addUser(userId);
+            }
+        } else {
+            if (android.os.Build.VERSION.SDK_INT >= 11) {
+                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.clear().commit();
+                UserConfig.clearConfig();
+            }
+        }
+
 
         if (!UserConfig.isClientActivated()) {
             Intent intent = getIntent();
@@ -276,49 +302,19 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 2) {
-                    if (!MessagesController.isFeatureEnabled("chat_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
-                        return;
-                    }
-                    presentFragment(new GroupCreateActivity());
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 3) {
-                    Bundle args = new Bundle();
-                    args.putBoolean("onlyUsers", true);
-                    args.putBoolean("destroyAfterSelect", true);
-                    args.putBoolean("createSecretChat", true);
-                    presentFragment(new ContactsActivity(args));
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 4) {
-                    if (!MessagesController.isFeatureEnabled("broadcast_create", actionBarLayout.fragmentsStack.get(actionBarLayout.fragmentsStack.size() - 1))) {
-                        return;
-                    }
-                    Bundle args = new Bundle();
-                    args.putBoolean("broadcast", true);
-                    presentFragment(new GroupCreateActivity(args));
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 6) {
                     presentFragment(new ContactsActivity(null));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 7) {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, ContactsController.getInstance().getInviteText());
-                        startActivityForResult(Intent.createChooser(intent, LocaleController.getString("InviteFriends", R.string.InviteFriends)), 500);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
-                    }
+                } else if (position == 3) {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.dialogsNeedReload);
+                    MessagesController.getInstance().loadDialogs(0, 0, 110, false);
+                    MessagesController.getInstance().getDifference();
+                    MessagesController.getInstance().reloadDialogs();
+                    MessagesController.getInstance().checkDialogsRead();
+                    Toast.makeText(getApplicationContext(), LocaleController.getString("Refreshing", R.string.Refreshing) , Toast.LENGTH_LONG).show();
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification);
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 8) {
+                } else if (position == 4) {
                     presentFragment(new SettingsActivity());
-                    drawerLayoutContainer.closeDrawer(false);
-                } else if (position == 9) {
-                    try {
-                        Intent pickIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(LocaleController.getString("TelegramFaqUrl", R.string.TelegramFaqUrl)));
-                        startActivityForResult(pickIntent, 500);
-                    } catch (Exception e) {
-                        FileLog.e("tmessages", e);
-                    }
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -355,10 +351,13 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.mainUserInfoChanged);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.closeOtherAppActivities);
         NotificationCenter.getInstance().addObserver(this, NotificationCenter.didUpdatedConnectionState);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.templatesDidUpdated);
+        NotificationCenter.getInstance().addObserver(this, NotificationCenter.errorTemplates);
         if (Build.VERSION.SDK_INT < 14) {
             NotificationCenter.getInstance().addObserver(this, NotificationCenter.screenStateChanged);
         }
-
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        TemplateSupport.loadDifferences(preferences.getString("languageSupport", "en"));
         if (actionBarLayout.fragmentsStack.isEmpty()) {
             if (!UserConfig.isClientActivated()) {
                 actionBarLayout.addFragmentToStack(new LoginActivity());
@@ -1240,6 +1239,8 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.mainUserInfoChanged);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.closeOtherAppActivities);
         NotificationCenter.getInstance().removeObserver(this, NotificationCenter.didUpdatedConnectionState);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.templatesDidUpdated);
+        NotificationCenter.getInstance().removeObserver(this, NotificationCenter.errorTemplates);
         if (Build.VERSION.SDK_INT < 14) {
             NotificationCenter.getInstance().removeObserver(this, NotificationCenter.screenStateChanged);
         }
@@ -1384,6 +1385,10 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
     @Override
     protected void onDestroy() {
         PhotoViewer.getInstance().destroyPhotoViewer();
+        File dir = AndroidUtilities.getCacheDir();
+        if (dir != null && dir.isDirectory()) {
+            ConnectionsManager.getInstance().deleteDir(dir);
+        }
         SecretPhotoViewer.getInstance().destroyPhotoViewer();
         try {
             if (visibleDialog != null) {
@@ -1471,6 +1476,17 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 } else {
                     onPasscodeResume();
                 }
+            }
+        } else if (id == NotificationCenter.templatesDidUpdated) {
+            if (args.length == 1) {
+                JSONArray templateLogs = (JSONArray) args[0];
+                TemplatesChangeLog cl = new TemplatesChangeLog(this, templateLogs);
+                cl.getFullLogDialog().show();
+            }
+        } else if (id == NotificationCenter.errorTemplates) {
+            if (args.length == 1) {
+                String errorMessage = (String)args[0];
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -1562,8 +1578,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                 } else if (lastFragment instanceof GroupCreateFinalActivity && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "group");
-                //} else if (lastFragment instanceof WallpapersActivity) {
-                //    outState.putString("fragment", "wallpapers");
                 } else if (lastFragment instanceof ProfileActivity && ((ProfileActivity) lastFragment).isChat() && args != null) {
                     outState.putBundle("args", args);
                     outState.putString("fragment", "chat_profile");
