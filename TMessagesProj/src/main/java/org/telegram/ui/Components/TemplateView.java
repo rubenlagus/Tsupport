@@ -199,6 +199,7 @@ public class TemplateView extends LinearLayout {
     }
 
     public interface Listener {
+        boolean onBackspace();
         void onTemplateSelected(String paramString);
     }
 }

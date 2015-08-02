@@ -458,8 +458,6 @@ public class MessagesStorage {
                             MessagesController.getInstance().getDifference();
                         }
                     });
-                } else {
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.databaseDidReset);
                 }
             }
         });

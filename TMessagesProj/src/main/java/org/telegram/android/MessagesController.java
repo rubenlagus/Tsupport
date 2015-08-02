@@ -2362,6 +2362,9 @@ public class MessagesController implements NotificationCenter.NotificationCenter
     }
 
     public void performLogout(boolean byUser) {
+        SharedPreferences userNumberPreferences = ApplicationLoader.applicationContext.getSharedPreferences("userNumber", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor userNumberEditor = userNumberPreferences.edit();
+        userNumberEditor.clear().commit();
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear().commit();

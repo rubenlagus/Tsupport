@@ -2525,13 +2525,13 @@ public class SendMessagesHelper implements NotificationCenter.NotificationCenter
         TLRPC.User sendToUser = MessagesController.getInstance().getUser(lower_id);
 
         TLRPC.InputPeer sendToPeer = null;
-        if (sendToUser instanceof TLRPC.TL_userForeign || sendToUser instanceof TLRPC.TL_userRequest) {
+        if (UserObject.isContact(sendToUser)) {
+            sendToPeer = new TLRPC.TL_inputPeerContact();
+            sendToPeer.user_id = sendToUser.id;
+        } else {
             sendToPeer = new TLRPC.TL_inputPeerForeign();
             sendToPeer.user_id = sendToUser.id;
             sendToPeer.access_hash = sendToUser.access_hash;
-        } else {
-            sendToPeer = new TLRPC.TL_inputPeerContact();
-            sendToPeer.user_id = sendToUser.id;
         }
 
         TLRPC.Message newMsg = null;

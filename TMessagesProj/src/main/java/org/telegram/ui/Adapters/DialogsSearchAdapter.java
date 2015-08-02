@@ -20,6 +20,7 @@ import org.telegram.android.LocaleController;
 import org.telegram.android.MessageObject;
 import org.telegram.android.MessagesController;
 import org.telegram.android.MessagesStorage;
+import org.telegram.android.UserObject;
 import org.telegram.android.support.widget.RecyclerView;
 import org.telegram.messenger.ByteBufferDesc;
 import org.telegram.messenger.ConnectionsManager;
@@ -153,8 +154,8 @@ public class DialogsSearchAdapter extends BaseSearchAdapterRecycler {
                                 }
                                 for (TLRPC.User user: res.users) {
                                     if (!usersIds.contains(user.id) &&
-                                            !(user instanceof TLRPC.TL_userDeleted) &&
-                                            (user.id != UserConfig.getClientUserId())) {
+                                            !UserObject.isDeleted(user) &&
+                                            !UserObject.isUserSelf(user)) {
                                         searchResultUsers.add(user);
                                         usersIds.add(user.id);
                                     }

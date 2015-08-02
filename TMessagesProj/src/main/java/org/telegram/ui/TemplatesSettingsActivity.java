@@ -84,7 +84,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
     }
 
     @Override
-    public View createView(Context context, LayoutInflater inflater) {
+    public View createView(Context context) {
         if (fragmentView == null) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             actionBar.setAllowOverlayTitle(true);
@@ -212,7 +212,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
             layoutParamsProgressView.height = FrameLayout.LayoutParams.MATCH_PARENT;
             progressView.setLayoutParams(layoutParamsProgressView);
 
-            emptyView = new TextView(inflater.getContext());
+            emptyView = new TextView(context);
             emptyView.setTextColor(0xFF808080);
             emptyView.setGravity(Gravity.CENTER);
             emptyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);

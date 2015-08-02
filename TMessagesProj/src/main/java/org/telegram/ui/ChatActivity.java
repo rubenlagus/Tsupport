@@ -114,7 +114,6 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ResourceLoader;
 import org.telegram.ui.Components.SendingFileExDrawable;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
-import org.telegram.ui.Components.TimerDrawable;
 import org.telegram.ui.Components.TypingDotsDrawable;
 import org.telegram.ui.Components.WebFrameLayout;
 
@@ -125,7 +124,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
-public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, MessagesActivity.MessagesActivityDelegate,
+public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.MessagesActivityDelegate,
         PhotoViewer.PhotoViewerProvider, IssuesActivity.IssueSelectActivityDelegate {
 
     protected TLRPC.Chat currentChat;
@@ -139,16 +138,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private FrameLayout progressView;
     private FrameLayout bottomOverlay;
     private ChatActivityEnterView chatActivityEnterView;
-    //private ImageView timeItem;
-    //private View timeItem2;
-    //private TimerDrawable timerDrawable;
     private ActionBarMenuItem menuItem;
     private ActionBarMenuItem attachItem;
     private ActionBarMenuItem headerItem;
     private ActionBarMenuItem searchItem;
     private ActionBarMenuItem searchUpItem;
     private ActionBarMenuItem searchDownItem;
-    //private TextView addContactItem;
     private RecyclerListView chatListView;
     private LinearLayoutManager chatLayoutManager;
     private ChatActivityAdapter chatAdapter;
@@ -291,8 +286,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private final static int attach_video = 2;
     private final static int attach_audio = 3;
     private final static int attach_document = 4;
-    private final static int attach_contact = 5;
-    //private final static int attach_location = 6;
+    private final static int attach_open_issue = 5;
+    private final static int attach_close_issue = 6;
 
     private final static int search = 40;
     private final static int search_up = 41;
@@ -845,9 +840,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                     chatAttachView.init(ChatActivity.this);
                     showDialog(chatAttachViewSheet);
-                }/* else if (id == attach_gallery || id == attach_video || id == attach_document || id == attach_location || id == attach_photo || id == attach_audio || id == attach_contact) {
+                } else if (id == attach_gallery || id == attach_video || id == attach_document || id == attach_photo || id == attach_audio || id == attach_open_issue || id == attach_close_issue) {
                     processSelectedAttach(id);
-                } */else if (id == bot_help) {
+                } else if (id == bot_help) {
                     SendMessagesHelper.getInstance().sendMessage("/help", dialog_id, null, null, false);
                 } else if (id == bot_settings) {
                     SendMessagesHelper.getInstance().sendMessage("/settings", dialog_id, null, null, false);
@@ -2074,23 +2069,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             } catch (Exception e) {
                 FileLog.e("tmessages", e);
             }
-        } else if (which == attach_location) {
-            if (!isGoogleMapsInstalled()) {
-                return;
-            }
-            LocationActivity fragment = new LocationActivity();
-            fragment.setDelegate(new LocationActivity.LocationActivityDelegate() {
-                @Override
-                public void didSelectLocation(TLRPC.MessageMedia location) {
-                    SendMessagesHelper.getInstance().sendMessage(location, dialog_id, replyingMessageObject);
-                    moveScrollToLastMessage();
-                    showReplyPanel(false, null, null, null, false, true);
-                    if (paused) {
-                        scrollToTopOnResume = true;
-                    }
-                }
-            });
-            presentFragment(fragment);
         } else if (which == attach_document) {
             DocumentSelectActivity fragment = new DocumentSelectActivity();
             fragment.setDelegate(new DocumentSelectActivity.DocumentSelectActivityDelegate() {
@@ -2123,13 +2101,37 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             });
             presentFragment(fragment);
-        } else if (which == attach_contact) {
-            try {
-                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-                startActivityForResult(intent, 31);
-            } catch (Exception e) {
-                FileLog.e("tmessages", e);
+        } else if (which == attach_open_issue) {
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
+            String token = preferences.getString("token", "");
+            if (token.length() == 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                builder.setMessage(LocaleController.getString("trelloTokenNeeded", R.string.trelloTokenNeeded));
+                builder.setPositiveButton(LocaleController.getString("OK", R.string.OK),null);
+                showDialog(builder.create());
+            } else {
+                Bundle args = new Bundle();
+                args.putInt("open", 1);
+                IssuesActivity fragment = new IssuesActivity(args);
+                fragment.setDelegate(ChatActivity.this);
+                presentFragment(fragment);
+            }
+        } else if (which == attach_close_issue) {
+            SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("trello", Activity.MODE_PRIVATE);
+            String token = preferences.getString("token", "");
+            if (token.length() == 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                builder.setMessage(LocaleController.getString("trelloTokenNeeded", R.string.trelloTokenNeeded));
+                builder.setPositiveButton(LocaleController.getString("OK", R.string.OK),null);
+                showDialog(builder.create());
+            } else {
+                Bundle args = new Bundle();
+                args.putInt("open", 0);
+                IssuesActivity fragment = new IssuesActivity(args);
+                fragment.setDelegate(ChatActivity.this);
+                presentFragment(fragment);
             }
         }
     }
@@ -2602,7 +2604,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private void checkActionBarMenu() {
         if (currentEncryptedChat != null && !(currentEncryptedChat instanceof TLRPC.TL_encryptedChat) ||
                 currentChat != null && (currentChat instanceof TLRPC.TL_chatForbidden || currentChat.left) ||
-                currentUser != null && (currentUser instanceof TLRPC.TL_userDeleted || currentUser instanceof TLRPC.TL_userEmpty)) {
+                currentUser != null && UserObject.isDeleted(currentUser)) {
             // Disabled
         } else {
             if (menuItem != null) {
@@ -3549,6 +3551,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, dialog.top_message, 0, dialog.last_message_date, true, false);
                         MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, 0, 0, dialog.last_message_date, true, false);
                     }
+                    Toast.makeText(getParentActivity(), LocaleController.getString("ConversationRead", R.string.ConversationRead), Toast.LENGTH_LONG).show();
                 }
             }
         } else if (id == NotificationCenter.emojiDidLoaded) {

@@ -105,7 +105,6 @@ public class NotificationCenter {
     public static final int readChatNotification = totalEvents++;
     public static final int updateTemplatesNotification = totalEvents++;
     public static final int exportTemplates = totalEvents++;
-    public static final int hideTemplatesKeyboard = totalEvents++;
     public static final int conversationOwned = totalEvents++;
     public static final int conversationNotOwned = totalEvents++;
     public static final int conversationOwnedDeleted = totalEvents++;

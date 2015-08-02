@@ -77,7 +77,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
     }
 
     @Override
-    public View createView(Context context, LayoutInflater inflater) {
+    public View createView(Context context) {
         if (fragmentView == null) {
             ActionBarMenu menu = actionBar.createMenu();
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
@@ -137,7 +137,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
             progressView.setLayoutParams(layoutParams);
 
 
-            emptyView = new TextView(inflater.getContext());
+            emptyView = new TextView(context);
             emptyView.setTextColor(0xFF808080);
             emptyView.setGravity(Gravity.CENTER);
             emptyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);

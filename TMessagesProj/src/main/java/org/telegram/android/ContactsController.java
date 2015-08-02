@@ -215,7 +215,7 @@ public class ContactsController {
             FileLog.e("tmessages", e);
         }
 
-        accounts = am.getAccountsByType("org.telegram.messenger");
+        accounts = am.getAccountsByType("org.telegram.tsupport");
         boolean recreateAccount = false;
         if (UserConfig.isClientActivated()) {
             if (accounts.length == 1) {
@@ -240,7 +240,7 @@ public class ContactsController {
             }
             if (UserConfig.isClientActivated()) {
                 try {
-                    currentAccount = new Account(UserConfig.getCurrentUser().phone, "org.telegram.messenger");
+                    currentAccount = new Account(UserConfig.getCurrentUser().phone, "org.telegram.tsupport");
                     am.addAccountExplicitly(currentAccount, "", null);
                 } catch (Exception e) {
                     FileLog.e("tmessages", e);
@@ -252,7 +252,7 @@ public class ContactsController {
     public void deleteAllAppAccounts() {
         try {
             AccountManager am = AccountManager.get(ApplicationLoader.applicationContext);
-            Account[] accounts = am.getAccountsByType("org.telegram.messenger");
+            Account[] accounts = am.getAccountsByType("org.telegram.tsupport");
             for (Account c : accounts) {
                 am.removeAccount(c, null, null);
             }
@@ -274,33 +274,8 @@ public class ContactsController {
     }
 
     private boolean checkContactsInternal() {
-        boolean reload = false;
-        try {
-            ContentResolver cr = ApplicationLoader.applicationContext.getContentResolver();
-            Cursor pCur = null;
-            try {
-                pCur = cr.query(ContactsContract.RawContacts.CONTENT_URI, new String[]{ContactsContract.RawContacts.VERSION}, null, null, null);
-                StringBuilder currentVersion = new StringBuilder();
-                while (pCur.moveToNext()) {
-                    int col = pCur.getColumnIndex(ContactsContract.RawContacts.VERSION);
-                    currentVersion.append(pCur.getString(col));
-                }
-                String newContactsVersion = currentVersion.toString();
-                if (lastContactsVersions.length() != 0 && !lastContactsVersions.equals(newContactsVersion)) {
-                    reload = true;
-                }
-                lastContactsVersions = newContactsVersion;
-            } catch (Exception e) {
-                FileLog.e("tmessages", e);
-            } finally {
-                if (pCur != null) {
-                    pCur.close();
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e("tmessages", e);
-        }
-        return reload;
+        return false;
+        // Disabled
     }
 
     public void readContacts() {
@@ -784,144 +759,15 @@ public class ContactsController {
     }
 
     private void updateUnregisteredContacts(final ArrayList<TLRPC.TL_contact> contactsArr) {
-        final HashMap<String, TLRPC.TL_contact> contactsPhonesShort = new HashMap<>();
-
-        for (TLRPC.TL_contact value : contactsArr) {
-            TLRPC.User user = MessagesController.getInstance().getUser(value.user_id);
-            if (user == null || user.phone == null || user.phone.length() == 0) {
-                continue;
-            }
-            contactsPhonesShort.put(user.phone, value);
-        }
-
-        final ArrayList<Contact> sortedPhoneBookContacts = new ArrayList<>();
-        for (HashMap.Entry<Integer, Contact> pair : contactsBook.entrySet()) {
-            Contact value = pair.getValue();
-            int id = pair.getKey();
-
-            boolean skip = false;
-            for (int a = 0; a < value.phones.size(); a++) {
-                String sphone = value.shortPhones.get(a);
-                if (contactsPhonesShort.containsKey(sphone) || value.phoneDeleted.get(a) == 1) {
-                    skip = true;
-                    break;
-                }
-            }
-            if (skip) {
-                continue;
-            }
-
-            sortedPhoneBookContacts.add(value);
-        }
-        Collections.sort(sortedPhoneBookContacts, new Comparator<Contact>() {
-            @Override
-            public int compare(Contact contact, Contact contact2) {
-                String toComapre1 = contact.first_name;
-                if (toComapre1.length() == 0) {
-                    toComapre1 = contact.last_name;
-                }
-                String toComapre2 = contact2.first_name;
-                if (toComapre2.length() == 0) {
-                    toComapre2 = contact2.last_name;
-                }
-                return toComapre1.compareTo(toComapre2);
-            }
-        });
-
-        phoneBookContacts = sortedPhoneBookContacts;
+        // Disabled
     }
 
     private void buildContactsSectionsArrays(boolean sort) {
-        if (sort) {
-            Collections.sort(contacts, new Comparator<TLRPC.TL_contact>() {
-                @Override
-                public int compare(TLRPC.TL_contact tl_contact, TLRPC.TL_contact tl_contact2) {
-                    TLRPC.User user1 = MessagesController.getInstance().getUser(tl_contact.user_id);
-                    TLRPC.User user2 = MessagesController.getInstance().getUser(tl_contact2.user_id);
-                    String name1 = UserObject.getFirstName(user1);
-                    String name2 = UserObject.getFirstName(user2);
-                    return name1.compareTo(name2);
-                }
-            });
-        }
-
-        StringBuilder ids = new StringBuilder();
-        final HashMap<String, ArrayList<TLRPC.TL_contact>> sectionsDict = new HashMap<>();
-        final ArrayList<String> sortedSectionsArray = new ArrayList<>();
-
-        for (TLRPC.TL_contact value : contacts) {
-            TLRPC.User user = MessagesController.getInstance().getUser(value.user_id);
-            if (user == null) {
-                continue;
-            }
-
-            String key = UserObject.getFirstName(user);
-            if (key.length() > 1) {
-                key = key.substring(0, 1);
-            }
-            if (key.length() == 0) {
-                key = "#";
-            } else {
-                key = key.toUpperCase();
-            }
-            String replace = sectionsToReplace.get(key);
-            if (replace != null) {
-                key = replace;
-            }
-            ArrayList<TLRPC.TL_contact> arr = sectionsDict.get(key);
-            if (arr == null) {
-                arr = new ArrayList<>();
-                sectionsDict.put(key, arr);
-                sortedSectionsArray.add(key);
-            }
-            arr.add(value);
-            if (ids.length() != 0) {
-                ids.append(",");
-            }
-            ids.append(value.user_id);
-        }
-        UserConfig.contactsHash = Utilities.MD5(ids.toString());
-        UserConfig.saveConfig(false);
-
-        Collections.sort(sortedSectionsArray, new Comparator<String>() {
-            @Override
-            public int compare(String s, String s2) {
-                char cv1 = s.charAt(0);
-                char cv2 = s2.charAt(0);
-                if (cv1 == '#') {
-                    return 1;
-                } else if (cv2 == '#') {
-                    return -1;
-                }
-                return s.compareTo(s2);
-            }
-        });
-
-        usersSectionsDict = sectionsDict;
-        sortedUsersSectionsArray = sortedSectionsArray;
+        // Disabled
     }
 
     private void performWriteContactsToPhoneBookInternal(ArrayList<TLRPC.TL_contact> contactsArray) {
-        try {
-            Uri rawContactUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_NAME, currentAccount.name).appendQueryParameter(ContactsContract.RawContacts.ACCOUNT_TYPE, currentAccount.type).build();
-            Cursor c1 = ApplicationLoader.applicationContext.getContentResolver().query(rawContactUri, new String[]{BaseColumns._ID, ContactsContract.RawContacts.SYNC2}, null, null, null);
-            HashMap<Integer, Long> bookContacts = new HashMap<>();
-            if (c1 != null) {
-                while (c1.moveToNext()) {
-                    bookContacts.put(c1.getInt(1), c1.getLong(0));
-                }
-                c1.close();
-
-                for (TLRPC.TL_contact u : contactsArray) {
-                    if (!bookContacts.containsKey(u.user_id)) {
-                        TLRPC.User user = MessagesController.getInstance().getUser(u.user_id);
-                        addContactToPhoneBook(user, false);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e("tmessages", e);
-        }
+        // Disabled
     }
 
     private void performWriteContactsToPhoneBook() {
