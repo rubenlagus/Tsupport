@@ -403,12 +403,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                                     }
                                 }
                                 break;
-                            case "wallpapers": {
-                                WallpapersActivity settings = new WallpapersActivity();
-                                actionBarLayout.addFragmentToStack(settings);
-                                settings.restoreSelfArgs(savedInstanceState);
-                                break;
-                            }
                         }
                     }
                 }

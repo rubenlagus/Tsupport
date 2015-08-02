@@ -294,43 +294,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener(new RecyclerListView.OnItemClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-        emptyView = fragmentView.findViewById(R.id.list_empty_view);
-        emptyView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-        });
-
-
-        TextView textView = (TextView) fragmentView.findViewById(R.id.list_empty_view_text1);
-        textView.setText(LocaleController.getString("NoChats", R.string.NoChats));
-        textView = (TextView) fragmentView.findViewById(R.id.list_empty_view_text2);
-        String help = LocaleController.getString("NoChatsHelp", R.string.NoChatsHelp);
-        if (AndroidUtilities.isTablet() && !AndroidUtilities.isSmallTablet()) {
-            help = help.replace("\n", " ");
-        }
-        textView.setText(help);
-        textView = (TextView) fragmentView.findViewById(R.id.search_empty_text);
-        textView.setText(LocaleController.getString("NoResult", R.string.NoResult));
-
-        if (MessagesController.getInstance().loadingDialogs && MessagesController.getInstance().dialogs.isEmpty()) {
-            searchEmptyView.setVisibility(View.INVISIBLE);
-            emptyView.setVisibility(View.INVISIBLE);
-            progressView.setVisibility(View.VISIBLE);
-            listView.setEmptyView(progressView);
-        } else {
-            listView.setEmptyView(emptyView);
-            searchEmptyView.setVisibility(View.INVISIBLE);
-            progressView.setVisibility(View.INVISIBLE);
-        }
-
-        listView.setOnItemClickListener(new RecyclerListView.OnItemClickListener() {
-            @Override
             public void onItemClick(View view, int position) {
                 if (listView == null || listView.getAdapter() == null) {
                     return;
@@ -553,33 +516,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         progressView.setVisibility(View.GONE);
         frameLayout.addView(progressView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
 
-        floatingButton = new ImageView(context);
-        floatingButton.setVisibility(onlySelect ? View.GONE : View.VISIBLE);
-        floatingButton.setScaleType(ImageView.ScaleType.CENTER);
-        floatingButton.setBackgroundResource(R.drawable.floating_states);
-        floatingButton.setImageResource(R.drawable.floating_pencil);
-        if (Build.VERSION.SDK_INT >= 21) {
-            StateListAnimator animator = new StateListAnimator();
-            animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(floatingButton, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
-            animator.addState(new int[]{}, ObjectAnimator.ofFloat(floatingButton, "translationZ", AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
-            floatingButton.setStateListAnimator(animator);
-            floatingButton.setOutlineProvider(new ViewOutlineProvider() {
-                @SuppressLint("NewApi")
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-                }
-            });
-        }
-        frameLayout.addView(floatingButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 14 : 0, 0, LocaleController.isRTL ? 0 : 14, 14));
-        floatingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle args = new Bundle();
-                args.putBoolean("destroyAfterSelect", true);
-                presentFragment(new ContactsActivity(args));
-            }
-        });
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

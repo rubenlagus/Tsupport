@@ -179,7 +179,7 @@ public class IssuesActivity extends BaseFragment implements NotificationCenter.N
                         }
                     });
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                    showAlertDialog(builder);
+                    showDialog(builder.create());
                 }
             });
             if (open) {

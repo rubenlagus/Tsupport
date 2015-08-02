@@ -56,7 +56,7 @@ public class TrelloSupport {
 
     private static long lastLoad = 0;
 
-    private String token = "";
+    private String token = "YOUR-TOKEN";
     private boolean loading = false;
     public ArrayList<Map.Entry<String,String>> openIssuesList = new ArrayList<Map.Entry<String,String>>();
     public ArrayList<Map.Entry<String,String>> closedIssuesList = new ArrayList<Map.Entry<String,String>>();
@@ -134,47 +134,47 @@ public class TrelloSupport {
     }
 
     public void loadIssues() {
-        HashMap<String, String> openIssuesTemp = new HashMap<String, String>();
-        HashMap<String, String> closedIssuesTemp = new HashMap<String, String>();
+        HashMap<String, String> openIssuesTemp = new HashMap<>();
+        HashMap<String, String> closedIssuesTemp = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
         String getCardsURL = getCards.replace("@myapikey@", BuildVars.TRELLO_API_KEY).replace("@mytoken@", token);
         HttpGet httpGet = new HttpGet(getCardsURL);
-        try{
+        try {
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
-            if(statusCode == 200){
+            if (statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 InputStream content = entity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
                 String line;
-                while((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     builder.append(line);
                 }
-                try{
+                try {
                     JSONArray jsonArray = new JSONArray(builder.toString());
 
-                    for (int i=0; i<jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         if (jsonObject.getString("shortLink").compareToIgnoreCase("Xc5l7jiP") == 0) {
                             continue;
                         }
                         JSONArray labels = jsonObject.getJSONArray("labels");
                         String preline = "";
-                        if(jsonObject.getString("idList").compareToIgnoreCase(iOSId) == 0 ) {
+                        if (jsonObject.getString("idList").compareToIgnoreCase(iOSId) == 0) {
                             preline = "[IOS]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(androidId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(androidId) == 0) {
                             preline = "[AND]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(wpId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(wpId) == 0) {
                             preline = "[WP]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(desktopId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(desktopId) == 0) {
                             preline = "[TDE]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(osXId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(osXId) == 0) {
                             preline = "[OSX]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(webogramId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(webogramId) == 0) {
                             preline = "[WEB]";
-                        } else if(jsonObject.getString("idList").compareToIgnoreCase(globalId) == 0 ) {
+                        } else if (jsonObject.getString("idList").compareToIgnoreCase(globalId) == 0) {
                             preline = "[GLO]";
                         }
                         if (labels.length() == 0) {
@@ -206,7 +206,7 @@ public class TrelloSupport {
                         }
                     });
 
-                    closedIssuesList = new ArrayList<Map.Entry<String,String>>(closedIssuesTemp.entrySet());
+                    closedIssuesList = new ArrayList<>(closedIssuesTemp.entrySet());
 
                     Collections.sort(closedIssuesList, new Comparator<Map.Entry<String, String>>() {
                         @Override
@@ -220,17 +220,22 @@ public class TrelloSupport {
                     });
 
                     FileLog.d("tsupportTrello", "Loading finished");
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.trelloLoaded);
+                    AndroidUtilities.runOnUIThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.trelloLoaded);
+                        }
+                    });
 
-                } catch(Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     FileLog.e("tsupportTrello", "Error loading ", e);
                 }
 
             }
-        }catch(ClientProtocolException e){
+        } catch (ClientProtocolException e) {
             e.printStackTrace();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

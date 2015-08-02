@@ -90,7 +90,12 @@ public class TemplateSupport {
             defaultTemplates = new TreeMap<>();
         }
         loadTemplates();
-        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+        AndroidUtilities.runOnUIThread(new Runnable() {
+            @Override
+            public void run() {
+                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+            }
+        });
     }
 
     /**
@@ -105,7 +110,12 @@ public class TemplateSupport {
             customTemplatesEditor.putString(key, value);
             allTemplates.put(key, value);
             customTemplatesEditor.commit();
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                }
+            });
         }
 
     }
@@ -121,7 +131,12 @@ public class TemplateSupport {
             customTemplatesEditor.remove(key);
             allTemplates.remove(key);
             customTemplatesEditor.commit();
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                }
+            });
         } else {
             SharedPreferences defaultTemplatesPreferences = ApplicationLoader.applicationContext.getSharedPreferences(DEFAULTTEMPLATES, Activity.MODE_PRIVATE);
             if (defaultTemplatesPreferences.contains(key)) {
@@ -129,7 +144,12 @@ public class TemplateSupport {
                 defaultTemplatesEditor.remove(key);
                 allTemplates.remove(key);
                 defaultTemplatesEditor.commit();
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                    }
+                });
             }
         }
     }
@@ -183,7 +203,12 @@ public class TemplateSupport {
                     allTemplates.put(entry.getKey(), entry.getValue());
                     defaultTemplates.put(entry.getKey(), entry.getValue());
                 }
-                NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                    }
+                });
             }
         });
 
@@ -286,17 +311,37 @@ public class TemplateSupport {
             }
             customtemplatesEditor.commit();
             loadTemplates();
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.updateTemplatesNotification);
+                }
+            });
         } catch (JSONException | InvalidObjectException e) {
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("FileNotCorrectFormat", R.string.FileNotCorrectFormat));
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("FileNotCorrectFormat", R.string.FileNotCorrectFormat));
+                }
+            });
             FileLog.e("TemplateSupport", e);
         } catch (FileNotFoundException e) {
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("FileNotFound", R.string.FileNotFound));
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("FileNotFound", R.string.FileNotFound));
+                }
+            });
             FileLog.e("TemplateSupport", e);
         } catch (UnsupportedEncodingException e) {
             FileLog.e("TemplateSupport", e);
         } catch (IOException e) {
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("NetworkErrorTemplates", R.string.NetworkErrorTemplates));
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.errorTemplates, LocaleController.getString("NetworkErrorTemplates", R.string.NetworkErrorTemplates));
+                }
+            });
             FileLog.e("TemplateSupport", e);
         } finally {
             if (customtemplatesEditor != null) {
@@ -351,7 +396,12 @@ public class TemplateSupport {
                 }
             }
             updateMaxHash(languageCode);
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated);
+                }
+            });
             allTemplates.clear();
             TemplateSupport.loadTemplatesInternal();
         } catch (FileNotFoundException e) {
@@ -424,7 +474,7 @@ public class TemplateSupport {
         String currentHash = preferences.getString("templatesHash","");
         SharedPreferences.Editor defaulttemplatesQuestionsEditor = null;
         SharedPreferences.Editor defaulttemplatesEditor = null;
-        JSONArray jsonArray = new JSONArray();
+        final JSONArray jsonArray;
         try {
             if (currentHash != null || !currentHash.equals("")) {
                 defaulttemplatesQuestionsEditor = defaulttemplatesQuestionsPreferences.edit();
@@ -463,9 +513,16 @@ public class TemplateSupport {
                         defaulttemplatesQuestionsEditor.putStringSet(question, keySet);
                     }
                 }
+            } else {
+                jsonArray = new JSONArray();
             }
             updateMaxHash(languageCode);
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated, jsonArray);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.templatesDidUpdated, jsonArray);
+                }
+            });
             allTemplates.clear();
             TemplateSupport.loadTemplatesInternal();
         } catch (FileNotFoundException e) {
@@ -566,9 +623,14 @@ public class TemplateSupport {
                     }
                 }
             }
-            Uri uri = Uri.fromFile(file);
+            final Uri uri = Uri.fromFile(file);
 
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.exportTemplates, uri);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.exportTemplates, uri);
+                }
+            });
         }
     }
 

@@ -85,7 +85,8 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
     private TemplateView templateView;
     private SizeNotifierFrameLayout sizeNotifierLayout;
     private LinearLayout attachButton;
-    private ImageView botButton;    private TextView recordTimeText;
+    private ImageView botButton;    
+    private TextView recordTimeText;
     private ImageView audioSendButton;
     private FrameLayout recordPanel;
     private LinearLayout slideText;
@@ -217,10 +218,10 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             @Override
             public boolean onLongClick(View view) {
                 if (templatePopup == null) {
-                    showTemplatePopup(true);
+                    showTemplatePopup(true, true);
                     return true;
                 } else {
-                    showTemplatePopup(!templatePopup.isShowing());
+                    showTemplatePopup(!templatePopup.isShowing(), true);
                     return true;
                 }
             }
@@ -263,7 +264,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                     return true;
                 } else if (i == 4 && !keyboardVisible && templatePopup != null && templatePopup.isShowing()) {
                     if (keyEvent.getAction() == 1) {
-                        showTemplatePopup(false);
+                        showTemplatePopup(false, true);
                     }
                 } else if (i == KeyEvent.KEYCODE_ENTER && sendByEnter && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
                     sendMessage();
@@ -282,7 +283,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                     setKeyboardTransitionState(1);
                 }
                 if (templatePopup != null && templatePopup.isShowing()) {
-                    showTemplatePopup(false);
+                    setKeyboardTransitionState(1);
                 }
             }
         });
@@ -388,41 +389,6 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                 }
             });
         }
-
-        recordPanel = new FrameLayoutFixed(context);
-        recordPanel.setVisibility(GONE);
-        recordPanel.setBackgroundColor(0xffffffff);
-        frameLayout.addView(recordPanel, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM));
-
-        slideText = new LinearLayout(context);
-        slideText.setOrientation(LinearLayout.HORIZONTAL);
-        recordPanel.addView(slideText, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 30, 0, 0, 0));
-
-        ImageView imageView = new ImageView(context);
-        imageView.setImageResource(R.drawable.slidearrow);
-        slideText.addView(imageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 0, 1, 0, 0));
-
-        TextView textView = new TextView(context);
-        textView.setText(LocaleController.getString("SlideToCancel", R.string.SlideToCancel));
-        textView.setTextColor(0xff999999);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
-        slideText.addView(textView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 6, 0, 0, 0));
-
-        LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        linearLayout.setPadding(AndroidUtilities.dp(13), 0, 0, 0);
-        linearLayout.setBackgroundColor(0xffffffff);
-        recordPanel.addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
-
-        imageView = new ImageView(context);
-        imageView.setImageResource(R.drawable.rec);
-        linearLayout.addView(imageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 0, 1, 0, 0));
-
-        recordTimeText = new TextView(context);
-        recordTimeText.setText("00:00");
-        recordTimeText.setTextColor(0xff4d4c4b);
-        recordTimeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        linearLayout.addView(recordTimeText, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 6, 0, 0, 0));
 
         FrameLayout frameLayout1 = new FrameLayout(context);
         textFieldContainer.addView(frameLayout1, LayoutHelper.createLinear(48, 48, Gravity.BOTTOM));
@@ -679,7 +645,12 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
         }
         String message = messageEditText.getText().toString();
         if (processSendingText(message)) {
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+                }
+            });
             messageEditText.setText("");
             messageEditText.setSelection(messageEditText.length());
             lastTypingTimeSend = 0;
@@ -712,7 +683,12 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             }
         }
         if (processSendingText(text)) {
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+                }
+            });
             messageEditText.setText("");
             messageEditText.setSelection(messageEditText.length());
             lastTypingTimeSend = 0;
@@ -759,7 +735,12 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             }
             return true;
         } else { // Mark as read but send nothing
-            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+            AndroidUtilities.runOnUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+                }
+            });
             return false;
         }
 
@@ -1462,8 +1443,16 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
 
         boolean oldValue = keyboardVisible;
         keyboardVisible = height > 0;
-        if (keyboardVisible && isPopupShowing()) {
-            showPopup(0, currentPopupContentType);
+        if (keyboardVisible && (sizeNotifierLayout.getPaddingBottom() > 0 || keyboardTransitionState == 1)) {
+            setKeyboardTransitionState(1);
+            showEmojiPopup(false, false);
+            showTemplatePopup(false, false)
+        } else if (keyboardTransitionState != 2 && !keyboardVisible && keyboardVisible != oldValue && emojiPopup != null && emojiPopup.isShowing()) {
+            showEmojiPopup(false, false);
+            showTemplatePopup(false, false);
+        } else if (!keyboardVisible && keyboardVisible != oldValue && templatePopup != null && templatePopup.isShowing()) {
+            showTemplatePopup(false, false);
+            showEmojiPopup(false, false);
         }
         if (emojiPadding != 0 && !keyboardVisible && keyboardVisible != oldValue && !isPopupShowing()) {
             emojiPadding = 0;

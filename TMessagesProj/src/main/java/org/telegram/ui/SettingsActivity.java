@@ -472,7 +472,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
+                        showDialog(builder.create());
                     }
                 } else if (i == notificationRow) {
                     presentFragment(new NotificationsSettingsActivity());
@@ -521,7 +521,7 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
                         }
                     });
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                    showAlertDialog(builder);
+                    showDialog(builder.create());
                 } else if (i == languageRow) {
                     presentFragment(new LanguageSelectActivity());
                 } else if (i == supportLanguageRow) {

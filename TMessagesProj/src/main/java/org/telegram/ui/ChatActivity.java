@@ -81,7 +81,6 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.TsupportApi;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.BottomSheet;
-import org.telegram.ui.Adapters.ChatActivityAdapter;
 import org.telegram.ui.Adapters.MentionsAdapter;
 import org.telegram.ui.Adapters.StickersAdapter;
 import org.telegram.android.AnimationCompat.AnimatorListenerAdapterProxy;
@@ -149,7 +148,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private ActionBarMenuItem searchItem;
     private ActionBarMenuItem searchUpItem;
     private ActionBarMenuItem searchDownItem;
-    private TextView addContactItem;
+    //private TextView addContactItem;
     private RecyclerListView chatListView;
     private LinearLayoutManager chatLayoutManager;
     private ChatActivityAdapter chatAdapter;
@@ -4676,7 +4675,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 options = new int[]{8, 2, 1};
                             } else if (type == 3) {
                                 items = new CharSequence[]{LocaleController.getString("Reply", R.string.Reply), LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
-                                options = new int[]{8, 2, 3, 1, 10};
+                                options = new int[]{8, 2, 3, 1, 11};
                             } else if (type == 4) {
                                 if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     String saveString;
@@ -4713,7 +4712,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 options = new int[]{2, 1};
                             } else if (type == 3) {
                                 items = new CharSequence[]{LocaleController.getString("Forward", R.string.Forward), LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
-                                options = new int[]{2, 3, 1, 10};
+                                options = new int[]{2, 3, 1, 11};
                             } else if (type == 4) {
                                 if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                     String saveString;
@@ -4751,7 +4750,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options = new int[]{1};
                         } else if (type == 3) {
                             items = new CharSequence[]{LocaleController.getString("Copy", R.string.Copy), LocaleController.getString("Delete", R.string.Delete), LocaleController.getString("saveToTemplates", R.string.saveToTemplates)};
-                            options = new int[]{3, 1, 10};
+                            options = new int[]{3, 1, 11};
                         } else if (type == 4) {
                             if (selectedObject.messageOwner.media instanceof TLRPC.TL_messageMediaDocument) {
                                 String saveString;
@@ -4975,25 +4974,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             });
             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
             showDialog(builder.create());
-        } else if (option == 11) {
-            final String value = selectedObject.messageText.toString();
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
-            builder.setMessage(LocaleController.getString("insertKey", R.string.insertKey));
-            builder.setInverseBackgroundForced(true);
-            final EditText input = new EditText(getParentActivity());
-            builder.setView(input);
-            builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    String key = input.getText().toString();
-                    FileLog.d("tsupport", "Key: " + key + "--> Value: " + value);
-                    if (key.length() != 0) {
-                        TemplateSupport.putTemplate(key, value);
-                    }
-                }
-            });
-            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-            showAlertDialog(builder);
         }
         selectedObject = null;
     }

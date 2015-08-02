@@ -198,8 +198,7 @@ public class TemplateView extends LinearLayout {
         }
     }
 
-    public static abstract interface Listener {
-        public abstract void onBackspace();
-        public abstract void onTemplateSelected(String paramString);
+    public interface Listener {
+        void onTemplateSelected(String paramString);
     }
 }

@@ -9,6 +9,7 @@ import com.appspot.tsupport_android.ownedConversation.model.BooleanType;
 import com.appspot.tsupport_android.users.Users;
 import com.appspot.tsupport_android.users.model.User;
 
+import org.telegram.android.AndroidUtilities;
 import org.telegram.android.NotificationCenter;
 
 import java.io.IOException;
@@ -115,11 +116,16 @@ public class TsupportApi {
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
-                        if (result)
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwned, dialogId);
-                        else
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationNotOwned, dialogId);
+                    protected void onPostExecute(final Boolean result) {
+                        AndroidUtilities.runOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result)
+                                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwned, dialogId);
+                                else
+                                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationNotOwned, dialogId);
+                            }
+                        });
                     }
 
                 };
@@ -140,13 +146,17 @@ public class TsupportApi {
                     }
 
                     @Override
-                    protected void onPostExecute(Boolean result) {
-                        if (result)
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwnedDeleted, dialogId);
-                        else
-                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwned, dialogId);
+                    protected void onPostExecute(final Boolean result) {
+                        AndroidUtilities.runOnUIThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (result)
+                                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwnedDeleted, dialogId);
+                                else
+                                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.conversationOwned, dialogId);
+                            }
+                        });
                     }
-
                 };
         ownConversation.execute();
     }

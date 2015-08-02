@@ -123,7 +123,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                                 updateView();
                             }
                         });
-                        showAlertDialog(builder);
+                        showDialog(builder.create());
                         emptyView.setVisibility(View.GONE);
                         listView.setVisibility(View.GONE);
                         progressView.setVisibility(View.VISIBLE);
@@ -140,7 +140,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
+                        showDialog(builder.create());
                     } else if (id == export_templates) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setMessage(LocaleController.getString("exportTemplates", R.string.exportTemplates));
@@ -154,7 +154,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
+                        showDialog(builder.create());
                     } else if (id == delete_all_templates) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setMessage(LocaleController.getString("clearrAllTempaltes", R.string.clearrAllTempaltes));
@@ -168,7 +168,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                        showAlertDialog(builder);
+                        showDialog(builder.create());
                     }
                 }
             });
@@ -268,7 +268,7 @@ public class TemplatesSettingsActivity extends BaseFragment implements Notificat
                             }
                         }
                     });
-                    showAlertDialog(builder);
+                    showDialog(builder.create());
 
                     return true;
                 }

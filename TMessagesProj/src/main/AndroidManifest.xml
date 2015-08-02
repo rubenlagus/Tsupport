@@ -125,13 +125,13 @@
 
         <receiver android:name="org.telegram.android.AutoMessageHeardReceiver">
             <intent-filter>
-                <action android:name="org.telegram.messenger.ACTION_MESSAGE_HEARD"/>
+                <action android:name="org.telegram.tsupport.ACTION_MESSAGE_HEARD"/>
             </intent-filter>
         </receiver>
 
         <receiver android:name="org.telegram.android.AutoMessageReplyReceiver">
             <intent-filter>
-                <action android:name="org.telegram.messenger.ACTION_MESSAGE_REPLY"/>
+                <action android:name="org.telegram.tsupport.ACTION_MESSAGE_REPLY"/>
             </intent-filter>
         </receiver>
 
