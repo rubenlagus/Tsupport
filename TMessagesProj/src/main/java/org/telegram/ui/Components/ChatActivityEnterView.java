@@ -365,6 +365,18 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                 sendMessage();
             }
         });
+        sendButton.setOnLongClickListener(new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AndroidUtilities.runOnUIThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id, true);
+                    }
+                });
+                return true;
+            }
+        });
 
         SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("emoji", Context.MODE_PRIVATE);
         keyboardHeight = sharedPreferences.getInt("kbd_height", AndroidUtilities.dp(200));
@@ -602,7 +614,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             AndroidUtilities.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id, false);
                 }
             });
             messageEditText.setText("");
@@ -640,7 +652,7 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
             AndroidUtilities.runOnUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
+                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id, false);
                 }
             });
             messageEditText.setText("");
@@ -688,15 +700,8 @@ public class ChatActivityEnterView extends FrameLayoutFixed implements Notificat
                 }
             }
             return true;
-        } else { // Mark as read but send nothing
-            AndroidUtilities.runOnUIThread(new Runnable() {
-                @Override
-                public void run() {
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id);
-                }
-            });
-            return false;
         }
+        return false;
 
     }
 

@@ -145,8 +145,8 @@ public class ChatAttachView extends FrameLayout implements NotificationCenter.No
                 LocaleController.getString("ChatVideo", R.string.ChatVideo),
                 LocaleController.getString("AttachAudio", R.string.AttachAudio),
                 LocaleController.getString("ChatDocument", R.string.ChatDocument),
-                LocaleController.getString("openIssues", R.string.openIssues),
-                LocaleController.getString("SolvedIssues", R.string.SolvedIssues),
+                LocaleController.getString("OpenIssues", R.string.OpenIssues),
+                LocaleController.getString("ClosedIssues", R.string.ClosedIssues),
                 ""
         };
         int itemIcons[] = new int[] {

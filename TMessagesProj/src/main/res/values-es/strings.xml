@@ -910,4 +910,7 @@ Sentimos los inconvenientes que pueda causarte. Por el momento, desgraciadamente
     <string name="clearrAllTempaltes">Are you sure you want to remove all saved templates (Default templates will be loaded after the process)</string>
     <string name="NoUsers">No users yet</string>
     <string name="ConversationRead">This conversation has been marked as read without an answer</string>
+    <string name="ClosedIssues">Closed</string>
+    <string name="OpenIssues">Open</string>
+    <string name="MarkAsRead">Mark as read</string>
 </resources>

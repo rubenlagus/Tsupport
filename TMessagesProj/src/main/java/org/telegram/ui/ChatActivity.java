@@ -120,7 +120,9 @@ import org.telegram.ui.Components.WebFrameLayout;
 import java.io.File;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
@@ -646,15 +648,28 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     } else {
                         Collections.sort(ids, Collections.reverseOrder());
                     }
+
+                    String formatString = "%s, [%s]\n%s";
+                    String userName = String.format("%s %s", currentUser.first_name == null ? "" : currentUser.first_name,
+                            currentUser.last_name == null ? "" : currentUser.last_name);
                     for (Integer messageId : ids) {
                         MessageObject messageObject = selectedMessagesCanCopyIds.get(messageId);
+                        Calendar rightNow = new GregorianCalendar();
+                        rightNow.setTimeInMillis((long) (messageObject.messageOwner.date) * 1000);
+                        int dateDay = rightNow.get(Calendar.DAY_OF_MONTH);
+                        int dateYear = rightNow.get(Calendar.YEAR);
+                        int dateMonth = rightNow.get(Calendar.MONTH);
+                        int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+                        int minute = rightNow.get(Calendar.MINUTE);
+                        String date = String.format("%02d.%02d.%d %02d:%02d", dateDay, dateMonth, dateYear, hour, minute);
+
                         if (str.length() != 0) {
-                            str += "\n";
+                            str += "\n\n";
                         }
                         if (messageObject.messageOwner.message != null) {
-                            str += messageObject.messageOwner.message;
+                            str += String.format(formatString, userName, date, messageObject.messageOwner.message);
                         } else {
-                            str += messageObject.messageText;
+                            str += String.format(formatString, userName, date, messageObject.messageText);
                         }
                     }
                     if (str.length() != 0) {
@@ -1890,13 +1905,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     botUser = null;
                     updateBottomOverlay();
                 } else {
-                    builder = new AlertDialog.Builder(getParentActivity());
-                    builder.setMessage(LocaleController.getString("AreYouSureDeleteThisChat", R.string.AreYouSureDeleteThisChat));
-                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), new DialogInterface.OnClickListener() {
+                    AndroidUtilities.runOnUIThread(new Runnable() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            MessagesController.getInstance().deleteDialog(dialog_id, 0, false);
-                            finishFragment();
+                        public void run() {
+                            NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification, dialog_id, true);
                         }
                     });
                 }
@@ -3540,7 +3552,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
         } else if (id == NotificationCenter.readChatNotification) {
-            if (args.length > 0) {
+            if (args.length == 2) {
                 long did = (Long) args[0];
                 if (did == dialog_id) {
                     TLRPC.TL_dialog dialog =  MessagesController.getInstance().dialogs_dict.get(did);
@@ -3551,7 +3563,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, dialog.top_message, 0, dialog.last_message_date, true, false);
                         MessagesController.getInstance().markDialogAsRead(dialog_id, messages.get(0).messageOwner.id, 0, 0, dialog.last_message_date, true, false);
                     }
-                    Toast.makeText(getParentActivity(), LocaleController.getString("ConversationRead", R.string.ConversationRead), Toast.LENGTH_LONG).show();
+                    if ((Boolean)args[1]) {
+                        Toast.makeText(getParentActivity(), LocaleController.getString("ConversationRead", R.string.ConversationRead), Toast.LENGTH_LONG).show();
+                    }
+                    updateVisibleRows();
                 }
             }
         } else if (id == NotificationCenter.emojiDidLoaded) {
@@ -4392,7 +4407,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     AndroidUtilities.hideKeyboard(getParentActivity().getCurrentFocus());
                 }
             } else {
-                bottomOverlayChatText.setText(LocaleController.getString("DeleteThisChat", R.string.DeleteThisChat));
+                bottomOverlayChatText.setText(LocaleController.getString("MarkAsRead", R.string.MarkAsRead));
             }
         }
         if (currentChat != null && (currentChat instanceof TLRPC.TL_chatForbidden || currentChat.left) ||
@@ -4621,6 +4636,42 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     @Override
     public void onConfigurationChanged(android.content.res.Configuration newConfig) {
         fixLayout(false);
+    }
+
+    private void createHashtagMenu(final String url) {
+        if (actionBar.isActionModeShowed()) {
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+        CharSequence[] items = new CharSequence[] {LocaleController.getString("Search", R.string.Search), LocaleController.getString("Copy", R.string.Copy)};
+
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (i == 0) {
+                    DialogsActivity fragment = new DialogsActivity(null);
+                    fragment.setSearchString(url);
+                    presentFragment(fragment);
+                } else {
+                    try {
+                        if (Build.VERSION.SDK_INT < 11) {
+                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                            clipboard.setText(url);
+                        } else {
+                            android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                            android.content.ClipData clip = android.content.ClipData.newPlainText("label", url);
+                            clipboard.setPrimaryClip(clip);
+                        }
+                    } catch (Exception e) {
+                        FileLog.e("tmessages", e);
+                    }
+                }
+            }
+        });
+
+        builder.setTitle(LocaleController.getString("Hashtags", R.string.Hashtags));
+        showDialog(builder.create());
     }
 
     public void createMenu(View v, boolean single) {
@@ -4856,13 +4907,24 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             fragment.setDelegate(this);
             presentFragment(fragment);
         } else if (option == 3) {
+            String formatString = "%s, [%s]\n%s";
+            String userName = String.format("%s %s", currentUser.first_name == null ? "" : currentUser.first_name,
+                    currentUser.last_name == null ? "" : currentUser.last_name);
+            Calendar rightNow = new GregorianCalendar();
+            rightNow.setTimeInMillis((long) (selectedObject.messageOwner.date) * 1000);
+            int dateDay = rightNow.get(Calendar.DAY_OF_MONTH);
+            int dateYear = rightNow.get(Calendar.YEAR);
+            int dateMonth = rightNow.get(Calendar.MONTH);
+            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+            int minute = rightNow.get(Calendar.MINUTE);
+            String date = String.format("%02d.%02d.%d %02d:%02d", dateDay, dateMonth, dateYear, hour, minute);
             try {
                 if (Build.VERSION.SDK_INT < 11) {
                     android.text.ClipboardManager clipboard = (android.text.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setText(selectedObject.messageText);
+                    clipboard.setText(String.format(formatString, userName, date, selectedObject.messageText));
                 } else {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", selectedObject.messageText);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", String.format(formatString, userName, date, selectedObject.messageText));
                     clipboard.setPrimaryClip(clip);
                 }
             } catch (Exception e) {
@@ -5322,9 +5384,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         if (url.startsWith("@")) {
                             MessagesController.openByUserName(url.substring(1), ChatActivity.this, 0);
                         } else if (url.startsWith("#")) {
-                            DialogsActivity fragment = new DialogsActivity(null);
-                            fragment.setSearchString(url);
-                            presentFragment(fragment);
+                            createHashtagMenu(url);
                         } else if (url.startsWith("/")) {
                             chatActivityEnterView.setCommand(null, url);
                         }
@@ -5372,9 +5432,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         if (url.startsWith("@")) {
                             MessagesController.openByUserName(url.substring(1), ChatActivity.this, 0);
                         } else if (url.startsWith("#")) {
-                            DialogsActivity fragment = new DialogsActivity(null);
-                            fragment.setSearchString(url);
-                            presentFragment(fragment);
+                            createHashtagMenu(url);
                         } else if (url.startsWith("/")) {
                             chatActivityEnterView.setCommand(messageObject, url);
                         }

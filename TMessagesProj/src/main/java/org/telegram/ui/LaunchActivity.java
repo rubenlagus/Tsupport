@@ -311,7 +311,6 @@ public class LaunchActivity extends Activity implements ActionBarLayout.ActionBa
                     MessagesController.getInstance().reloadDialogs();
                     MessagesController.getInstance().checkDialogsRead();
                     Toast.makeText(getApplicationContext(), LocaleController.getString("Refreshing", R.string.Refreshing) , Toast.LENGTH_LONG).show();
-                    NotificationCenter.getInstance().postNotificationName(NotificationCenter.readChatNotification);
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (position == 4) {
                     presentFragment(new SettingsActivity());
