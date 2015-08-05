@@ -833,10 +833,9 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s a las %2$s</string>
-    <!--update text-->
-    <string name="updateText">Telegram para Android fue actualizada. Novedades en la versión 3.1:\n\n- Busca mensajes dentro de un chat en específico.\n- Menú para adjuntar completamente rediseñado. Envía contactos y archivos de audio directamente desde el menú para adjuntar.\n- Reproducción de multimedia dentro de la aplicación mejorada (YouTube, Vimeo, SoundCloud etc.), nuevo reproductor para archivos de audio largos.\n\nMás sobre esta actualización:\nhttps://telegram.org/blog/search-and-media</string>
-    <string name="updateBuild">577</string>
     <!--Tsupport-->
+    <string name="updateText">Tsupport para Android ha sido actualizado. Novedades en la version 3.1.1T:\n\n- Actualización al cliente oficial v3.1.\n- Click en un hashtag para copiarlo o buscar.\n- Búsqueda general muestra usuarios cuyo chat contiene el texto buscado, no cada mensaje.\n- Marca como leído con un click largo en el botón de enviar (un mensaje informativo aparecerá al soltar el botón).\n- Cuando se copian mensajes, sen incluyen el nombre del usuario, los apellidos y la fecha.\n- Al buscar, las conversaciones con mensajes sin leer están marcados con un check verde sobre la foto de perfil.</string>
+    <string name="updateBuild">580</string>
     <string name="loaddefaulttemplates">¿Deseas usar las plantillas por defecto (si se le enviaron al desarrollador)?</string>
     <string name="saveToTemplates">Guardar plantilla</string>
     <string name="insertKey">Inserta una clave para esta plantilla</string>
@@ -904,13 +903,13 @@ Sentimos los inconvenientes que pueda causarte. Por el momento, desgraciadamente
     <string name="changelog_show_full">más...</string>
     <string name="templatesUpdated">Las plantillas se han actualizado</string>
     <string name="templatesUpdatedFromServer">Se han descargado las plantillas oficiales</string>
-    <string name="FileNotCorrectFormat">File could not be loaded, please check that it has the correct format (KEY-VALUE)</string>
-    <string name="FileNotFound">Selected file could not be found</string>
-    <string name="NetworkErrorTemplates">There was an error loading the file, please try again.</string>
-    <string name="clearrAllTempaltes">Are you sure you want to remove all saved templates (Default templates will be loaded after the process)</string>
-    <string name="NoUsers">No users yet</string>
-    <string name="ConversationRead">This conversation has been marked as read without an answer</string>
-    <string name="ClosedIssues">Closed</string>
-    <string name="OpenIssues">Open</string>
-    <string name="MarkAsRead">Mark as read</string>
+    <string name="FileNotCorrectFormat">No se ha podido cargar el archivo, comprueba que tiene el formato correcto (KEY-VALUE)</string>
+    <string name="FileNotFound">No se ha encontrado el archivo seleccionado</string>
+    <string name="NetworkErrorTemplates">Se ha producido un error al cargar el archivo, inténtalo de nuevo.</string>
+    <string name="clearrAllTempaltes">¿Seguro que quieres borrar todas las plantillas guardadas? (Las plantillas por defecto se cargarán tras el proceso)</string>
+    <string name="NoUsers">Sin usuarios aún</string>
+    <string name="ConversationRead">Esta conversación ha sido marcada como leída sin una respuesta</string>
+    <string name="ClosedIssues">Cerrados</string>
+    <string name="OpenIssues">Abiertos</string>
+    <string name="MarkAsRead">Marcar como leído</string>
 </resources>

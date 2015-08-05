@@ -833,10 +833,9 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s um %2$s</string>
-    <!--update text-->
-    <string name="updateText">Telegram für Android wurde aktualisiert. Neu in Version 3.1:\n\n- Direkte Suche in Chats.\n- In Chats versteckt sich ein komplett neues Menü hinter der Büroklammer. Nun kann man dort auch Musik und Kontakte versenden.\n- In-App Medienwiedergabe für YouTube, Vimeo, SoundCloud, etc. optimiert und neuer Player für Audiodateien.\n\nMehr dazu unter:\nhttps://telegram.org/blog/search-and-media</string>
-    <string name="updateBuild">577</string>
-    <!-- Tsupport -->
+    <!-- Tsupport-->
+    <string name="updateText">Tsupport for Android has been updated. New in version 3.1.1T:\n\n- Update to official client v3.1.\n- Tap on a hashtag for copy or search.\n- General search shows users whose chat contains the searched text, not every messages.\n- Mark as read with long click on send button (a information message will appear after release button).\n- When coping messages, user name, user surname and date is included.\n- When searching, conversations with unread messages are marked with a green check over profile picture.</string>
+    <string name="updateBuild">580</string>
     <string name="loaddefaulttemplates">Möchtest du die Standardvorlagen verwenden (sofern sie dem App Entwickler zur Verfügung gestanden haben)?</string>
     <string name="saveToTemplates">Als Vorlage speichern</string>
     <string name="insertKey">Schlüsselwort der Vorlage hinzufügen</string>

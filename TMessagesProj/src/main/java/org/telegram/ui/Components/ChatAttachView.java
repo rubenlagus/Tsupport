@@ -155,8 +155,8 @@ public class ChatAttachView extends FrameLayout implements NotificationCenter.No
                 R.drawable.attach_video_states,
                 R.drawable.attach_audio_states,
                 R.drawable.attach_file_states,
-                R.drawable.attach_contact_states,
-                R.drawable.attach_location_states,
+                R.drawable.attach_bug_open_states,
+                R.drawable.attach_bug_closed_states,
                 R.drawable.attach_hide_states,
         };
         for (int a = 0; a < 8; a++) {

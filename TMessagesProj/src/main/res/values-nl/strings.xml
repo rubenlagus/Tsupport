@@ -833,10 +833,9 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s om %2$s</string>
-    <!--update text-->
-    <string name="updateText">Telegram voor Android is bijgewerkt. Nieuw in versie 3.1:\n\n- Zoek naar berichten in een specifieke chat.\n- Volledig opnieuw ontworpen bijlagemenu. Verstuur contacten en audiobestanden rechtstreeks vanuit het bijlagemenu.\n- Afspelen van media in de app verbeterd (YouTube, Vimeo, SoundCloud, etc.), nieuwe speler voor grote audiobestanden.\n\nMeer weten? Kijk op:\nhttps://telegram.org/blog/search-and-media</string>
-    <string name="updateBuild">577</string>
     <!--Tsupport-->
+    <string name="updateText">Tsupport voor Android is bijgewerkt. Nieuw in versie 3.1.1T:\n\n- Bijgewerkt naar de officiële client v3.1.\n- Druk op een hashtag om hem te kopiëren of te zoeken.\n- Een algemene zoekopdracht toont gebruikers wiens chat de gezochte tekst bevat, niet alle berichten.\n- Markeren als gelezen door lang op te stuurknop te drukken (een melding verschijnt na het loslaten van de knop).\n- Als je berichten kopieert worden de gebruikersnaam, voornaam, achternaam en datum inbegrepen.\n- Bij het zoeken worden gesprekken met ongelezen berichten gemarkeerd met een groen vinkje over de profielfoto.</string>
+    <string name="updateBuild">580</string>
     <string name="loaddefaulttemplates"> Wil je de standaard templates gebruiken (indien opgeleverd aan de app ontwikkelaar)?</string>
     <string name="saveToTemplates">Opslaan als template</string>
     <string name="insertKey">Key toevoegen aan de template</string>
@@ -866,12 +865,12 @@
     <string name="IssueNoted">Je probleem met #issue_@id is opgenomen in ons systeem, we nemen contact met je op zodra het probleem is verholpen.\n\nExcuses voor het ongemak!</string>
     <string name="IssueSolved">Hallo!\n\nEven een kort berichtje om door te geven dat we je probleem #issue_@id hebben weten op te lossen.\n\nExcuses voor het geleden ongemak. Zou je Telegram willen updaten naar de meest recente versie en contact met ons opnemen als je verdere vragen hebt?</string>
     <string name="clearCache">Cache opschonen</string>
-    <string name="AreYouSureClearCache">Na het opschonen van de cache zal Tsupport opnieuw worden opgestart.</string>
+    <string name="AreYouSureClearCache">Na het opschonen van de cache zal TSupport opnieuw worden opgestart.</string>
     <string name="downloadUserPhotos">Gebruikersfoto\'s</string>
     <string name="exportTemplates">Je templates worden geëxporteerd, daarna kun je ze overal heen sturen. Dit proces kan even duren, wees geduldig.</string>
     <string name="exporting">Bezig met Exporteren...</string>
     <string name="linkTrello">Linken met Trello</string>
-    <string name="trelloTokenExists">Trello toegang is reeds gegeven.</string>
+    <string name="trelloTokenExists">Trello-toegang is reeds gegeven.</string>
     <string name="grantTrelloAccess">Door toegang te geven tot Trello krijgt de app een lijst met openstaande en opgeloste problemen.</string>
     <string name="tokenNotFetched">Ophalen van het toegangstoken mislukt, probeer het opnieuw.</string>
     <string name="tokenFetched">Toegangstoken is opgehaald.</string>
@@ -898,13 +897,13 @@
     <string name="changelog_show_full">meer... </string>
     <string name="templatesUpdated">Templates zijn geüpdatet</string>
     <string name="templatesUpdatedFromServer">Officiële templates zijn gedownload</string>
-    <string name="FileNotCorrectFormat">File could not be loaded, please check that it has the correct format (KEY-VALUE)</string>
-    <string name="FileNotFound">Selected file could not be found</string>
-    <string name="NetworkErrorTemplates">There was an error loading the file, please try again.</string>
-    <string name="clearrAllTempaltes">Are you sure you want to remove all saved templates (Default templates will be loaded after the process)</string>
-    <string name="NoUsers">No users yet</string>
-    <string name="ConversationRead">This conversation has been marked as read without an answer</string>
-    <string name="ClosedIssues">Closed</string>
+    <string name="FileNotCorrectFormat">Bestand kon niet worden geladen, controleer of het formaat correct is (KEY/VALUE)</string>
+    <string name="FileNotFound">Geselecteerde bestand kan niet worden gevonden</string>
+    <string name="NetworkErrorTemplates">Er is iets misgegaan bij het laden van het bestand, probeer het opnieuw.</string>
+    <string name="clearrAllTempaltes">Weet je zeker dat je alle opgeslagen templates wilt verwijderen?(standaard templates worden geladen na verwijderen)</string>
+    <string name="NoUsers">Nog geen gebruikers</string>
+    <string name="ConversationRead">Dit gesprek is gemarkeerd als gelezen zonder een antwoord</string>
+    <string name="ClosedIssues">Gesloten</string>
     <string name="OpenIssues">Open</string>
-    <string name="MarkAsRead">Mark as read</string>
+    <string name="MarkAsRead">Markeren als gelezen</string>
 </resources>

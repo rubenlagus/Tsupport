@@ -833,10 +833,9 @@
     <string name="formatterDay24H">HH:mm</string>
     <string name="formatterDay12H">a h:mm</string>
     <string name="formatDateAtTime">%1$s %2$s</string>
-    <!--update text-->
-    <string name="updateText">텔레그램 안드로이드 버전이 업데이트 되었습니다. 새로운 버전은 3.1 입니다:\n\n- 특정 대화창에서 검색. \n- 첨부 메뉴 개선. 해당 메뉴에서 바로 연락처, 오디오를 전송 가능. \n- 인앱 미디어 재생 기능 향상 (YouTube, Vimeo, SoundCloud etc). 대용량 오디오 파일 별도 플레이어 기능. \n\nhttps://telegram.org/blog/search-and-media에서 자세한 사항을 알아보세요.</string>
-    <string name="updateBuild">577</string>
     <!-- Tsupport -->
+    <string name="updateText">Tsupport for Android has been updated. New in version 3.1.1T:\n\n- Update to official client v3.1.\n- Tap on a hashtag for copy or search.\n- General search shows users whose chat contains the searched text, not every messages.\n- Mark as read with long click on send button (a information message will appear after release button).\n- When coping messages, user name, user surname and date is included.\n- When searching, conversations with unread messages are marked with a green check over profile picture.</string>
+    <string name="updateBuild">580</string>
     <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
     <string name="saveToTemplates">Save as template</string>
     <string name="insertKey">Insert key for the template</string>

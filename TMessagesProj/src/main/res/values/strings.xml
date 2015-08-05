@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-
 <resources>
     <string name="AppName">Tsupport</string>
     <string name="LanguageName">English</string>
@@ -834,8 +831,7 @@
     <string name="formatterDay12H">h:mm a</string>
     <string name="formatDateAtTime">%1$s at %2$s</string>
     <!--Tsupport-->
-    <string name="updateText">Telegram for Android has been updated. New in version 3.1:\n\n- Search for messages inside a specific chat.\n- Fully redesigned attachment menu. Send contacts and audio files straight from the attachment menu.\n- Improved in-app media playback (YouTube, Vimeo, SoundCloud etc.), new player for large audio files.\n\nMore about this update:\nhttps://telegram.org/blog/search-and-media</string>
-    <string name="updateBuild">577</string>
+    <string name="updateText">Tsupport for Android has been updated. New in version 3.1.1T:\n\n- Update to official client v3.1.\n- Tap on a hashtag for copy or search.\n- General search shows users whose chat contains the searched text, not every messages.\n- Mark as read with long click on send button (a information message will appear after release button).\n- When coping messages, user name, user surname and date is included.\n- When searching, conversations with unread messages are marked with a green check over profile picture.</string>    <string name="updateBuild">580</string>
     <string name="loaddefaulttemplates">Do you want to use the default templates (if they were suplied to app developer)?</string>
     <string name="saveToTemplates">Save as template</string>
     <string name="insertKey">Insert a key for this template</string>

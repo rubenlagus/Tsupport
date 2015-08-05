@@ -766,14 +766,14 @@ public class NotificationsController {
 
             Intent msgHeardIntent = new Intent();
             msgHeardIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            msgHeardIntent.setAction("org.telegram.messenger.ACTION_MESSAGE_HEARD");
+            msgHeardIntent.setAction("org.telegram.tsupport.ACTION_MESSAGE_HEARD");
             msgHeardIntent.putExtra("dialog_id", dialog_id);
             msgHeardIntent.putExtra("max_id", max_id);
             PendingIntent msgHeardPendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, notificationIdAuto, msgHeardIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             Intent msgReplyIntent = new Intent();
             msgReplyIntent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-            msgReplyIntent.setAction("org.telegram.messenger.ACTION_MESSAGE_REPLY");
+            msgReplyIntent.setAction("org.telegram.tsupport.ACTION_MESSAGE_REPLY");
             msgReplyIntent.putExtra("dialog_id", dialog_id);
             msgReplyIntent.putExtra("max_id", max_id);
             PendingIntent msgReplyPendingIntent = PendingIntent.getBroadcast(ApplicationLoader.applicationContext, notificationIdAuto, msgReplyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
