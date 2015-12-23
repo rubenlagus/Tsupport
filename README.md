@@ -36,6 +36,6 @@ Original [Telegram App for Android](https://play.google.com/store/apps/details?i
 
 ### Acknowledgments
 
-[Artur] (https://github.com/Ecron) for his contribution to translations and visual improvements
-[Marvin] (https://github.com/dapoldi) for his contribution to development and testing
-[DrKlo] (https://github.com/drklo) for creating base Telegram Android App
+[Artur] (https://github.com/Ecron) for his contribution to translations and visual improvements  
+[Marvin] (https://github.com/dapoldi) for his contribution to development and testing  
+[DrKlo] (https://github.com/drklo) for creating base Telegram Android App  
